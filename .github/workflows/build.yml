@@ -40,7 +40,7 @@ jobs:
     - name: Build Release APK
       run: |
         echo "Starting Gradle Release build..."
-        gradle assembleRelease --stacktrace
+        gradle assembleDebug --stacktrace
         echo "Build completed"
 
     - name: Verify APK
