@@ -10,6 +10,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper
+
       - name: Build Debug APK
         run: |
           chmod +x gradlew
