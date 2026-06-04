@@ -1,10 +1,14 @@
 package com.example.webviewapp
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.webkit.DownloadListener
+import android.print.PrintAttributes
+import android.print.PrintManager
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -21,10 +25,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private val TAG = "WebViewApp"
     private val FILE_CHOOSER_RESULT_CODE = 101
 
-    // CONFIG: URL Utama Aplikasi Buku Kas Anda
+    // CONFIG: URL Utama Aplikasi Buku Kas
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -32,17 +35,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Menyambungkan ID sesuai template bawaan
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
         swipeRefreshLayout = findViewById(R.id.swipeRefresh)
 
-        // Konfigurasi performa dasar WebView
+        // Konfigurasi performa dasar
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // DISATUKAN: Menggabungkan semua fungsi WebViewClient agar tidak saling tumpang tindih
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -54,13 +57,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                // Menghentikan putaran loading refresh saat halaman selesai dimuat
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // Fitur Unggah File untuk tombol cadangkan/pulihkan data di web
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -68,13 +69,18 @@ class MainActivity : AppCompatActivity() {
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
                 val intent = fileChooserParams?.createIntent()
-                try {
-                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                } catch (e: Exception) {
-                    this@MainActivity.filePathCallback = null
-                    return false
+                
+                // 🔥 PERBAIKAN FATAL 1: Lolos sensor Null Safety Kotlin
+                if (intent != null) {
+                    try {
+                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
+                        return true
+                    } catch (e: Exception) {
+                        this@MainActivity.filePathCallback = null
+                        return false
+                    }
                 }
-                return true
+                return false
             }
         }
 
@@ -82,35 +88,63 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
-        // 📥 FITUR DOWNLOAD: Menggunakan struktur objek klasik agar lolos sensor Gradle
-        webView.setDownloadListener(object : DownloadListener {
-            override fun onDownloadStart(
-                url: String?,
-                userAgent: String?,
-                contentDisposition: String?,
-                mimetype: String?,
-                contentLength: Long
-            ) {
+        // ==========================================
+        // 📥 FITUR DOWNLOAD (BACK UP DATA)
+        // ==========================================
+        webView.setDownloadListener { url, _, _, _, _ ->
+            // 🔥 PERBAIKAN FATAL 2: Melindungi Uri.parse dari URL kosong
+            if (url != null) {
                 try {
-                    if (url != null) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        startActivity(intent)
-                        Toast.makeText(this@MainActivity, "Mengalihkan ke unduhan...", Toast.LENGTH_SHORT).show()
-                    }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                    Toast.makeText(this@MainActivity, "Memproses unduhan...", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    // Mengamankan aplikasi agar tidak crash jika browser bawaan tidak merespons
+                    Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
 
+        // Menanamkan fitur Cetak untuk dipanggil jika diperlukan
+        webView.addJavascriptInterface(WebAppInterface(this), "Android")
+
+        // Menjalankan web
         webView.loadUrl(TARGET_URL)
+    }
+
+    // ==========================================
+    // 🖨️ FITUR CETAK (PRINT INVOICE)
+    // ==========================================
+    inner class WebAppInterface(private val mContext: Context) {
+        @android.webkit.JavascriptInterface
+        fun printInvoice() {
+            runOnUiThread {
+                buatCetakWeb()
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    fun buatCetakWeb() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
+                printManager.print("Invoice_Document", printAdapter, PrintAttributes.Builder().build())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(this, "Fitur cetak tidak didukung perangkat ini", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             if (filePathCallback == null) return
-            filePathCallback!!.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data))
+            // Penanganan null safety pada hasil tangkapan file
+            val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+            filePathCallback?.onReceiveValue(results)
             filePathCallback = null
         }
     }
