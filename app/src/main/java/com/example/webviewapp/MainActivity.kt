@@ -14,13 +14,19 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private val TAG = "WebViewApp"
     private val FILE_CHOOSER_RESULT_CODE = 101
 
     // CONFIG: URL Utama Aplikasi Buku Kas Anda
@@ -29,10 +35,13 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Mengisolasi WebView langsung agar 100% aman dari konflik file layout XML bawaan
-        webView = WebView(this)
-        setContentView(webView)
+        // Mengembalikan ke layout XML bawaan agar Gradle tidak eror
+        setContentView(R.layout.activity_main)
+
+        // Menghubungkan id komponen sesuai template asli
+        webView = findViewById(R.id.webView)
+        progressBar = findViewById(R.id.progressBar)
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
 
         // Konfigurasi performa web standar
         webView.settings.javaScriptEnabled = true
@@ -40,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
+        // WebViewClient Tunggal (Aman & Sinkron dengan SwipeRefresh)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -48,10 +58,16 @@ class MainActivity : AppCompatActivity() {
                 }
                 return false
             }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                // Menghentikan animasi loading refresh saat halaman selesai dimuat
+                swipeRefreshLayout.isRefreshing = false
+            }
         }
 
+        // WebChromeClient untuk menangani unggah file / pulihkan data
         webView.webChromeClient = object : WebChromeClient() {
-            // Jembatan Unggah File: Menangani tombol input file/pulihkan data di dalam website
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -69,8 +85,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Fitur Swipe Refresh bawaan template
+        swipeRefreshLayout.setOnRefreshListener {
+            webView.reload()
+        }
+
         // ==========================================
-        // 📥 FITUR 1: JEMBATAN DOWNLOAD (BACK UP DATA)
+        // 📥 FITUR Tambahan 1: JEMBATAN DOWNLOAD (BACK UP)
         // ==========================================
         webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             try {
@@ -88,9 +109,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ==========================================
-    // 🖨️ FITUR 2: JEMBATAN CETAK (PRINT INVOICE)
+    // 🖨️ FITUR Tambahan 2: JEMBATAN CETAK (PRINT INVOICE)
     // ==========================================
-    // Diberikan pengaman TargetApi agar kompilasi Gradle tidak mendeteksi eror SDK lagi
     @TargetApi(Build.VERSION_CODES.KITKAT)
     fun buatCetakWeb(webView: WebView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
