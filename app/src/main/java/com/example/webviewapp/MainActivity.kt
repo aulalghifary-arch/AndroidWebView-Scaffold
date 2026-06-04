@@ -12,7 +12,13 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.print.PrintAttributes
 import android.print.PrintManager
-import android.webkit.*
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.DownloadListener
+import android.webkit.JavascriptInterface
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,18 +63,18 @@ class MainActivity : AppCompatActivity() {
         settings.allowFileAccess = true
         settings.allowContentAccess = true
 
-        // Menangani Navigasi Halaman Web
+        // Menangani Navigasi Halaman Web dengan Null-Safety tambahan
         mWebView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val url = request.url.toString()
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url?.toString() ?: return false
                 if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view.loadUrl(url)
+                    view?.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView?, url: String?) {
                 progressBar.visibility = ProgressBar.GONE
                 swipeRefreshLayout.isRefreshing = false
             }
@@ -77,19 +83,21 @@ class MainActivity : AppCompatActivity() {
         // Menangani Fitur File Upload / Pulihkan Data agar bekerja di APK
         mWebView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
-                webView: WebView,
-                filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: FileChooserParams
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
             ): Boolean {
                 fileChooserCallback = filePathCallback
-                val intent = fileChooserParams.createIntent()
+                val intent = fileChooserParams?.createIntent()
                 try {
-                    fileChooserLauncher.launch(intent)
-                    return true
+                    if (intent != null) {
+                        fileChooserLauncher.launch(intent)
+                        return true
+                    }
                 } catch (e: Exception) {
                     fileChooserCallback = null
-                    return false
                 }
+                return false
             }
         }
 
@@ -98,39 +106,48 @@ class MainActivity : AppCompatActivity() {
             mWebView.reload()
         }
 
-        // MENANGANI BACKUP DATA (Mencegat Blob URL & Mengonversinya ke File JSON asli)
-        mWebView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-            if (url.startsWith("blob:")) {
-                val jsBlobConverter = """
-                    javascript:
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', '$url', true);
-                    xhr.responseType = 'blob';
-                    xhr.onload = function(e) {
-                        if (this.status == 200) {
-                            var blob = this.response;
-                            var reader = new FileReader();
-                            reader.readAsDataURL(blob);
-                            reader.onloadend = function() {
-                                var base64data = reader.result;
-                                Android.prosesBase64Backup(base64data);
+        // MENANGANI BACKUP DATA menggunakan deklarasi objek eksplisit (Anti Gagal Compile)
+        mWebView.setDownloadListener(object : DownloadListener {
+            override fun onDownloadStart(
+                url: String?,
+                userAgent: String?,
+                contentDisposition: String?,
+                mimetype: String?,
+                contentLength: Long
+            ) {
+                val currentUrl = url ?: return
+                if (currentUrl.startsWith("blob:")) {
+                    val jsBlobConverter = """
+                        javascript:
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', '$currentUrl', true);
+                        xhr.responseType = 'blob';
+                        xhr.onload = function(e) {
+                            if (this.status == 200) {
+                                var blob = this.response;
+                                var reader = new FileReader();
+                                reader.readAsDataURL(blob);
+                                reader.onloadend = function() {
+                                    var base64data = reader.result;
+                                    Android.prosesBase64Backup(base64data);
+                                }
                             }
-                        }
-                    };
-                    xhr.send();
-                """.trimIndent()
-                
-                mWebView.loadUrl(jsBlobConverter)
-                Toast.makeText(this, "Memproses data backup...", Toast.LENGTH_SHORT).show()
-            } else {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Gagal membuka tautan unduhan", Toast.LENGTH_SHORT).show()
+                        };
+                        xhr.send();
+                    """.trimIndent()
+                    
+                    mWebView.loadUrl(jsBlobConverter)
+                    Toast.makeText(this@MainActivity, "Memproses data backup...", Toast.LENGTH_SHORT).show()
+                } else {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MainActivity, "Gagal membuka tautan unduhan", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
+        })
 
         // Menangani Tombol Back Fisik HP agar tidak langsung keluar aplikasi
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
