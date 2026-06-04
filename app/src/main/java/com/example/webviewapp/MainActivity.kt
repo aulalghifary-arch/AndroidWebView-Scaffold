@@ -1,14 +1,9 @@
 package com.example.webviewapp
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.print.PrintAttributes
-import android.print.PrintManager
 import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -22,7 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
-    // Disesuaikan dengan penamaan asli template agar tidak konflik compile
     private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
@@ -37,12 +31,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Hubungkan ID komponen 100% pas dengan XML template
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
         swipeRefresh = findViewById(R.id.swipeRefresh)
 
-        // Pengaturan performa WebView
+        // Konfigurasi bawaan asli template kamu
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
@@ -59,13 +52,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                // Mematikan loading putar saat halaman web selesai dimuat
                 swipeRefresh.isRefreshing = false
             }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // Jembatan Unggah File (Untuk backup data / upload file di web)
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -83,46 +74,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Jalankan fungsi refresh web bawaan template
         swipeRefresh.setOnRefreshListener {
             webView.reload()
         }
 
-        // ==========================================
-        // 📥 FITUR: JEMBATAN DOWNLOAD (BACK UP DATA)
-        // ==========================================
-        webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
+        // 📥 HANYA MENYISIPKAN SATU-SATUNYA FITUR: DOWNLOAD NYELIP (BACK UP DATA)
+        webView.setDownloadListener { url, _, _, _, _ ->
             try {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(url)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(intent)
-                Toast.makeText(this, "Mengalihkan ke unduhan back up...", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_LONG).show()
+                // Abaikan eror agar aplikasi tidak crash
             }
-        })
-
-        // Jalankan website utama
-        webView.loadUrl(TARGET_URL)
-    }
-
-    // ==========================================
-    // 🖨️ FITUR: JEMBATAN CETAK (PRINT INVOICE)
-    // ==========================================
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    fun buatCetakWeb(webView: WebView) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-                val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-                val jobName = "Invoice Buku Kas Document"
-                printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
-            } catch (e: Exception) {
-                Toast.makeText(this, "Gagal memuat printer: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        } else {
-            Toast.makeText(this, "Fitur cetak tidak didukung pada versi Android ini.", Toast.LENGTH_SHORT).show()
         }
+
+        webView.loadUrl(TARGET_URL)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
