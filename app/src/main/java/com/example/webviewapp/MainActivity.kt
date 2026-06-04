@@ -12,41 +12,32 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private val TAG = "WebViewApp"
-
-    // CONFIG: Target URL
-    private val TARGET_URL = "https://buku-kas-online.vercel.app"
-    private val PERMISSION_REQUEST_CODE = 100
     private val FILE_CHOOSER_RESULT_CODE = 101
+
+    // CONFIG: URL Aplikasi Buku Kas Anda
+    private val TARGET_URL = "https://buku-kas-online.vercel.app"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        
+        // Membuat WebView langsung memenuhi layar tanpa bergantung xml layout yang rawan eror
+        webView = WebView(this)
+        setContentView(webView)
 
-        webView = findViewById(R.id.webView)
-        progressBar = findViewById(R.id.progressBar)
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
-
-        // Konfigurasi Dasar WebView
+        // Konfigurasi Standar Keamanan & Fungsi Web
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // DISATUKAN: WebViewClient hanya boleh dideklarasikan SATU KALI
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -55,14 +46,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 return false
             }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                swipeRefreshLayout.isRefreshing = false
-            }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
+            // Fitur Jembatan: Agar tombol "Pulihkan/Pilih File" di web bisa ditekan
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -80,37 +67,36 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Swipe Refresh
-        swipeRefreshLayout.setOnRefreshListener {
-            webView.reload()
-        }
-
-        // 🔥 JEMBATAN 1: Menangani Download untuk Fitur Back Up
+        // ==========================================
+        // 🔥 FITUR 1: JEMBATAN DOWNLOAD (BACK UP DATA)
+        // ==========================================
         webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             try {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(url)
                 startActivity(intent)
-                Toast.makeText(this, "Mengunduh data back up...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Mengalihkan ke unduhan back up...", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_LONG).show()
             }
         })
 
-        // Jalankan URL Utama
+        // Menjalankan Aplikasi Buku Kas Online Anda
         webView.loadUrl(TARGET_URL)
     }
 
-    // 🔥 JEMBATAN 2: Fungsi untuk Mencetak / Membuat PDF Invoice
-    // Fungsi ini bisa dipanggil secara otomatis oleh sistem Android saat mendeteksi perintah cetak web
+    // ==========================================
+    // 🔥 FITUR 2: JEMBATAN CETAK (PRINT INVOICE)
+    // ==========================================
+    // Fungsi otomatis Android untuk menangani window.print() dari website
     fun buatCetakWeb(webView: WebView) {
         try {
             val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
             val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-            val jobName = "${getString(R.string.app_name)} Document"
+            val jobName = "Invoice Buku Kas Document"
             printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
         } catch (e: Exception) {
-            Toast.makeText(this, "Gagal mencetak: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Gagal memuat printer: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
