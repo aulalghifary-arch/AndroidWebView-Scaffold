@@ -1,5 +1,6 @@
 package com.example.webviewapp
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,10 +13,12 @@ import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import java.io.File
@@ -25,13 +28,26 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    
+    // BUG FIX: Media penampung untuk data file yang dipilih user
+    private var uploadMessage: ValueCallback<Array<Uri>>? = null
+
+    // BUG FIX: Sistem peluncur jendela File Manager HP
+    private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val results = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
+            uploadMessage?.onReceiveValue(results)
+        } else {
+            uploadMessage?.onReceiveValue(null)
+        }
+        uploadMessage = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webView)
-        // Mencari komponen SwipeRefresh secara otomatis tanpa menebak ID
         swipeRefreshLayout = cariSwipeRefresh(findViewById(android.R.id.content))
 
         val settings = webView.settings
@@ -40,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         settings.allowFileAccess = true
         settings.allowContentAccess = true
 
-        // Menghubungkan fungsi tarik kebawah untuk memuat ulang halaman
         swipeRefreshLayout?.setOnRefreshListener {
             webView.reload()
         }
@@ -48,19 +63,36 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                // BUG 4 FIX: Hentikan animasi putar saat halaman selesai dimuat
                 swipeRefreshLayout?.isRefreshing = false
-                
-                // BUG 1 & 3 FIX: Menyadap fungsi print website agar terbuka di Android
                 view?.evaluateJavascript("window.print = function() { Android.printInvoice(); };", null)
             }
         }
 
-        webView.webChromeClient = WebChromeClient()
+        // BUG FIX: Mengganti WebChromeClient standar agar bisa merespons tombol "Pulihkan Data"
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                uploadMessage?.onReceiveValue(null)
+                uploadMessage = filePathCallback
+
+                val intent = fileChooserParams?.createIntent()
+                try {
+                    fileChooserLauncher.launch(intent)
+                } catch (e: Exception) {
+                    uploadMessage = null
+                    Toast.makeText(this@MainActivity, "Gagal membuka file manager", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                return true
+            }
+        }
+
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
         webView.loadUrl("https://buku-kas-online.vercel.app")
 
-        // BUG 2 FIX: Menangani unduhan file modern (Blob) dan Base64
         webView.setDownloadListener { url, _, _, _, _ ->
             if (url.startsWith("blob:") || url.startsWith("data:")) {
                 val jsDataConverter = """
@@ -94,7 +126,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Fungsi canggih untuk mendeteksi SwipeRefreshLayout di XML
     private fun cariSwipeRefresh(view: View): SwipeRefreshLayout? {
         if (view is SwipeRefreshLayout) return view
         if (view is ViewGroup) {
@@ -121,7 +152,6 @@ class MainActivity : AppCompatActivity() {
 
     fun simpanFile(base64Data: String) {
         try {
-            // Memisahkan tipe file dan isi data
             val mimeType = if (base64Data.contains(";")) {
                 base64Data.substringAfter("data:").substringBefore(";")
             } else {
@@ -131,7 +161,6 @@ class MainActivity : AppCompatActivity() {
             val pureBase64 = base64Data.substringAfter("base64,")
             val fileBytes = Base64.decode(pureBase64, Base64.DEFAULT)
 
-            // Menentukan ekstensi file secara otomatis
             val extension = when {
                 mimeType.contains("pdf") -> ".pdf"
                 mimeType.contains("json") -> ".json"
