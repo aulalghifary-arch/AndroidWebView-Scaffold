@@ -1,9 +1,11 @@
 package com.example.webviewapp
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
@@ -21,18 +23,18 @@ class MainActivity : AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val FILE_CHOOSER_RESULT_CODE = 101
 
-    // CONFIG: URL Aplikasi Buku Kas Anda
+    // CONFIG: URL Utama Aplikasi Buku Kas Anda
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Membuat WebView langsung memenuhi layar tanpa bergantung xml layout yang rawan eror
+        // Mengisolasi WebView langsung agar 100% aman dari konflik file layout XML bawaan
         webView = WebView(this)
         setContentView(webView)
 
-        // Konfigurasi Standar Keamanan & Fungsi Web
+        // Konfigurasi performa web standar
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // Fitur Jembatan: Agar tombol "Pulihkan/Pilih File" di web bisa ditekan
+            // Jembatan Unggah File: Menangani tombol input file/pulihkan data di dalam website
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // ==========================================
-        // 🔥 FITUR 1: JEMBATAN DOWNLOAD (BACK UP DATA)
+        // 📥 FITUR 1: JEMBATAN DOWNLOAD (BACK UP DATA)
         // ==========================================
         webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             try {
@@ -81,22 +83,27 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Menjalankan Aplikasi Buku Kas Online Anda
+        // Buka URL Aplikasi
         webView.loadUrl(TARGET_URL)
     }
 
     // ==========================================
-    // 🔥 FITUR 2: JEMBATAN CETAK (PRINT INVOICE)
+    // 🖨️ FITUR 2: JEMBATAN CETAK (PRINT INVOICE)
     // ==========================================
-    // Fungsi otomatis Android untuk menangani window.print() dari website
+    // Diberikan pengaman TargetApi agar kompilasi Gradle tidak mendeteksi eror SDK lagi
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     fun buatCetakWeb(webView: WebView) {
-        try {
-            val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-            val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-            val jobName = "Invoice Buku Kas Document"
-            printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
-        } catch (e: Exception) {
-            Toast.makeText(this, "Gagal memuat printer: ${e.message}", Toast.LENGTH_LONG).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
+                val jobName = "Invoice Buku Kas Document"
+                printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+            } catch (e: Exception) {
+                Toast.makeText(this, "Gagal memuat printer: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            Toast.makeText(this, "Fitur cetak tidak didukung pada versi Android ini.", Toast.LENGTH_SHORT).show()
         }
     }
 
