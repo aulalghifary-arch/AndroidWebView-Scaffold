@@ -17,13 +17,13 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    // Disesuaikan dengan penamaan asli template agar tidak konflik compile
+    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val TAG = "WebViewApp"
@@ -35,21 +35,19 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Mengembalikan ke layout XML bawaan agar Gradle tidak eror
         setContentView(R.layout.activity_main)
 
-        // Menghubungkan id komponen sesuai template asli
+        // Hubungkan ID komponen 100% pas dengan XML template
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
+        swipeRefresh = findViewById(R.id.swipeRefresh)
 
-        // Konfigurasi performa web standar
+        // Pengaturan performa WebView
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // WebViewClient Tunggal (Aman & Sinkron dengan SwipeRefresh)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -61,13 +59,13 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                // Menghentikan animasi loading refresh saat halaman selesai dimuat
-                swipeRefreshLayout.isRefreshing = false
+                // Mematikan loading putar saat halaman web selesai dimuat
+                swipeRefresh.isRefreshing = false
             }
         }
 
-        // WebChromeClient untuk menangani unggah file / pulihkan data
         webView.webChromeClient = object : WebChromeClient() {
+            // Jembatan Unggah File (Untuk backup data / upload file di web)
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -85,13 +83,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Fitur Swipe Refresh bawaan template
-        swipeRefreshLayout.setOnRefreshListener {
+        // Jalankan fungsi refresh web bawaan template
+        swipeRefresh.setOnRefreshListener {
             webView.reload()
         }
 
         // ==========================================
-        // 📥 FITUR Tambahan 1: JEMBATAN DOWNLOAD (BACK UP)
+        // 📥 FITUR: JEMBATAN DOWNLOAD (BACK UP DATA)
         // ==========================================
         webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             try {
@@ -104,12 +102,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Buka URL Aplikasi
+        // Jalankan website utama
         webView.loadUrl(TARGET_URL)
     }
 
     // ==========================================
-    // 🖨️ FITUR Tambahan 2: JEMBATAN CETAK (PRINT INVOICE)
+    // 🖨️ FITUR: JEMBATAN CETAK (PRINT INVOICE)
     // ==========================================
     @TargetApi(Build.VERSION_CODES.KITKAT)
     fun buatCetakWeb(webView: WebView) {
