@@ -1,4 +1,4 @@
-package com.example.webviewapp
+package com.bukukas.online
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val FILE_CHOOSER_RESULT_CODE = 101
 
-    // CONFIG: URL Utama Aplikasi Buku Kas
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -44,35 +43,36 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // 🛡️ SOLUSI 1: WebViewClient TANPA tanda tanya (?) di parameternya
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val url = request.url.toString()
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url?.toString() ?: return false
                 if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view.loadUrl(url)
+                    view?.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
-        // 🛡️ SOLUSI 2: WebChromeClient TANPA tanda tanya (?) di parameternya
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
-                webView: WebView,
-                filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: WebChromeClient.FileChooserParams
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: WebChromeClient.FileChooserParams?
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams.createIntent()
+                val intent = fileChooserParams?.createIntent()
                 try {
-                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                    return true
+                    if (intent != null) {
+                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
+                        return true
+                    }
+                    return false
                 } catch (e: Exception) {
                     this@MainActivity.filePathCallback = null
                     return false
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
-                    Toast.makeText(this@MainActivity, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Memproses unduhan...", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
                 }
@@ -111,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(TARGET_URL)
     }
 
-    // 🖨️ FITUR CETAK (PRINT INVOICE)
     inner class WebAppInterface(private val mContext: Context) {
         @android.webkit.JavascriptInterface
         fun printInvoice() {
@@ -132,13 +131,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 🛡️ SOLUSI 3: Menggunakan onActivityResult klasik yang dijamin cocok dengan kodemu
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            // Memberikan array kosong jika batal memilih file agar WebView tidak membeku (freeze)
             filePathCallback?.onReceiveValue(results ?: emptyArray())
             filePathCallback = null
         }
