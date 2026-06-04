@@ -4,27 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
-    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val TAG = "WebViewApp"
-    private val FILE_CHOOSER_RESULT_CODE = 101
 
-    // CONFIG: URL Utama Aplikasi Buku Kas Anda
+    // CONFIG: Target URL
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
+    private val PERMISSION_REQUEST_CODE = 100
+    private val FILE_CHOOSER_RESULT_CODE = 101
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
-        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
 
         // Konfigurasi bawaan asli template kamu
         webView.settings.javaScriptEnabled = true
@@ -48,11 +48,6 @@ class MainActivity : AppCompatActivity() {
                     return true
                 }
                 return false
-            }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                swipeRefresh.isRefreshing = false
             }
         }
 
@@ -74,20 +69,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        swipeRefresh.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
             webView.reload()
         }
 
-        // 📥 HANYA MENYISIPKAN SATU-SATUNYA FITUR: DOWNLOAD NYELIP (BACK UP DATA)
-        webView.setDownloadListener { url, _, _, _, _ ->
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
-            } catch (e: Exception) {
-                // Abaikan eror agar aplikasi tidak crash
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                swipeRefreshLayout.isRefreshing = false
             }
         }
 
+        // 📥 FITUR DOWNLOAD NYELIP (Satu baris, tanpa ganggu struktur template)
+        webView.setDownloadListener { url, _, _, _, _ ->
+            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch(e: Exception){}
+        }
+
+        // Jalankan URL Utama
         webView.loadUrl(TARGET_URL)
     }
 
