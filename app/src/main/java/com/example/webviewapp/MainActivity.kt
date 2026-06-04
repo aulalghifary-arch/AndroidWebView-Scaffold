@@ -28,11 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    
-    // BUG FIX: Media penampung untuk data file yang dipilih user
     private var uploadMessage: ValueCallback<Array<Uri>>? = null
 
-    // BUG FIX: Sistem peluncur jendela File Manager HP
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val results = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
@@ -60,15 +57,48 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
+        // BUG FIX: Deteksi scroll native Android agar tidak bentrok dengan SwipeRefresh
+        webView.viewTreeObserver.addOnScrollChangedListener {
+            if (webView.scrollY == 0) {
+                // Jika webview murni di posisi paling atas, izinkan refresh halaman
+                swipeRefreshLayout?.isEnabled = true
+            } else {
+                // Jika sedang di tengah halaman, matikan fitur refresh agar bisa di-scroll dengan lancar
+                swipeRefreshLayout?.isEnabled = false
+            }
+        }
+
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout?.isRefreshing = false
                 view?.evaluateJavascript("window.print = function() { Android.printInvoice(); };", null)
+
+                // BUG FIX: Suntikkan sensor pintar ke dalam JavaScript website
+                // Ini untuk mendeteksi scroll pada website modern yang menggunakan layout kontainer internal (100vh)
+                val jsScrollSensor = """
+                    (function() {
+                        var checkScroll = function() {
+                            var isAtTop = window.scrollY === 0 && document.documentElement.scrollTop === 0;
+                            Android.setSwipeRefreshEnable(isAtTop);
+                        };
+                        window.addEventListener('scroll', checkScroll);
+                        
+                        // Cari seluruh elemen box yang bisa di-scroll di dalam web
+                        document.querySelectorAll('*').forEach(function(el) {
+                            var styles = window.getComputedStyle(el);
+                            if (styles.overflowY === 'auto' || styles.overflowY === 'scroll') {
+                                el.addEventListener('scroll', function() {
+                                    Android.setSwipeRefreshEnable(el.scrollTop === 0);
+                                });
+                            }
+                        });
+                    })();
+                """.trimIndent()
+                view?.evaluateJavascript(jsScrollSensor, null)
             }
         }
 
-        // BUG FIX: Mengganti WebChromeClient standar agar bisa merespons tombol "Pulihkan Data"
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
@@ -135,6 +165,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return null
+    }
+
+    // Fungsi pembantu untuk mengontrol aktif/tidaknya swipe-refresh dari jembatan JavaScript
+    fun aturStatusRefresh(diAtasMaksimal: Boolean) {
+        runOnUiThread {
+            swipeRefreshLayout?.isEnabled = diAtasMaksimal
+        }
     }
 
     fun buatCetak() {
@@ -214,5 +251,11 @@ class WebAppInterface(private val mContext: MainActivity) {
     @JavascriptInterface
     fun prosesDownload(base64Data: String) {
         mContext.simpanFile(base64Data)
+    }
+
+    // Jembatan khusus untuk menerima data posisi scroll dari website
+    @JavascriptInterface
+    fun setSwipeRefreshEnable(isAtTop: Boolean) {
+        mContext.aturStatusRefresh(isAtTop)
     }
 }
