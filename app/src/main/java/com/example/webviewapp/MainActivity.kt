@@ -107,15 +107,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        webView.addJavascriptInterface(WebAppInterface(this), "Android")
+        // 🛡️ PERUBAHAN 1: Menyambungkan Interface ke Activity secara eksplisit
+        webView.addJavascriptInterface(WebAppInterface(this@MainActivity), "Android")
         webView.loadUrl(TARGET_URL)
     }
 
-    inner class WebAppInterface(private val mContext: Context) {
+    // 🛡️ PERUBAHAN 2: Menghapus "inner", dan merujuk "activity." agar mesin tidak bingung
+    class WebAppInterface(private val activity: MainActivity) {
         @android.webkit.JavascriptInterface
         fun printInvoice() {
-            runOnUiThread {
-                buatCetakWeb()
+            activity.runOnUiThread {
+                activity.buatCetakWeb()
             }
         }
     }
