@@ -1,7 +1,6 @@
 package com.example.webviewapp
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,7 +15,6 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -27,19 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-
-    // 🛡️ KUNCI 1: Menggunakan Activity Result API Modern
-    // Ini menggantikan fungsi onActivityResult secara total sehingga bebas dari eror "overrides nothing"
-    private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            val results = WebChromeClient.FileChooserParams.parseResult(result.resultCode, data)
-            filePathCallback?.onReceiveValue(results ?: emptyArray())
-        } else {
-            filePathCallback?.onReceiveValue(emptyArray())
-        }
-        filePathCallback = null
-    }
+    private val FILE_CHOOSER_RESULT_CODE = 101
 
     // CONFIG: URL Utama Aplikasi Buku Kas
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
@@ -58,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // 🛡️ KUNCI 2: WebViewClient menggunakan tipe Non-Null murni
+        // 🛡️ SOLUSI 1: WebViewClient TANPA tanda tanya (?) di parameternya
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
@@ -75,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🛡️ KUNCI 3: WebChromeClient menggunakan tipe Non-Null murni
+        // 🛡️ SOLUSI 2: WebChromeClient TANPA tanda tanya (?) di parameternya
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView,
@@ -85,8 +71,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity.filePathCallback = filePathCallback
                 val intent = fileChooserParams.createIntent()
                 try {
-                    // Menjalankan peluncur file chooser modern
-                    fileChooserLauncher.launch(intent)
+                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
                     return true
                 } catch (e: Exception) {
                     this@MainActivity.filePathCallback = null
@@ -122,9 +107,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Jembatan JavaScript untuk cetak invoice
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
-
         webView.loadUrl(TARGET_URL)
     }
 
@@ -146,6 +129,18 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(this, "Gagal memuat printer", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 🛡️ SOLUSI 3: Menggunakan onActivityResult klasik yang dijamin cocok dengan kodemu
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == FILE_CHOOSER_RESULT_CODE) {
+            val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+            // Memberikan array kosong jika batal memilih file agar WebView tidak membeku (freeze)
+            filePathCallback?.onReceiveValue(results ?: emptyArray())
+            filePathCallback = null
         }
     }
 }
