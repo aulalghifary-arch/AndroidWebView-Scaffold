@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
-        webView.loadUrl("https://buku-kas-online.vercel.app")
+        webView.loadUrl("https://proyek-kas.vercel.app")
 
         webView.setDownloadListener { url, _, _, _, _ ->
             if (url.startsWith("blob:") || url.startsWith("data:")) {
