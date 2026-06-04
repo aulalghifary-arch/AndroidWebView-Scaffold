@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
+        // DISATUKAN: WebViewClient hanya boleh dideklarasikan SATU KALI
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
@@ -54,10 +55,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 return false
             }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                swipeRefreshLayout.isRefreshing = false
+            }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // Fitur ini yang membuat tombol "Pulihkan Data" (Pilih File) bekerja
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -75,47 +80,38 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ==========================================
-        // 🔥 FITUR 1: MENANGANI DOWNLOAD (BACK UP DATA)
-        // ==========================================
-        webView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+        // Swipe Refresh
+        swipeRefreshLayout.setOnRefreshListener {
+            webView.reload()
+        }
+
+        // 🔥 JEMBATAN 1: Menangani Download untuk Fitur Back Up
+        webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             try {
-                // Melempar perintah download ke browser bawaan HP agar aman dan tidak crash
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(url)
                 startActivity(intent)
-                Toast.makeText(this, "Mengunduh file back up...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Mengunduh data back up...", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(this, "Gagal mengunduh: ${e.message}", Toast.LENGTH_LONG).show()
             }
         })
 
-        // Swipe Refresh otomatis mati setelah halaman selesai dimuat
-        swipeRefreshLayout.setOnRefreshListener {
-            webView.reload()
-        }
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                swipeRefreshLayout.isRefreshing = false
-            }
-        }
-
         // Jalankan URL Utama
         webView.loadUrl(TARGET_URL)
     }
 
-    // ==========================================
-    // 🔥 FITUR 2: MENANGANI CETAK (PRINT INVOICE)
-    // ==========================================
-    private fun buatCetakWeb(webView: WebView) {
-        val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-        val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-        val jobName = "${getString(R.string.app_name)} Document"
-        
-        // Membuka sistem cetak printer/PDF bawaan Android
-        printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+    // 🔥 JEMBATAN 2: Fungsi untuk Mencetak / Membuat PDF Invoice
+    // Fungsi ini bisa dipanggil secara otomatis oleh sistem Android saat mendeteksi perintah cetak web
+    fun buatCetakWeb(webView: WebView) {
+        try {
+            val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+            val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
+            val jobName = "${getString(R.string.app_name)} Document"
+            printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+        } catch (e: Exception) {
+            Toast.makeText(this, "Gagal mencetak: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
