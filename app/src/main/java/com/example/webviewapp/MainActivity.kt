@@ -9,10 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
-import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import android.webkit.WebChromeClient.FileChooserParams
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
@@ -47,38 +45,41 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowContentAccess = true
 
         webView.webViewClient = object : WebViewClient() {
-            // 🛡️ Parameter dibuat Non-Null untuk menghindari eror 'overrides nothing'
+            // 🛡️ Tanda tanya (?) dikembalikan karena SDK menuntut tipe Nullable
             @Deprecated("Deprecated in Java")
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view.loadUrl(url)
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                    view?.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // 🛡️ Menghapus tanda tanya pada parameter agar klop dengan Android SDK terbaru
+            // 🛡️ Struktur onShowFileChooser yang klop dengan kemauan compiler
             override fun onShowFileChooser(
-                webView: WebView,
-                filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: FileChooserParams
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: WebChromeClient.FileChooserParams?
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams.createIntent()
-                try {
-                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                    return true
-                } catch (e: Exception) {
-                    this@MainActivity.filePathCallback = null
-                    return false
+                val intent = fileChooserParams?.createIntent()
+                if (intent != null) {
+                    try {
+                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
+                        return true
+                    } catch (e: Exception) {
+                        this@MainActivity.filePathCallback = null
+                        return false
+                    }
                 }
+                return false
             }
         }
 
@@ -89,14 +90,9 @@ class MainActivity : AppCompatActivity() {
         // ==========================================
         // 📥 FITUR DOWNLOAD (BACK UP DATA)
         // ==========================================
-        webView.setDownloadListener(object : DownloadListener {
-            override fun onDownloadStart(
-                url: String,
-                userAgent: String,
-                contentDisposition: String,
-                mimetype: String,
-                contentLength: Long
-            ) {
+        // 🔥 STRATEGI LAMBDA: Mengganti struktur objek dengan lambda untuk bypass deteksi eror tipe data!
+        webView.setDownloadListener { url, _, _, _, _ ->
+            if (url != null) {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
 
         // Jembatan JavaScript untuk cetak invoice
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
