@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
+import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -35,18 +36,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Menyambungkan ID sesuai template bawaan
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
         swipeRefreshLayout = findViewById(R.id.swipeRefresh)
 
-        // Konfigurasi performa dasar
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
         webView.webViewClient = object : WebViewClient() {
+            @Deprecated("Deprecated in Java")
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
                     view?.loadUrl(url)
@@ -62,15 +62,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {
+            // 🔥 BIANG KEROK 1 TERATASI: Penulisan lengkap WebChromeClient.FileChooserParams 
+            // agar Kotlin tidak bingung mengenali tipe datanya tanpa import!
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: FileChooserParams?
+                fileChooserParams: WebChromeClient.FileChooserParams?
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
                 val intent = fileChooserParams?.createIntent()
-                
-                // 🔥 PERBAIKAN FATAL 1: Lolos sensor Null Safety Kotlin
                 if (intent != null) {
                     try {
                         startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
@@ -91,23 +91,30 @@ class MainActivity : AppCompatActivity() {
         // ==========================================
         // 📥 FITUR DOWNLOAD (BACK UP DATA)
         // ==========================================
-        webView.setDownloadListener { url, _, _, _, _ ->
-            // 🔥 PERBAIKAN FATAL 2: Melindungi Uri.parse dari URL kosong
-            if (url != null) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                    Toast.makeText(this@MainActivity, "Memproses unduhan...", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
+        // 🔥 BIANG KEROK 2 TERATASI: Penulisan struktur objek mutlak agar lolos sensor kompilasi
+        webView.setDownloadListener(object : DownloadListener {
+            override fun onDownloadStart(
+                url: String?,
+                userAgent: String?,
+                contentDisposition: String?,
+                mimetype: String?,
+                contentLength: Long
+            ) {
+                if (url != null) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                        Toast.makeText(this@MainActivity, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        // Aman dari crash
+                    }
                 }
             }
-        }
+        })
 
-        // Menanamkan fitur Cetak untuk dipanggil jika diperlukan
+        // Menambahkan Jembatan Web untuk Cetak Invoice
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
 
-        // Menjalankan web
         webView.loadUrl(TARGET_URL)
     }
 
@@ -123,18 +130,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    // 🔥 BIANG KEROK 3 TERATASI: Menyesuaikan aturan metode adapter printer versi lama & baru
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     fun buatCetakWeb() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
                 val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-                printManager.print("Invoice_Document", printAdapter, PrintAttributes.Builder().build())
-            } catch (e: Exception) {
-                e.printStackTrace()
+                printManager?.print("Invoice_Document", printAdapter, PrintAttributes.Builder().build())
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
+                @Suppress("DEPRECATION")
+                val printAdapter = webView.createPrintDocumentAdapter()
+                printManager?.print("Invoice_Document", printAdapter, PrintAttributes.Builder().build())
+            } else {
+                Toast.makeText(this, "Fitur cetak tidak didukung perangkat ini", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "Fitur cetak tidak didukung perangkat ini", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Gagal memuat printer", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -142,7 +156,6 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             if (filePathCallback == null) return
-            // Penanganan null safety pada hasil tangkapan file
             val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
             filePathCallback?.onReceiveValue(results)
             filePathCallback = null
