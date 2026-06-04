@@ -11,6 +11,7 @@ import android.print.PrintAttributes
 import android.print.PrintManager
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
@@ -44,42 +45,39 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
+        // 🛡️ Menggunakan WebResourceRequest (Standar SDK Modern) untuk bypass 'overrides nothing'
         webView.webViewClient = object : WebViewClient() {
-            // 🛡️ Tanda tanya (?) dikembalikan karena SDK menuntut tipe Nullable
-            @Deprecated("Deprecated in Java")
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-                    view?.loadUrl(url)
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                val url = request.url.toString()
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    view.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
+            override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
+        // 🛡️ Parameter Non-Null murni sesuai format cetak biru Gradle masa kini
         webView.webChromeClient = object : WebChromeClient() {
-            // 🛡️ Struktur onShowFileChooser yang klop dengan kemauan compiler
             override fun onShowFileChooser(
-                webView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: WebChromeClient.FileChooserParams?
+                webView: WebView,
+                filePathCallback: ValueCallback<Array<Uri>>,
+                fileChooserParams: WebChromeClient.FileChooserParams
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams?.createIntent()
-                if (intent != null) {
-                    try {
-                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                        return true
-                    } catch (e: Exception) {
-                        this@MainActivity.filePathCallback = null
-                        return false
-                    }
+                val intent = fileChooserParams.createIntent()
+                try {
+                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
+                    return true
+                } catch (e: Exception) {
+                    this@MainActivity.filePathCallback = null
+                    return false
                 }
-                return false
             }
         }
 
@@ -87,18 +85,15 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
-        // ==========================================
-        // 📥 FITUR DOWNLOAD (BACK UP DATA)
-        // ==========================================
-        // 🔥 STRATEGI LAMBDA: Mengganti struktur objek dengan lambda untuk bypass deteksi eror tipe data!
+        // 📥 FITUR DOWNLOAD (Pemberangus Ambiguitas Lambda)
         webView.setDownloadListener { url, _, _, _, _ ->
-            if (url != null) {
+            if (!url.isNullOrEmpty()) {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
-                    Toast.makeText(this@MainActivity, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -109,9 +104,7 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(TARGET_URL)
     }
 
-    // ==========================================
     // 🖨️ FITUR CETAK (PRINT INVOICE)
-    // ==========================================
     inner class WebAppInterface(private val mContext: Context) {
         @android.webkit.JavascriptInterface
         fun printInvoice() {
@@ -145,18 +138,18 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
-            if (filePathCallback == null) return
             val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            filePathCallback?.onReceiveValue(results)
+            // 🛡️ SOLUSI TYPE MISMATCH: Ditambahkan operator '?: emptyArray()' agar compiler tidak protes eror Nullable!
+            filePathCallback?.onReceiveValue(results ?: emptyArray())
             filePathCallback = null
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack()
         } else {
-            @Suppress("DEPRECATION")
             super.onBackPressed()
         }
     }
