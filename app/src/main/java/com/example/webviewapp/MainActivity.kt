@@ -1,145 +1,153 @@
-package com.bukukas.online
+package com.example.webaswapp
 
-import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.print.PrintAttributes
 import android.print.PrintManager
-import android.webkit.ValueCallback
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.ProgressBar
+import android.webkit.*
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
-    private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private val FILE_CHOOSER_RESULT_CODE = 101
-
-    private val TARGET_URL = "https://buku-kas-online.vercel.app"
-
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        webView = findViewById(R.id.webView)
-        progressBar = findViewById(R.id.progressBar)
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
+        webView = findViewById(R.id.webView) // Sesuaikan dengan ID WebView di layout Anda
+        
+        // Pengaturan WebView
+        val settings = webView.settings
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.allowFileAccess = true
+        settings.allowContentAccess = true
 
-        webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
-        webView.settings.allowFileAccess = true
-        webView.settings.allowContentAccess = true
+        // Hubungkan JavaScript Web dengan Android (PENTING)
+        webView.addJavascriptInterface(WebAppInterface(this), "Android")
 
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val url = request?.url?.toString() ?: return false
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view?.loadUrl(url)
-                    return true
-                }
-                return false
-            }
+        webView.webViewClient = WebViewClient()
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                swipeRefreshLayout.isRefreshing = false
-            }
-        }
-
-        webView.webChromeClient = object : WebChromeClient() {
-            override fun onShowFileChooser(
-                webView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: WebChromeClient.FileChooserParams?
-            ): Boolean {
-                this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams?.createIntent()
-                try {
-                    if (intent != null) {
-                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                        return true
-                    }
-                    return false
-                } catch (e: Exception) {
-                    this@MainActivity.filePathCallback = null
-                    return false
-                }
-            }
-        }
-
-        swipeRefreshLayout.setOnRefreshListener {
-            webView.reload()
-        }
-
-        webView.setDownloadListener { url, _, _, _, _ ->
-            if (!url.isNullOrEmpty()) {
+        // MENANGANI BACKUP (Mengubah Blob URL menjadi file JSON di folder Download)
+        webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+            if (url.startsWith("blob:")) {
+                // Trik: Gunakan JavaScript untuk mengubah Blob menjadi Base64 string, lalu kirim ke Android
+                val jsBlobConverter = """
+                    javascript:
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '$url', true);
+                    xhr.responseType = 'blob';
+                    xhr.onload = function(e) {
+                        if (this.status == 200) {
+                            var blob = this.response;
+                            var reader = new FileReader();
+                            reader.readAsDataURL(blob);
+                            reader.onloadend = function() {
+                                var base64data = reader.result;
+                                Android.prosesBase64Backup(base64data);
+                            }
+                        }
+                    };
+                    xhr.send();
+                """.trimIndent()
+                
+                webView.loadUrl(jsBlobConverter)
+                Toast.makeText(this, "Memproses data backup...", Toast.LENGTH_SHORT).show()
+            } else {
+                // Jika unduhan biasa (bukan blob)
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
-                    Toast.makeText(this@MainActivity, "Memproses unduhan...", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Gagal membuka tautan unduhan", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (webView.canGoBack()) {
-                    webView.goBack()
-                } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                }
-            }
-        })
-
-        // 🛡️ PERUBAHAN 1: Menyambungkan Interface ke Activity secara eksplisit
-        webView.addJavascriptInterface(WebAppInterface(this@MainActivity), "Android")
-        webView.loadUrl(TARGET_URL)
+        webView.loadUrl("https://buku-kas-online.vercel.app") // Sesuaikan URL Anda
     }
 
-    // 🛡️ PERUBAHAN 2: Menghapus "inner", dan merujuk "activity." agar mesin tidak bingung
-    class WebAppInterface(private val activity: MainActivity) {
-        @android.webkit.JavascriptInterface
-        fun printInvoice() {
-            activity.runOnUiThread {
-                activity.buatCetakWeb()
+    // FUNGSI CETAK: Harus di dalam MainActivity & berjalan di runOnUiThread
+    fun buatCetak() {
+        runOnUiThread {
+            try {
+                val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
+                printManager.print("Invoice Buku Kas", printAdapter, PrintAttributes.Builder().build())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Gagal memuat printer: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun buatCetakWeb() {
+    // FUNGSI MENYIMPAN JSON: Menyimpan string Base64 menjadi file .json asli
+    fun simpanFileBackup(base64Data: String) {
         try {
-            val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
-            val printAdapter = webView.createPrintDocumentAdapter("Invoice Buku Kas")
-            printManager?.print("Invoice_Document", printAdapter, PrintAttributes.Builder().build())
+            // Bersihkan prefix base64 jika ada (contoh: "data:application/json;base64,")
+            val pureBase64 = if (base64Data.contains(",")) base64Data.split(",")[1] else base64Data
+            val fileBytes = android.util.Base64.decode(pureBase64, android.util.Base64.DEFAULT)
+            
+            val namaFile = "Backup_Full_Kas_${System.currentTimeMillis()}.json"
+            
+            // Simpan menggunakan MediaStore agar aman di Android versi baru (Scoped Storage)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val resolver = contentResolver
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, namaFile)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                uri?.let {
+                    resolver.openOutputStream(it)?.use { outputStream ->
+                        outputStream.write(fileBytes)
+                    }
+                }
+            } else {
+                // Untuk Android versi lama
+                val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val file = File(downloadDir, namaFile)
+                FileOutputStream(file).use { outputStream ->
+                    outputStream.write(fileBytes)
+                }
+            }
+            
+            runOnUiThread {
+                Toast.makeText(this, "Backup berhasil disimpan di folder Download!", Toast.LENGTH_LONG).show()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Gagal memuat printer", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                Toast.makeText(this, "Gagal menyimpan file backup: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+}
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FILE_CHOOSER_RESULT_CODE) {
-            val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            filePathCallback?.onReceiveValue(results ?: emptyArray())
-            filePathCallback = null
-        }
+// CLASS INTERFACE: Letakkan di luar MainActivity (di bagian paling bawah file)
+class WebAppInterface(private val mContext: MainActivity) {
+
+    @JavascriptInterface
+    fun printInvoice() {
+        // Alihkan perintah cetak ke MainActivity agar aman dari crash Thread
+        mContext.buatCetak()
+    }
+
+    @JavascriptInterface
+    fun prosesBase64Backup(base64Data: String) {
+        // Alihkan perintah simpan file ke MainActivity
+        mContext.simpanFileBackup(base64Data)
     }
 }
