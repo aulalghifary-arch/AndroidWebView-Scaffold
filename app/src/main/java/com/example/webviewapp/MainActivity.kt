@@ -1,6 +1,7 @@
 package com.example.webviewapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -15,6 +16,7 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -25,7 +27,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private val FILE_CHOOSER_RESULT_CODE = 101
+
+    // 🛡️ KUNCI 1: Menggunakan Activity Result API Modern
+    // Ini menggantikan fungsi onActivityResult secara total sehingga bebas dari eror "overrides nothing"
+    private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val results = WebChromeClient.FileChooserParams.parseResult(result.resultCode, data)
+            filePathCallback?.onReceiveValue(results ?: emptyArray())
+        } else {
+            filePathCallback?.onReceiveValue(emptyArray())
+        }
+        filePathCallback = null
+    }
 
     // CONFIG: URL Utama Aplikasi Buku Kas
     private val TARGET_URL = "https://buku-kas-online.vercel.app"
@@ -44,41 +58,40 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // 🛡️ KUNCI 1: Menggunakan Nullable (?) kembali karena Android 16 mewajibkannya di level cetak biru platform
+        // 🛡️ KUNCI 2: WebViewClient menggunakan tipe Non-Null murni
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val url = request?.url?.toString()
-                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-                    view?.loadUrl(url)
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                val url = request.url.toString()
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    view.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
+            override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
+        // 🛡️ KUNCI 3: WebChromeClient menggunakan tipe Non-Null murni
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
-                webView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: WebChromeClient.FileChooserParams?
+                webView: WebView,
+                filePathCallback: ValueCallback<Array<Uri>>,
+                fileChooserParams: WebChromeClient.FileChooserParams
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams?.createIntent()
-                if (intent != null) {
-                    try {
-                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                        return true
-                    } catch (e: Exception) {
-                        this@MainActivity.filePathCallback = null
-                        return false
-                    }
+                val intent = fileChooserParams.createIntent()
+                try {
+                    // Menjalankan peluncur file chooser modern
+                    fileChooserLauncher.launch(intent)
+                    return true
+                } catch (e: Exception) {
+                    this@MainActivity.filePathCallback = null
+                    return false
                 }
-                return false
             }
         }
 
@@ -98,7 +111,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🛡️ KUNCI 2: Sistem navigasi "Back" modern Android 15/16 menggunakan onBackPressedDispatcher
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (webView.canGoBack()) {
@@ -126,7 +138,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Pembersihan kode usang (Guard clauses KitKat/Lollipop dibuang karena Android 16 sudah jauh melompati versi itu)
     fun buatCetakWeb() {
         try {
             val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
@@ -135,20 +146,6 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(this, "Gagal memuat printer", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FILE_CHOOSER_RESULT_CODE) {
-            val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            // 🛡️ KUNCI 3: Penegasan tipe data array menggunakan emptyArray<Uri>() murni tanpa inferensi ganda
-            if (results != null) {
-                filePathCallback?.onReceiveValue(results)
-            } else {
-                filePathCallback?.onReceiveValue(emptyArray<Uri>())
-            }
-            filePathCallback = null
         }
     }
 }
