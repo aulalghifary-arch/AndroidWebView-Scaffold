@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
+import android.webkit.DownloadListener
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -45,39 +46,42 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        // 🛡️ Menggunakan WebResourceRequest (Standar SDK Modern) untuk bypass 'overrides nothing'
+        // 🛡️ KUNCI 1: Menggunakan Nullable (?) penuh agar 100% sinkron dengan cetak biru SDK Android
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val url = request.url.toString()
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view.loadUrl(url)
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url?.toString()
+                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                    view?.loadUrl(url)
                     return true
                 }
                 return false
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
             }
         }
 
-        // 🛡️ Parameter Non-Null murni sesuai format cetak biru Gradle masa kini
+        // 🛡️ KUNCI 2: Struktur WebChromeClient dengan Nullable lengkap menjamin bebas eror 'overrides nothing'
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
-                webView: WebView,
-                filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: WebChromeClient.FileChooserParams
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: WebChromeClient.FileChooserParams?
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
-                val intent = fileChooserParams.createIntent()
-                try {
-                    startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
-                    return true
-                } catch (e: Exception) {
-                    this@MainActivity.filePathCallback = null
-                    return false
+                val intent = fileChooserParams?.createIntent()
+                if (intent != null) {
+                    try {
+                        startActivityForResult(intent, FILE_CHOOSER_RESULT_CODE)
+                        return true
+                    } catch (e: Exception) {
+                        this@MainActivity.filePathCallback = null
+                        return false
+                    }
                 }
+                return false
             }
         }
 
@@ -85,18 +89,26 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
-        // 📥 FITUR DOWNLOAD (Pemberangus Ambiguitas Lambda)
-        webView.setDownloadListener { url, _, _, _, _ ->
-            if (!url.isNullOrEmpty()) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                    Toast.makeText(this, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
+        // 🛡️ KUNCI 3: Menggunakan struktur Object eksplisit (bukan Lambda) untuk mengunci tipe data parameter unduhan
+        webView.setDownloadListener(object : DownloadListener {
+            override fun onDownloadStart(
+                url: String?,
+                userAgent: String?,
+                contentDisposition: String?,
+                mimetype: String?,
+                contentLength: Long
+            ) {
+                if (!url.isNullOrEmpty()) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                        Toast.makeText(this@MainActivity, "Memproses unduhan back up...", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MainActivity, "Gagal mengunduh", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
+        })
 
         // Jembatan JavaScript untuk cetak invoice
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
@@ -139,8 +151,8 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             val results = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            // 🛡️ SOLUSI TYPE MISMATCH: Ditambahkan operator '?: emptyArray()' agar compiler tidak protes eror Nullable!
-            filePathCallback?.onReceiveValue(results ?: emptyArray())
+            // 🛡️ KUNCI 4: Penggunaan arrayOf<Uri>() secara eksplisit memotong kebingungan inferensi compiler Kotlin
+            filePathCallback?.onReceiveValue(results ?: arrayOf<Uri>())
             filePathCallback = null
         }
     }
@@ -150,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         if (webView.canGoBack()) {
             webView.goBack()
         } else {
+            @Suppress("DEPRECATION")
             super.onBackPressed()
         }
     }
