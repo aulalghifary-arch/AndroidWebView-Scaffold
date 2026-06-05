@@ -58,15 +58,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // BUG FIX: Deteksi scroll native Android agar tidak bentrok dengan SwipeRefresh
-        webView.viewTreeObserver.addOnScrollChangedListener {
-            if (webView.scrollY == 0) {
-                // Jika webview murni di posisi paling atas, izinkan refresh halaman
-                swipeRefreshLayout?.isEnabled = true
-            } else {
-                // Jika sedang di tengah halaman, matikan fitur refresh agar bisa di-scroll dengan lancar
-                swipeRefreshLayout?.isEnabled = false
-            }
-        }
+        swipeRefreshLayout?.isEnabled = false
+
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
