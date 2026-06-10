@@ -553,10 +553,10 @@ function simpanPerubahanEditPop() {
     
     // Update data di dalam array dbTransaksi
     dbTransaksi = dbTransaksi.map(t => {
-        if (t.id === idTarget) {
+        if (t.id == idTarget) {
             // Menyesuaikan properti nama/keterangan sesuai struktur aplikasi Anda
             t.nama = document.getElementById('edit-pop-nama').value;
-            t.keterangan = document.getElementById('edit-pop-nama').value;
+            t.keterangan = document.getElementById('edit-pop-keterangan').value;
             
             t.jumlah = parseFloat(document.getElementById('edit-pop-jumlah').value);
             t.tanggal = document.getElementById('edit-pop-tanggal').value;
