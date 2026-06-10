@@ -523,34 +523,62 @@
     }
 
     function editTransaksi(id) {
-        if(!confirm("Apakah Anda yakin ingin memperbaiki (edit) transaksi ini?")) return;
-        let t = dbTransaksi.find(item => item.id === id);                                                         
-        if(!t) return;
-        document.getElementById('form-title').innerText = "Perbaiki Transaksi Kas (Edit)";
-        document.getElementById('tx-id-edit').value = t.id;
-        document.getElementById('tx-tanggal').value = t.tanggal;
-        document.getElementById('tx-jam').value = t.jam;
-        document.getElementById('tx-jenis').value = t.jenis;
-        sesuaikanKategori();                         
-        
-        let listCek = (t.jenis === 'masuk') ? kategoriMasuk : kategoriKeluar;
-        if(listCek.includes(t.kategori)) {
-            document.getElementById('tx-kategori').value = t.kategori;
-            document.getElementById('tx-kategori-manual').style.display = 'none';
-        } else {                                                 
-            document.getElementById('tx-kategori').value = 'Lain-lain';
-            document.getElementById('tx-kategori-manual').style.display = 'block';
-            document.getElementById('tx-kategori-manual').value = t.kategori;
+    // Cari data transaksi berdasarkan ID
+    let t = dbTransaksi.find(item => item.id === id);
+    if (!t) return;
+
+    // 1. Masukkan data lama transaksi ke dalam form di dalam Pop-up Edit Baru
+    document.getElementById('edit-pop-id').value = t.id;
+    document.getElementById('edit-pop-nama').value = t.nama || t.keterangan || ""; 
+    document.getElementById('edit-pop-jumlah').value = t.jumlah;
+    document.getElementById('edit-pop-tanggal').value = t.tanggal;
+    document.getElementById('edit-pop-jam').value = t.jam;
+    document.getElementById('edit-pop-jenis').value = t.jenis;
+
+    // 2. Tutup modal konfirmasi lama agar tidak menumpuk
+    // Catatan: Jika ID modal konfirmasi lama Anda bukan 'modal-konfirmasi', silakan sesuaikan
+    let modalKonfirmasi = document.getElementById('modal-konfirmasi'); 
+    if(modalKonfirmasi) modalKonfirmasi.style.display = 'none'; 
+
+    // 3. Tampilkan Pop-up Edit Baru yang barusan Anda tempel di bawah
+    document.getElementById('modal-edit-transaksi').style.display = 'block';
+}
+
+// Fungsi untuk menutup Pop-up Edit jika klik Batal
+function tutupModalEditPop() {
+    document.getElementById('modal-edit-transaksi').style.display = 'none';
+}
+function simpanPerubahanEditPop() {
+    let idTarget = document.getElementById('edit-pop-id').value;
+    
+    // Update data di dalam array dbTransaksi
+    dbTransaksi = dbTransaksi.map(t => {
+        if (t.id === idTarget) {
+            // Menyesuaikan properti nama/keterangan sesuai struktur aplikasi Anda
+            t.nama = document.getElementById('edit-pop-nama').value;
+            t.keterangan = document.getElementById('edit-pop-nama').value;
+            
+            t.jumlah = parseFloat(document.getElementById('edit-pop-jumlah').value);
+            t.tanggal = document.getElementById('edit-pop-tanggal').value;
+            t.jam = document.getElementById('edit-pop-jam').value;
+            t.jenis = document.getElementById('edit-pop-jenis').value;
         }
-                                                             
-        dompetAktif = t.dompet || "Dompet Utama";
-        localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
-        document.getElementById('tx-jumlah').value = t.jumlah;
-        document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";                           
-        document.getElementById('btn-batal-edit').style.display = "block";                                        
-        perbaruiSemuaData();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
+        return t;
+    });
+
+    // Simpan ke LocalStorage agar data diperbarui secara permanen
+    localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+
+    // Perbarui tampilan halaman utama
+    perbaruiSemuaData(); 
+
+    // Tutup pop-up edit
+    tutupModalEditPop();
+    
+    alert("Transaksi berhasil diperbarui!");
+}
+                         
+
     
     function toggleDaftarDompet() {
         let listContainer = document.getElementById('md-daftar-per-dompet');
@@ -1508,5 +1536,46 @@ function toggleDarkMode() {
         html2pdf().set(konfigurasiPDF).from(elemenCetak).save();
     }
 </script>
+<div id="modal-edit-transaksi" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; backgroundColor: rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; border-radius: 15px; width: 85%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="text-align: center; margin-bottom: 20px;">Perbaiki Transaksi</h3>
+        
+        <input type="hidden" id="edit-pop-id">
+
+        <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:12px; color:#666;">Nama Transaksi/Keterangan</label>
+            <input type="text" id="edit-pop-nama" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:12px; color:#666;">Jumlah Uang (Rp)</label>
+            <input type="number" id="edit-pop-jumlah" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:12px; color:#666;">Tanggal</label>
+            <input type="date" id="edit-pop-tanggal" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:12px; color:#666;">Waktu (Jam)</label>
+            <input type="text" id="edit-pop-jam" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:8px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display:block; font-size:12px; color:#666;">Jenis Transaksi</label>
+            <select id="edit-pop-jenis" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:8px;">
+                <option value="Pemasukan (+)">Pemasukan (+)</option>
+                <option value="Pengeluaran (-)">Pengeluaran (-)</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="tutupModalEditPop()" style="flex: 1; padding: 10px; background: #94a3b8; color: white; border: none; border-radius: 8px; cursor: pointer;">Batal</button>
+            <button type="button" onclick="simpanPerubahanEditPop()" style="flex: 1; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Simpan</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
