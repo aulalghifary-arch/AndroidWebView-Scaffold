@@ -768,10 +768,12 @@
                 localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
                 document.getElementById('tx-jumlah').value = t.jumlah;
                 document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";                           
-                document.getElementById('btn-batal-edit').style.display = "block";                                        
+                document.getElementById('btn-batal-edit').style.display = "block";
                 perbaruiSemuaData();
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            }
+                setTimeout(() => {
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                }, 300);
+                        
         });
     }
     
