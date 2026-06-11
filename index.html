@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta id="theme-color-meta" name="theme-color" content="#f4f7f6">
 <title>Buku Kas Aul v8 Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 :root {
 --primary: #3498db;
@@ -61,7 +63,8 @@ input, select { width: 100%; padding: 11px; border: 1px solid var(--border-color
 .tab-item { padding: 8px 14px; background-color: transparent; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; color: var(--text-color); transition: all 0.2s; }
 .tab-item.active { background-color: var(--primary); color: white; }
  .list-transaksi { margin-top: 15px; max-height: 280px; overflow-y: auto; }
-.item-transaksi { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; transition: background 0.2s; }
+.item-transaksi { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; transition: background 0.2s; cursor: pointer;}
+.item-transaksi:active { background: var(--border-color); }
 .item-left { display: flex; flex-direction: column; flex: 1; }
 .item-name { font-weight: 600; }
 .item-date { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
@@ -167,6 +170,7 @@ body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a 
 <h2 style="font-size:18px;">Menu Utama</h2>
 </div>
 <div style="margin-top: 20px;">
+<button class="btn btn-secondary" onclick="bukaHalamanPencarian()" style="background-color: #34495e; color: white; border: none;">🔍 Pencarian Transaksi</button>
 <button class="btn btn-secondary" onclick="bukaHalaman('page-hutang')">📝 Manajemen Hutang Piutang</button>
  <button class="btn btn-secondary" onclick="bukaHalamanKategori()" style="background-color: #f39c12; color: white; border: none;">📁 Manajemen Kategori</button>
 <button class="btn btn-secondary" onclick="bukaHalaman('page-transfer')" style="background-color: #27ae60; color: white; border: none;">💸 Transfer Antar Dompet</button>
@@ -181,6 +185,29 @@ body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a 
  </div>
 </div>
  </div>
+
+<div id="page-pencarian" class="sub-page">
+<div class="page-header">
+<button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>
+<h2 style="font-size:18px;">Pencarian</h2>
+</div>
+<div style="text-align: center; font-size: 11px; opacity: 0.7; margin-bottom: 15px;">Temukan Transaksi Pada Buku Kas</div>
+<div style="background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+<input type="text" id="cari-teks" placeholder="Nominal atau Deskripsi/Kategori" style="margin-bottom: 10px;">
+<select id="cari-jenis" style="margin-bottom: 10px;">
+<option value="semua">Semua Jenis Pemasukan/Pengeluaran</option>
+<option value="masuk">Pemasukan (+)</option>
+<option value="keluar">Pengeluaran (-)</option>
+</select>
+<select id="cari-dompet" style="margin-bottom: 10px;">
+<option value="semua">Semua Buku Kas</option>
+</select>
+<button class="btn btn-primary" onclick="eksekusiPencarian()">Cari!</button>
+</div>
+<div id="hasil-pencarian" class="list-transaksi" style="max-height: 400px;">
+<p style="text-align:center; opacity:0.6; font-size:12px;">Tidak Ada Transaksi</p>
+</div>
+</div>
 
 <div id="page-kategori" class="sub-page">
 <div class="page-header">
@@ -197,6 +224,7 @@ body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a 
 </div>
 <div id="list-kategori-manage" class="list-transaksi"></div>
 </div>
+
 <div id="page-laporan" class="sub-page">
 <div class="page-header">
 <button class="btn-back" onclick="bukaHalaman('page-utama')">← Kembali</button>
@@ -270,6 +298,7 @@ body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a 
 <button type="submit" class="btn btn-primary" style="background-color: #27ae60;">Kirim / Pindahkan Saldo</button>
  </form>
 </div>
+
 <div id="page-invoice" class="sub-page">
 <div class="page-header">
 <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>
@@ -292,6 +321,23 @@ body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a 
 </div>
 <button type="button" class="btn btn-primary" style="background-color: #9b59b6; margin-top: 15px;" onclick="prosesCetakPDF()">📥 Unduh Invoice PDF</button>
 </div>
+</div>
+</div>
+
+<div id="modal-detail-tx" class="action-modal">
+<div class="action-content">
+<h3 style="text-align:center; font-size:16px; margin-bottom:5px;">Detail Transaksi</h3>
+<div id="detail-tx-kategori" style="font-weight:bold; font-size:18px; text-align:center;"></div>
+<div id="detail-tx-nominal" style="font-size:24px; font-weight:bold; text-align:center; margin-bottom:15px;"></div>
+<div style="background:var(--bg-color); padding:10px; border-radius:8px; font-size:13px; margin-bottom:15px; border:1px solid var(--border-color);">
+<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Tanggal:</span> <strong id="detail-tx-tanggal"></strong></div>
+<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Waktu:</span> <strong id="detail-tx-waktu"></strong></div>
+<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Dompet:</span> <strong id="detail-tx-dompet"></strong></div>
+<div style="display:flex; justify-content:space-between;"><span>Jenis:</span> <strong id="detail-tx-jenis"></strong></div>
+</div>
+<button class="btn-action btn-blue" onclick="editDariModalTx()">✏️ Edit Transaksi</button>
+<button class="btn-action btn-red" onclick="hapusDariModalTx()">🗑️ Hapus Transaksi</button>
+<button class="btn-action btn-gray" onclick="tutupModalDetailTx()">Kembali</button>
 </div>
 </div>
 
@@ -383,9 +429,27 @@ let dbKategoriKeluar = JSON.parse(localStorage.getItem('aul_kas_kat_keluar')) ||
 let idHutangTerpilih = null;
  let modeEditHutangId = null;
 let tabKategoriAktif = 'keluar';
+let idTransaksiTerpilihModal = null; // Menyimpan state modal detail transaksi
+
+// Wrapper SweetAlert2 untuk support warna gelap otomatis
+function customSwal() {
+let isDark = document.body.classList.contains('dark-mode');
+return Swal.mixin({
+background: isDark ? '#1e1e1e' : '#ffffff',
+color: isDark ? '#e0e0e0' : '#2c3e50',
+confirmButtonColor: '#3498db',
+cancelButtonColor: '#e74c3c'
+});
+}
 
 window.onload = function() {
- setTanggalHariIni();
+ if (localStorage.getItem('tema_buku_kas') === 'dark') {
+document.body.classList.add('dark-mode');
+document.getElementById('theme-color-meta').content = "#121212";
+} else {
+document.getElementById('theme-color-meta').content = "#f4f7f6";
+}
+setTanggalHariIni();
 sesuaikanKategori();
 buatBilahTab('tabs-utama', 'utama');
 buatBilahTab('tabs-laporan', 'laporan');
@@ -426,34 +490,44 @@ optBaru.style.color = "var(--primary)";
 katSelect.appendChild(optBaru);
 }
 
-function handleKategoriChange() {
+async function handleKategoriChange() {
 let val = document.getElementById('tx-kategori').value;
 if (val === 'buat_baru') {
-let namaBaru = prompt("Masukkan nama kategori baru:");
+const { value: namaBaru } = await customSwal().fire({
+title: 'Kategori Baru',
+input: 'text',
+inputLabel: 'Masukkan nama kategori baru:',
+showCancelButton: true,
+inputValidator: (value) => {
+if (!value) {
+return 'Nama kategori tidak boleh kosong!'
+}
+}
+});
+
 if (namaBaru && namaBaru.trim() !== "") {
 let jenis = document.getElementById('tx-jenis').value;
-namaBaru = namaBaru.trim();
+let bersih = namaBaru.trim();
 
 if (jenis === 'masuk') {
-if(!dbKategoriMasuk.includes(namaBaru)) {
-dbKategoriMasuk.push(namaBaru);
+if(!dbKategoriMasuk.includes(bersih)) {
+dbKategoriMasuk.push(bersih);
 localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
 }
 } else {
-if(!dbKategoriKeluar.includes(namaBaru)) {
-dbKategoriKeluar.push(namaBaru);
+if(!dbKategoriKeluar.includes(bersih)) {
+dbKategoriKeluar.push(bersih);
 localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
 }
 }
 sesuaikanKategori();
-document.getElementById('tx-kategori').value = namaBaru;
+document.getElementById('tx-kategori').value = bersih;
 } else {
-sesuaikanKategori(); // Reset pilihan jika dibatalkan
+sesuaikanKategori();
 }
 }
 }
 
-// Fungsi Manajemen Kategori
 function bukaHalamanKategori() {
 bukaHalaman('page-kategori');
 renderDaftarKategori();
@@ -484,7 +558,15 @@ container.innerHTML += &lt;div class="item-transaksi" style="background:var(--ca
 }
 
 function hapusKategoriTersimpan(jenis, index) {
-if(confirm("Yakin ingin menghapus kategori ini? (Riwayat transaksi yang sudah menggunakan kategori ini tidak akan terhapus)")) {
+customSwal().fire({
+title: 'Hapus Kategori?',
+text: "Riwayat transaksi yang sudah menggunakan kategori ini tidak akan terhapus.",
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#e74c3c',
+confirmButtonText: 'Ya, Hapus'
+}).then((result) => {
+if(result.isConfirmed) {
 if(jenis === 'masuk') {
 dbKategoriMasuk.splice(index, 1);
 localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
@@ -493,8 +575,9 @@ dbKategoriKeluar.splice(index, 1);
 localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
 }
 renderDaftarKategori();
-sesuaikanKategori(); // Perbarui juga di halaman utama
+sesuaikanKategori();
 }
+});
 }
 
 function buatBilahTab(containerId, jenisSistem) {
@@ -566,7 +649,8 @@ function simpanTransaksi(e) {
 e.preventDefault();
  let kategoriDipilih = document.getElementById('tx-kategori').value;
 if (kategoriDipilih === 'buat_baru') {
- alert("Silakan pilih kategori yang valid!"); return;
+ customSwal().fire('Perhatian', 'Silakan pilih kategori yang valid!', 'warning');
+return;
 }
 
 let dompetDipilih = dompetAktif;
@@ -599,10 +683,58 @@ dbTransaksi.unshift(transaksi);
 localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
  perbaruiSemuaData();
 resetFormTransaksi();
- }
+if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian(); // update pencarian jika disana
+}
+
+// Modal Detail Transaksi Functions
+function bukaModalDetailTx(id) {
+idTransaksiTerpilihModal = id;
+let t = dbTransaksi.find(item => item.id === id);
+if(!t) return;
+
+document.getElementById('detail-tx-kategori').innerText = t.kategori;
+
+let cls = (t.jenis === 'masuk') ? 'color: #2ecc71;' : 'color: #e74c3c;';
+let tnd = (t.jenis === 'masuk') ? '+' : '-';
+document.getElementById('detail-tx-nominal').style.cssText = font-size:24px; font-weight:bold; text-align:center; margin-bottom:15px; ${cls}; document.getElementById('detail-tx-nominal').innerText = ``${tnd} ${formatRupiah(t.jumlah)}`;
+
+document.getElementById('detail-tx-tanggal').innerText = formatTanggalIndo(t.tanggal);
+document.getElementById('detail-tx-waktu').innerText = t.jam;
+document.getElementById('detail-tx-dompet').innerText = t.dompet || "Dompet Utama";
+document.getElementById('detail-tx-jenis').innerText = (t.jenis === 'masuk') ? "Pemasukan" : "Pengeluaran";
+
+document.getElementById('modal-detail-tx').classList.add('active');
+}
+
+function tutupModalDetailTx() {
+document.getElementById('modal-detail-tx').classList.remove('active');
+idTransaksiTerpilihModal = null;
+}
+function editDariModalTx() {
+if(idTransaksiTerpilihModal) {
+tutupModalDetailTx();
+bukaHalaman('page-utama'); // Pindah ke halaman utama form jika dari menu pencarian
+editTransaksi(idTransaksiTerpilihModal);
+}
+}
+
+function hapusDariModalTx() {
+if(idTransaksiTerpilihModal) {
+let id = idTransaksiTerpilihModal;
+tutupModalDetailTx();
+removeTransaksiPermanen(id);
+}
+}
 
 function editTransaksi(id) {
-if(!confirm("Apakah Anda yakin ingin memperbaiki (edit) transaksi ini?")) return;
+customSwal().fire({
+title: 'Edit Transaksi?',
+text: "Apakah Anda yakin ingin memperbaiki (edit) transaksi ini?",
+icon: 'question',
+showCancelButton: true,
+confirmButtonText: 'Ya, Edit'
+}).then((result) => {
+if(result.isConfirmed) {
 let t = dbTransaksi.find(item => item.id === id);
  if(!t) return;
 document.getElementById('form-title').innerText = "Perbaiki Transaksi Kas (Edit)";
@@ -614,7 +746,6 @@ sesuaikanKategori();
 
 let listCek = (t.jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
 if(!listCek.includes(t.kategori)) {
-// Jika kategori lama tidak ada di daftar saat ini (mungkin dihapus), tambahkan sementara ke dropdown
 let opt = document.createElement('option');
 opt.value = t.kategori;
 opt.innerText = t.kategori;
@@ -629,6 +760,8 @@ document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";
  document.getElementById('btn-batal-edit').style.display = "block";
  perbaruiSemuaData();
 window.scrollTo({top: 0, behavior: 'smooth'});
+}
+});
 }
 
 function toggleDaftarDompet() {
@@ -656,7 +789,7 @@ function tambahDompetBaru() {
 if(nama) {
 gantiDompetAktif(nama);
  } else {
- alert("Ketikkan nama dompet baru terlebih dahulu!");
+ customSwal().fire('Perhatian', 'Ketikkan nama dompet baru terlebih dahulu!', 'warning');
  }
 }
 
@@ -696,23 +829,35 @@ if (t.jenis === 'keluar') totalKeluarSemuaDompetAktif += t.jumlah;
 }
 });
 
-document.getElementById('lbl-saldo-utama').innerText = Saldo ${dompetAktif} ↗ (Ketuk Ganti Dompet)`;
+document.getElementById('lbl-saldo-utama').innerText = Saldo${dompetAktif} ↗ (Ketuk Ganti Dompet)`;
 document.getElementById('total-pemasukan').innerText = formatRupiah(totalMasukFilter);
 document.getElementById('total-pengeluaran').innerText = formatRupiah(totalKeluarFilter);
 
 let selisihSaldoDompetAktif = totalMasukSemuaDompetAktif - totalKeluarSemuaDompetAktif;
  document.getElementById('total-saldo').innerText = formatRupiah(selisihSaldoDompetAktif);
 document.getElementById('md-total-saldo').innerText = formatRupiah(saldoPerDompet[dompetAktif]);
- document.getElementById('md-lbl-dompet-aktif').innerText = SALDO AKTIF:${dompetAktif.toUpperCase()}`;
+ document.getElementById('md-lbl-dompet-aktif').innerText = SALDO AKTIF: ${dompetAktif.toUpperCase()}`;
 
 let modalDaftarDompet = document.getElementById('md-daftar-per-dompet');
 let datalistDompet = document.getElementById('list-dompet-tersimpan');
 modalDaftarDompet.innerHTML = "";
 datalistDompet.innerHTML = "";
+
 let listNamaDompet = Object.keys(saldoPerDompet);
 
 let selectDari = document.getElementById('trf-dari');
 let selectKe = document.getElementById('trf-ke');
+
+// Update list dompet di pencarian
+let selectCariDompet = document.getElementById('cari-dompet');
+if (selectCariDompet) {
+let dompetSebelum = selectCariDompet.value;
+selectCariDompet.innerHTML = '<option value="semua">Semua Buku Kas</option>';
+listNamaDompet.forEach(d => {
+selectCariDompet.innerHTML += <option value="${d}">${d}&lt;/option>;
+});
+selectCariDompet.value = listNamaDompet.includes(dompetSebelum) ? dompetSebelum : "semua";
+}
 
 if (selectDari && selectKe) {
 let opsiDariSblm = selectDari.value;
@@ -721,8 +866,7 @@ let opsiKeSblm = selectKe.value;
 selectDari.innerHTML = "";
 selectKe.innerHTML = "";
 listNamaDompet.forEach(d => {
- selectDari.innerHTML += <option value="${d}">${d}&lt;/option>;
-selectKe.innerHTML += <option value="${d}">${d}&lt;/option>;
+ selectDari.innerHTML += <option value="${d}">{d}">${d}&lt;/option>;
 });
 
 if(opsiDariSblm && listNamaDompet.includes(opsiDariSblm)) selectDari.value = opsiDariSblm;
@@ -733,11 +877,10 @@ listNamaDompet.forEach(d => {
 let opt = document.createElement('option');
  opt.value = d;
 datalistDompet.appendChild(opt);
-
 let sld = saldoPerDompet[d] || 0;
  let styleWarna = sld >= 0 ? 'var(--success)' : 'var(--danger)';
 let styleAktif = (d === dompetAktif) ? 'background: rgba(52, 152, 219, 0.15); border-left: 4px solid var(--primary);' : '';
- modalDaftarDompet.innerHTML += &lt;div onclick="gantiDompetAktif('${d}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 10px; border-bottom:1px solid var(--border-color); font-size:13px; cursor:pointer; ${styleAktif}"&gt; &lt;span style="font-weight:600;"&gt;💳 ${d} ${d === dompetAktif ? '✅' : ''}&lt;/span&gt; &lt;span style="font-weight:bold; color:${styleWarna};">${formatRupiah(sld)}&lt;/span&gt; &lt;/div>;
+ modalDaftarDompet.innerHTML += &lt;div onclick="gantiDompetAktif('${d}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 10px; border-bottom:1px solid var(--border-color); font-size:13px; cursor:pointer; {d} {styleWarna};">${formatRupiah(sld)}&lt;/span&gt; &lt;/div>;
  });
 
 modalDaftarDompet.innerHTML += &lt;div style="padding: 12px 10px; display: flex; gap: 8px; background: var(--bg-color); border-top: 1px solid var(--border-color);"&gt; &lt;input type="text" id="new-wallet-name" placeholder="Tambah E-Wallet/Dompet baru..." style="padding: 6px; font-size: 12px; width: 65%;"&gt; &lt;button type="button" onclick="tambahDompetBaru()" class="btn btn-primary" style="width: 35%; padding: 6px; font-size: 12px;"&gt;+ Buat&lt;/button&gt; &lt;/div&gt;;
@@ -780,39 +923,97 @@ if ((t.dompet || "Dompet Utama") !== dompetAktif) return;
 let cls = (t.jenis === 'masuk') ? 'txt-masuk' : 'txt-keluar';
  let tnd = (t.jenis === 'masuk') ? '+' : '-';
 let dmp = t.dompet || "Dompet Utama";
- listContainer.innerHTML += &lt;div class="item-transaksi"&gt; &lt;div class="item-left"&gt; &lt;span class="item-name"&gt;${t.kategori}</span>
-<span class="item-date">${formatTanggalIndo(t.tanggal)} • ${t.jam} • 💳 ${dmp}&lt;/span&gt; &lt;/div&gt; &lt;div class="item-right ${cls}">${tnd} ${formatRupiah(t.jumlah)}</div>
- <div class="item-actions">
-<button class="btn-icon" onclick="editTransaksi('${t.id}')"&gt;✏️&lt;/button&gt; &lt;button class="btn-icon" onclick="removeTransaksiPermanen('${t.id}')">🗑️</button>
-</div>
+ listContainer.innerHTML += &lt;div class="item-transaksi" onclick="bukaModalDetailTx('${t.id}')">
+ <div class="item-left">
+<span class="item-name">{formatTanggalIndo(t.tanggal)} • {dmp}</span>
  </div>
-`;
+<div class="item-right {tnd} ${formatRupiah(t.jumlah)}&lt;/div&gt; &lt;/div&gt;;
  });
 }
 
+// Fungsi Pencarian Transaksi
+function bukaHalamanPencarian() {
+bukaHalaman('page-pencarian');
+document.getElementById('cari-teks').value = "";
+document.getElementById('cari-jenis').value = "semua";
+document.getElementById('hasil-pencarian').innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px;">Masukkan kata kunci untuk mencari</p>';
+}
+
+function eksekusiPencarian() {
+let keyword = document.getElementById('cari-teks').value.toLowerCase();
+let jenis = document.getElementById('cari-jenis').value;
+let dompetCari = document.getElementById('cari-dompet').value;
+let container = document.getElementById('hasil-pencarian');
+container.innerHTML = "";
+
+let hasil = dbTransaksi.filter(t => {
+let matchJenis = (jenis === 'semua') || (t.jenis === jenis);
+let matchDompet = (dompetCari === 'semua') || ((t.dompet || "Dompet Utama") === dompetCari);
+let strNominal = t.jumlah.toString();
+let matchTeks = t.kategori.toLowerCase().includes(keyword) || strNominal.includes(keyword);
+
+return matchJenis && matchDompet && matchTeks;
+});
+
+if (hasil.length === 0) {
+container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px;">Tidak ada transaksi ditemukan</p>';
+return;
+}
+
+hasil.forEach(t => {
+let cls = (t.jenis === 'masuk') ? 'txt-masuk' : 'txt-keluar';
+ let tnd = (t.jenis === 'masuk') ? '+' : '-';
+let dmp = t.dompet || "Dompet Utama";
+ container.innerHTML += &lt;div class="item-transaksi" onclick="bukaModalDetailTx('${t.id}')">
+ <div class="item-left">
+<span class="item-name">{formatTanggalIndo(t.tanggal)} • {dmp}</span>
+ </div>
+<div class="item-right {tnd} ${formatRupiah(t.jumlah)}&lt;/div&gt; &lt;/div&gt;;
+});
+}
+
 function removeTransaksiPermanen(id) {
-if(confirm("Apakah Anda yakin ingin menghapus permanen transaksi ini dari riwayat?")) {
 let t = dbTransaksi.find(item => item.id === id);
 if(t && (t.id.startsWith('hp-') || t.id.startsWith('lunas-') || t.id.startsWith('cicil-'))) {
-alert("Info: Ini adalah transaksi bayangan hutang/piutang/cicilan. Harap kelola atau hapus langsung lewat menu Manajemen Hutang Piutang agar sinkron.");
+customSwal().fire('Info', 'Ini adalah transaksi bayangan hutang/piutang/cicilan. Harap kelola atau hapus langsung lewat menu Manajemen Hutang Piutang agar sinkron.', 'info');
  return;
 }
  if(t && (t.id.startsWith('trf-out-') || t.id.startsWith('trf-in-'))) {
-if(confirm("Transaksi ini adalah bagian dari transfer antar dompet. Menghapus data ini akan menghapus mutasi pasangannya secara otomatis agar saldo tetap seimbang. Lanjutkan?")) {
- let coreTimestamp = t.id.replace('trf-out-', '').replace('trf-in-', '');
+customSwal().fire({
+title: 'Hapus Transfer?',
+text: "Transaksi ini adalah bagian dari transfer antar dompet. Menghapus data ini akan menghapus mutasi pasangannya secara otomatis agar saldo tetap seimbang. Lanjutkan?",
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#e74c3c'
+}).then((result) => {
+if(result.isConfirmed) {
+let coreTimestamp = t.id.replace('trf-out-', '').replace('trf-in-', '');
  dbTransaksi = dbTransaksi.filter(item => !item.id.endsWith(coreTimestamp));
 localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
  perbaruiSemuaData();
-return;
- } else {
-return;
+if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
 }
-}
+});
+return;
+ }
+
+customSwal().fire({
+title: 'Hapus Permanen?',
+text: "Apakah Anda yakin ingin menghapus permanen transaksi ini dari riwayat?",
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#e74c3c',
+confirmButtonText: 'Ya, Hapus'
+}).then((result) => {
+if(result.isConfirmed) {
 dbTransaksi = dbTransaksi.filter(item => item.id !== id);
  localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
 perbaruiSemuaData();
+if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
+}
+});
  }
- }
+
 function tampilkanRiwayatLaporan() {
  let listContainer = document.getElementById('list-laporan');
 listContainer.innerHTML = "";
@@ -843,7 +1044,6 @@ listContainer.innerHTML += &lt;div class="item-transaksi"&gt; &lt;div class="ite
 
 document.getElementById('laporan-card-total').innerText = formatRupiah(totalTerhitungFilter);
  }
-
 function bukaHalamanLaporan(jenis) {
 jenisLaporanSaja = jenis;
  filterLaporanAktif = "hari-ini";
@@ -864,7 +1064,6 @@ buatBilahTab('tabs-laporan', 'laporan');
 bukaHalaman('page-laporan');
 tampilkanRiwayatLaporan();
 }
-
 function bukaModalDompet() {
  document.getElementById('modal-detail-dompet').classList.add('active');
  document.getElementById('md-daftar-per-dompet').style.display = 'none';
@@ -875,6 +1074,7 @@ perbaruiGrafikDompet();
 function tutupModalDompet() {
 document.getElementById('modal-detail-dompet').classList.remove('active');
 }
+
 function perbaruiGrafikDompet() {
 let ftw = document.getElementById('md-filter-waktu').value;
  let cMasuk = 0;
@@ -905,7 +1105,7 @@ document.getElementById('bar-tinggi-keluar').style.height = hKeluar + '%';
 
 function exportKeJSON() {
  if(dbTransaksi.length === 0 && dbHutang.length === 0) {
- alert("Tidak ada data untuk dibackup!");
+ customSwal().fire('Info', 'Tidak ada data untuk dibackup!', 'info');
 return;
 }
 let backupData = {
@@ -926,7 +1126,6 @@ document.body.removeChild(downloadAnchor);
 function pemicuImport() {
  document.getElementById('input-backup').click();
  }
-
 function importDataUniversal(event) {
 const file = event.target.files[0];
 if (!file) return;
@@ -936,12 +1135,17 @@ reader.onload = function(e) {
  if (content.startsWith('{') || content.startsWith('[')) {
  try {
  let backup = JSON.parse(content);
-if (confirm("File backup JSON terdeteksi. Pulihkan seluruh data transaksi dan daftar hutang secara sempurna?")) {
+customSwal().fire({
+title: 'Pulihkan Data JSON?',
+text: "Pulihkan seluruh data transaksi dan daftar hutang secara sempurna?",
+icon: 'question',
+showCancelButton: true
+}).then((result) => {
+if (result.isConfirmed) {
 if (backup.transaksi) dbTransaksi = backup.transaksi;
 if (backup.hutang) dbHutang = backup.hutang;
 if (backup.kategoriMasuk) dbKategoriMasuk = backup.kategoriMasuk;
 if (backup.kategoriKeluar) dbKategoriKeluar = backup.kategoriKeluar;
-
 localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
  localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
 localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
@@ -949,18 +1153,19 @@ localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
 
 perbaruiSemuaData();
 sesuaikanKategori();
-alert("Seluruh data (Kas, Kategori, & Hubungan Hutang) berhasil dipulihkan total!");
+customSwal().fire('Berhasil!', 'Seluruh data (Kas, Kategori, & Hubungan Hutang) berhasil dipulihkan total!', 'success');
  bukaHalaman('page-utama');
 }
+});
  } catch(err) {
-alert("Gagal membaca file JSON: " + err.message);
+customSwal().fire('Error', "Gagal membaca file JSON: " + err.message, 'error');
 }
  return;
 }
 
 const baris = content.split('\n');
 if (baris.length <= 1) {
- alert("File tidak dikenal atau kosong!");
+ customSwal().fire('Error', "File tidak dikenal atau kosong!", 'error');
  return;
 }
 
@@ -969,9 +1174,13 @@ let dataDiimport = [];
 let kolom = baris[i].trim();
 if (!kolom) continue;
  let barisData = kolom.split(',').map(item => item.replace(/^"|"latex
-/g, '')); if (barisData.length &gt;= 6) { let dmp = "Dompet Utama"; let jml = 0; if(barisData.length &gt;= 7) { dmp = barisData[5]; jml = parseFloat(barisData[6]) || 0; } else { jml = parseFloat(barisData[5]) || 0; } dataDiimport.push({ id: barisData[0], tanggal: barisData[1], jam: barisData[2], jenis: barisData[3], kategori: barisData[4], dompet: dmp, jumlah: jml }); } } if (dataDiimport.length &gt; 0) { if (confirm(`Menemukan 
+/g, '')); if (barisData.length &gt;= 6) { let dmp = "Dompet Utama"; let jml = 0; if(barisData.length &gt;= 7) { dmp = barisData[5]; jml = parseFloat(barisData[6]) || 0; } else { jml = parseFloat(barisData[5]) || 0; } dataDiimport.push({ id: barisData[0], tanggal: barisData[1], jam: barisData[2], jenis: barisData[3], kategori: barisData[4], dompet: dmp, jumlah: jml }); } } if (dataDiimport.length &gt; 0) { customSwal().fire({ title: 'Pulihkan CSV Lama?', text: `Menemukan 
 
-{dataDiimport.length} riwayat kas. Mulai pemulihan & jalankan rekonstruksi daftar Hutang/Piutang otomatis?`)) {
+{dataDiimport.length} riwayat kas. Mulai pemulihan & jalankan rekonstruksi daftar Hutang/Piutang otomatis?`,
+icon: 'question',
+showCancelButton: true
+}).then((result) => {
+if (result.isConfirmed) {
 let idLama = dbTransaksi.map(t => t.id);
  let dataBaruBukanDuplikat = dataDiimport.filter(t => !idLama.includes(t.id));
 dbTransaksi = [...dataBaruBukanDuplikat, ...dbTransaksi];
@@ -1008,11 +1217,12 @@ dbHutang.push(h);
 
 localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
  perbaruiSemuaData();
-alert("Sukses! Riwayat Kas dipulihkan & Tabel daftar hutang berjalan berhasil dibangun kembali!");
+customSwal().fire('Sukses!', "Riwayat Kas dipulihkan & Tabel daftar hutang berjalan berhasil dibangun kembali!", 'success');
 bukaHalaman('page-utama');
 }
+});
  } else {
-alert("Format berkas backup tidak cocok!");
+customSwal().fire('Error', "Format berkas backup tidak cocok!", 'error');
 }
 };
 reader.readAsText(file);
@@ -1021,6 +1231,7 @@ reader.readAsText(file);
 
 function simpanHutang(e) {
 e.preventDefault();
+
 let tgl = document.getElementById('ht-tanggal').value;
 let jenis = document.getElementById('ht-jenis').value;
 let nama = document.getElementById('ht-nama').value;
@@ -1061,7 +1272,7 @@ let ketKategori = (jenisKas === 'masuk') ? 'Hutang dari ' + nama : 'Piutang kepa
  let transaksiBayangan = {
  id: 'hp-' + Date.now().toString(),
 tanggal: tgl,
- jam: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}).replace('.', ':'),
+ jam: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', hour12: false}).replace('.', ':'),
 jenis: jenisKas,
  kategori: ketKategori,
 dompet: dompetAktif,
@@ -1092,7 +1303,7 @@ ${terbayar &gt; 0 && h.status !== 'lunas' ?<div style="font-size:11px; color:#e7
 </div>
 `;
 
-container.innerHTML += &lt;div class="item-transaksi" style="background:var(--card-bg); border-radius:10px; margin-bottom:12px; padding:15px; border:1px solid var(--border-color);" onclick="bukaModalAksiHutang('${h.id}')">
+container.innerHTML += &lt;div class="item-transaksi" style="background:var(--card-bg); border-radius:10px; margin-bottom:12px; padding:15px; border:1px solid var(--border-color); cursor:pointer;" onclick="bukaModalAksiHutang('${h.id}')">
  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
  <div style="display:flex; flex-direction:column; gap:6px;">
 <div style="display:flex; align-items:center; gap:8px;">
@@ -1115,16 +1326,17 @@ let dari = document.getElementById('trf-dari').value;
 let nominal = parseFloat(document.getElementById('trf-nominal').value);
 
 if (dari === ke) {
-alert("Gagal: Dompet asal and dompet tujuan tidak boleh sama!");
+customSwal().fire('Gagal', 'Dompet asal and dompet tujuan tidak boleh sama!', 'error');
 return;
 }
  if (nominal <= 0 || isNaN(nominal)) {
-alert("Gagal: Nominal transfer harus diisi lebih besar dari 0!");
+customSwal().fire('Gagal', 'Nominal transfer harus diisi lebih besar dari 0!', 'error');
 return;
 }
 
-let jamSkrg = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}).replace('.', ':');
+let jamSkrg = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', hour12: false}).replace('.', ':');
 let unifStamp = Date.now().toString();
+
 let txKeluar = {
 id: 'trf-out-' + unifStamp,
  tanggal: tgl,
@@ -1154,7 +1366,7 @@ dompetAktif = ke;
 localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
 
 perbaruiSemuaData();
- alert(Sukses! Berhasil memindahkan ${formatRupiah(nominal)} dari ${dari} ke ${ke}.`);
+ customSwal().fire('Sukses!', Berhasil memindahkan ${formatRupiah(nominal)} dari ${dari} ke ${ke}.`, 'success');
  bukaHalaman('page-utama');
  }
 
@@ -1166,6 +1378,7 @@ document.getElementById('aksi-nama').innerText = Orang:${item.nama}`;
  document.getElementById('modal-aksi-hutang').classList.add('active');
 }
 }
+
 function tutupModalAksi() {
 document.getElementById('modal-aksi-hutang').classList.remove('active');
 idHutangTerpilih = null;
@@ -1181,11 +1394,20 @@ let sisa = h.nominal - terbayarSaatIni;
 let pesanKonfirmasi = (h.jenis === 'piutang') ?
 Tandai Piutang sebagai LUNAS dan otomatis catat sisa Pelunasan (${formatRupiah(sisa)}) ke Saldo ${dompetAktif}? :
 Tandai Hutang sebagai LUNAS dan otomatis catat sisa Pembayaran (${formatRupiah(sisa)}) dari Saldo ${dompetAktif}?;
-if (confirm(pesanKonfirmasi)) {
+
+customSwal().fire({
+title: 'Tandai Lunas?',
+text: pesanKonfirmasi,
+icon: 'question',
+showCancelButton: true,
+confirmButtonText: 'Ya, Lunas'
+}).then((result) => {
+if (result.isConfirmed) {
 h.status = 'lunas';
  h.terbayar = h.nominal;
 let jenisMutasi = (h.jenis === 'piutang') ? 'masuk' : 'keluar';
 let ketKategori = (h.jenis === 'piutang') ? 'Pelunasan Piutang dari ' + h.nama : 'Bayar Hutang ke ' + h.nama;
+
 let txPelunasan = {
 id: 'lunas-' + Date.now().toString(),
  tanggal: new Date().toISOString().split('T')[0],
@@ -1197,18 +1419,28 @@ jumlah: sisa
 };
 dbTransaksi.unshift(txPelunasan);
 localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
- }
-} else {
-if (confirm("Ubah status kembali menjadi BELUM LUNAS? (Info: Transaksi kas pelunasan sebelumnya tidak akan terhapus otomatis, dan riwayat cicilan akan di-reset)")) {
- h.status = 'belum';
-h.terbayar = 0;
-}
- }
-}
-
 localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
 perbaruiSemuaData();
 tutupModalAksi();
+}
+});
+} else {
+customSwal().fire({
+title: 'Ubah Status?',
+text: "Ubah status kembali menjadi BELUM LUNAS? (Info: Transaksi kas pelunasan sebelumnya tidak akan terhapus otomatis, dan riwayat cicilan akan di-reset)",
+icon: 'warning',
+showCancelButton: true
+}).then((result) => {
+if (result.isConfirmed) {
+h.status = 'belum';
+h.terbayar = 0;
+localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
+perbaruiSemuaData();
+tutupModalAksi();
+}
+});
+ }
+}
 }
  }
 
@@ -1218,7 +1450,7 @@ let h = dbHutang.find(item => item.id === idHutangTerpilih);
 if (!h) return;
 
 if (h.status === 'lunas') {
-alert("Catatan ini sudah lunas sepenuhnya!");
+customSwal().fire('Info', 'Catatan ini sudah lunas sepenuhnya!', 'info');
 return;
 }
 
@@ -1254,12 +1486,12 @@ let nominalCicilan = parseFloat(inputNominal);
 let tanggalCicilan = document.getElementById('input-tanggal-cicilan').value;
 
 if (!inputNominal || isNaN(nominalCicilan) || nominalCicilan <= 0) {
-alert("Silakan masukkan nominal angka yang valid!");
+customSwal().fire('Error', 'Silakan masukkan nominal angka yang valid!', 'error');
 return;
 }
 
 if (!tanggalCicilan) {
-alert("Silakan pilih tanggal cicilan!");
+customSwal().fire('Error', 'Silakan pilih tanggal cicilan!', 'error');
 return;
 }
 
@@ -1270,7 +1502,7 @@ let terbayarSaatIni = h.terbayar || 0;
 let sisaHutang = h.nominal - terbayarSaatIni;
 
 if (nominalCicilan > sisaHutang) {
-alert(Gagal: Nominal cicilan melebihi sisa beban hutang (${formatRupiah(sisaHutang)})!`);
+customSwal().fire('Gagal', Nominal cicilan melebihi sisa beban hutang (${formatRupiah(sisaHutang)})!`, 'error');
 return;
 }
 
@@ -1299,7 +1531,7 @@ localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
 perbaruiSemuaData();
 
 tutupModalCicilan();
-alert(Sukses mencatat cicilan sebesar${formatRupiah(nominalCicilan)} pada tanggal ${formatTanggalIndo(tanggalCicilan)}.);
+customSwal().fire('Berhasil', Sukses mencatat cicilan sebesar${formatRupiah(nominalCicilan)} pada tanggal ${formatTanggalIndo(tanggalCicilan)}., 'success');
 }
 
 function editHutang() {
@@ -1320,24 +1552,34 @@ document.getElementById('ht-nominal').value = item.nominal;
 
 function hapusHutangDariModal() {
  if(idHutangTerpilih) {
- if(confirm("Yakin ingin menghapus catatan ini? (Info: riwayat kas bayangan tidak ikut terhapus)")) {
- dbHutang = dbHutang.filter(h => h.id !== idHutangTerpilih);
+ customSwal().fire({
+title: 'Hapus Catatan?',
+text: "Yakin ingin menghapus catatan ini? (Info: riwayat kas bayangan tidak ikut terhapus)",
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#e74c3c',
+confirmButtonText: 'Ya, Hapus'
+}).then((result) => {
+if (result.isConfirmed) {
+dbHutang = dbHutang.filter(h => h.id !== idHutangTerpilih);
 localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
  perbaruiSemuaData();
 tutupModalAksi();
 }
- }
+});
+}
 }
 
-if (localStorage.getItem('tema_buku_kas') === 'dark') {
-document.body.classList.add('dark-mode');
-}
 function toggleDarkMode() {
 document.body.classList.toggle('dark-mode');
+let metaTheme = document.getElementById('theme-color-meta');
+
 if (document.body.classList.contains('dark-mode')) {
 localStorage.setItem('tema_buku_kas', 'dark');
+metaTheme.content = "#121212";
 } else {
 localStorage.setItem('tema_buku_kas', 'light');
+metaTheme.content = "#f4f7f6";
 }
 }
 
@@ -1348,7 +1590,16 @@ if (id === 'page-utama') perbaruiSemuaData();
 }
 
 function hapusSemuaData() {
-if(confirm("Apakah kamu yakin ingin menghapus seluruh riwayat transaksi & catatan hutang?")) {
+customSwal().fire({
+title: 'Zona Berbahaya',
+text: "Apakah kamu yakin ingin menghapus seluruh riwayat transaksi & catatan hutang?",
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#e74c3c',
+cancelButtonText: 'Batal',
+confirmButtonText: 'Ya, Reset Semua!'
+}).then((result) => {
+if (result.isConfirmed) {
 localStorage.clear();
  dbTransaksi = [];
 dbHutang = [];
@@ -1357,9 +1608,10 @@ dbKategoriKeluar = defaultKatKeluar;
  dompetAktif = "Dompet Utama";
 perbaruiSemuaData();
 sesuaikanKategori();
-alert("Database berhasil dikosongkan.");
+customSwal().fire('Terhapus!', 'Database berhasil dikosongkan.', 'success');
 bukaHalaman('page-utama');
- }
+}
+});
 }
 
 function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }
@@ -1405,7 +1657,7 @@ function prosesCetakPDF() {
 let dompetPilihan = document.getElementById('inv-dompet').value;
 
 if(!mulai || !akhir) {
- alert("Error: Mohon tentukan tanggal mulai dan tanggal akhir terlebih dahulu!");
+ customSwal().fire('Error', 'Mohon tentukan tanggal mulai dan tanggal akhir terlebih dahulu!', 'error');
 return;
 }
 
@@ -1416,11 +1668,10 @@ return pasTanggal && pasDompet;
  });
 
 if(filtered.length === 0) {
- alert("Tidak ditemukan riwayat data transaksi pada rentang waktu dan dompet tersebut!");
+ customSwal().fire('Info', 'Tidak ditemukan riwayat data transaksi pada rentang waktu dan dompet tersebut!', 'info');
 return;
  }
 
-// SISTEM REKONSTRUKSI AKUMULASI (GROUP BY KATEGORI + JENIS)
 let laporanGrouped = {};
 filtered.forEach(t => {
 let key = t.kategori + '|' + t.jenis;
@@ -1457,6 +1708,7 @@ jenisTanda = "- " + formatRupiah(jml);
 barisTabelHTML += &lt;tr style="border-bottom: 1px solid #e2e8f0;"&gt; &lt;td style="padding: 12px; text-align: center; font-size: 13px;"&gt;${index++}</td>
 <td style="padding: 12px; font-weight: 600; font-size: 13px; color: #2c3e50;">{warnaTeks} font-size: 13px;">${jenisTanda}&lt;/td&gt; &lt;/tr&gt;;
  }
+
 let saldoBersih = totalMasuk - totalKeluar;
 
 let elemenCetak = document.createElement('div');
