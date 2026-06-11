@@ -893,29 +893,6 @@ alert('Sukses mendaftar! Silakan klik tombol Masuk.');
             }
         });
 
-        document.getElementById('lbl-saldo-utama').innerText = `Saldo ${dompetAktif} ↗ (Ketuk Ganti Dompet)`;
-        document.getElementById('total-pemasukan').innerText = formatRupiah(totalMasukFilter);
-        document.getElementById('total-pengeluaran').innerText = formatRupiah(totalKeluarFilter);
-
-        let selisihSaldoDompetAktif = totalMasukSemuaDompetAktif - totalKeluarSemuaDompetAktif;           
-        document.getElementById('total-saldo').innerText = formatRupiah(selisihSaldoDompetAktif);                 document.getElementById('md-total-saldo').innerText = formatRupiah(saldoPerDompet[dompetAktif]);  
-        document.getElementById('md-lbl-dompet-aktif').innerText = `SALDO AKTIF: ${dompetAktif.toUpperCase()}`;
-                                                             let modalDaftarDompet = document.getElementById('md-daftar-per-dompet');                                  let datalistDompet = document.getElementById('list-dompet-tersimpan');
-        modalDaftarDompet.innerHTML = "";
-        datalistDompet.innerHTML = "";
-                                                             let listNamaDompet = Object.keys(saldoPerDompet);                                                                                                              let selectDari = document.getElementById('trf-dari');                                                     let selectKe = document.getElementById('trf-ke');
-                                                             // Update list dompet di pencarian                   let selectCariDompet = document.getElementById('cari-dompet');
-        if (selectCariDompet) {
-            let dompetSebelum = selectCariDompet.value;                                                               selectCariDompet.innerHTML = '<option value="semua">Semua Buku Kas</option>';                             listNamaDompet.forEach(d => {                            selectCariDompet.innerHTML += `<option value="${d}">${d}</option>`;                                   });                                                  selectCariDompet.value = listNamaDompet.includes(dompetSebelum) ? dompetSebelum : "semua";            }                                                                                                         if (selectDari && selectKe) {                            let opsiDariSblm = selectDari.value;                 let opsiKeSblm = selectKe.value;                                                                          selectDari.innerHTML = "";
-            selectKe.innerHTML = "";
-            listNamaDompet.forEach(d => {                                                                                 selectDari.innerHTML += `<option value="${d}">${d}</option>`;                                             selectKe.innerHTML += `<option value="${d}">${d}</option>`;                                           });                                                                                           
-            if(opsiDariSblm && listNamaDompet.includes(opsiDariSblm)) selectDari.value = opsiDariSblm;                if(opsiKeSblm && listNamaDompet.includes(opsiKeSblm)) selectKe.value = opsiKeSblm;
-        }                                                                                                                                                              listNamaDompet.forEach(d => {                            let opt = document.createElement('option');                                                                                                                    opt.value = d;                                       datalistDompet.appendChild(opt);
-
-            let sld = saldoPerDompet[d] || 0;        
-            let styleWarna = sld >= 0 ? 'var(--success)' : 'var(--danger)';                                           let styleAktif = (d === dompetAktif) ? 'background: rgba(52, 152, 219, 0.15); border-left: 4px solid var(--primary);' : '';                                    modalDaftarDompet.innerHTML += `
-                <div onclick="gantiDompetAktif('${d}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 10px; border-bottom:1px solid var(--border-color); font-size:13px; cursor:pointer; ${styleAktif}">                                                                                                   <span style="font-weight:600;">💳 ${d} ${d === dompetAktif ? '✅' : ''}</span>                            <span style="font-weight:bold; color:${styleWarna};">${formatRupiah(sld)}</span>                      </div>`;                                                                                          });
-
         modalDaftarDompet.innerHTML += `                         <div style="padding: 12px 10px; display: flex; gap: 8px; background: var(--bg-color); border-top: 1px solid var(--border-color);">
                 <input type="text" id="new-wallet-name" placeholder="Tambah E-Wallet/Dompet baru..." style="padding: 6px; font-size: 12px; width: 65%;">                       <button type="button" onclick="tambahDompetBaru()" class="btn btn-primary" style="width: 35%; padding: 6px; font-size: 12px;">+ Buat</button>              </div>                                                                                                `;
                                                                                                                   tampilkanRiwayatUtama();                             tampilkanRiwayatLaporan();                           tampilkanDaftarHutang();                                                                                  perbaruiGrafikDompet();                                                                               }
@@ -929,9 +906,35 @@ alert('Sukses mendaftar! Silakan klik tombol Masuk.');
                                                                                                                   if (filterId === 'minggu-ini') {                         let satuMingguLalu = new Date();                                                                          satuMingguLalu.setDate(tglSekarang.getDate() - 7);                                                        return tglData >= satuMingguLalu && tglData <= tglSekarang;                                   
         }                                            
         if (filterId === 'bulan-ini') return tglData.getMonth() === tglSekarang.getMonth() && tglData.getFullYear() === tglSekarang.getFullYear();
-                                                     
-        return itemTanggal === filterId;
-    }                                                                                                     
+            const selectCariDompet = document.getElementById('cari-dompet');
+
+if (selectCariDompet) {
+    let dompetSebelum = selectCariDompet.value;
+    selectKe.innerHTML = "";
+    
+    listNamaDompet.forEach(d => {
+        let opsi = document.createElement('option');
+        opsi.value = d;
+        opsi.textContent = d;
+        selectKe.appendChild(opsi);
+
+        if (opsiDariSblm && d === opsiDariSblm) {
+            selectKe.value = opsiDariSblm;
+        }
+    });
+}
+
+// Logika rendering utama diletakkan di sini, di luar blok if (selectCariDompet)
+// agar tetap berjalan meskipun halaman tidak memiliki elemen 'cari-dompet'
+let sld = saldoPerDompet[dompetAktif] || 0;
+let styleWarna = sld >= 0 ? 'var(--success)' : 'var(--danger)';
+
+// Pastikan modalDaftarDompet diupdate setelah data siap
+modalDaftarDompet.innerHTML = ""; 
+// Lanjutkan sisa logika rendering Anda...
+                                         
+    }   return itemTanggal === filterId;
+                                                                                                         
 
     function tampilkanRiwayatUtama() {
         let listContainer = document.getElementById('list-utama');                                                                                                     listContainer.innerHTML = "";                
