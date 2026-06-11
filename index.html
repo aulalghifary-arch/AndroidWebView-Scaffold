@@ -416,7 +416,7 @@
 <script>
 // 1. Inisialisasi Supabase Client
 const SUPABASE_URL = "https://bwijginbudwtgeiewcnh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo";
+const SUPABASE_ANON_KEY = "sb_publishable_MvEhcXf5OOEg_QrA2Z_8IA_nRyCYFhT";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 2. Fungsi untuk Mengecek Sesi Login
@@ -1716,7 +1716,13 @@ modalDaftarDompet.innerHTML = "";
             }
         });                                              
     }
-                                                         
+    // Ekspos fungsi ke global scope agar bisa diakses oleh onclick="" di HTML
+window.bukaHalaman = bukaHalaman;
+window.hapusSemuaData = hapusSemuaData;
+window.bukaModalDompet = bukaModalDompet;
+window.bukaHalamanLaporan = bukaHalamanLaporan;
+window.scrollTab = scrollTab;
+                                                     
     function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }              
     function formatTanggalIndo(tglString) {
         if(!tglString) return "";
