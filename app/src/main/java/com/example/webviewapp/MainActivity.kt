@@ -114,7 +114,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.addJavascriptInterface(WebAppInterface(this), "Android")
-        webView.loadUrl("file:///android_asset/index.html")
+        webView.loadUrl("https://proyek-kas-prod.vercel.app")
+
 
 
         webView.setDownloadListener { url, _, _, _, _ ->
