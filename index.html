@@ -726,9 +726,12 @@
 
     function editDariModalTx() {
         if(idTransaksiTerpilihModal) {
+            let currentId = idTransaksiTerpilihModal;
             tutupModalDetailTx();
             bukaHalaman('page-utama'); // Pindah ke halaman utama form jika dari menu pencarian
-            editTransaksi(idTransaksiTerpilihModal);
+            
+            // Eksekusi pemindahan data langsung tanpa double pop-up konfirmasi
+            eksekusiDataKeFormEdit(currentId);
         }
     }
 
@@ -740,40 +743,46 @@
         }
     }
 
+    // Mengurai data ke form input untuk diperbaiki
+    function eksekusiDataKeFormEdit(id) {
+        let t = dbTransaksi.find(item => item.id === id);                                                         
+        if(!t) return;
+        document.getElementById('form-title').innerText = "Perbaiki Transaksi Kas (Edit)";
+        document.getElementById('tx-id-edit').value = t.id;
+        document.getElementById('tx-tanggal').value = t.tanggal;
+        document.getElementById('tx-jam').value = t.jam;
+        document.getElementById('tx-jenis').value = t.jenis;
+        sesuaikanKategori();                         
+        
+        let listCek = (t.jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
+        if(!listCek.includes(t.kategori)) {
+            let opt = document.createElement('option');
+            opt.value = t.kategori;
+            opt.innerText = t.kategori;
+            document.getElementById('tx-kategori').insertBefore(opt, document.getElementById('tx-kategori').lastChild);
+        }
+        document.getElementById('tx-kategori').value = t.kategori;
+                                                             
+        dompetAktif = t.dompet || "Dompet Utama";
+        localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
+        document.getElementById('tx-jumlah').value = t.jumlah;
+        document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";                           
+        document.getElementById('btn-batal-edit').style.display = "block";                                        
+        perbaruiSemuaData();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
     function editTransaksi(id) {
         customSwal().fire({
             title: 'Edit Transaksi?',
             text: "Apakah Anda yakin ingin memperbaiki (edit) transaksi ini?",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Edit'
+            confirmButtonText: 'Ya, Edit',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if(result.isConfirmed) {
-                let t = dbTransaksi.find(item => item.id === id);                                                         
-                if(!t) return;
-                document.getElementById('form-title').innerText = "Perbaiki Transaksi Kas (Edit)";
-                document.getElementById('tx-id-edit').value = t.id;
-                document.getElementById('tx-tanggal').value = t.tanggal;
-                document.getElementById('tx-jam').value = t.jam;
-                document.getElementById('tx-jenis').value = t.jenis;
-                sesuaikanKategori();                         
-                
-                let listCek = (t.jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
-                if(!listCek.includes(t.kategori)) {
-                    let opt = document.createElement('option');
-                    opt.value = t.kategori;
-                    opt.innerText = t.kategori;
-                    document.getElementById('tx-kategori').insertBefore(opt, document.getElementById('tx-kategori').lastChild);
-                }
-                document.getElementById('tx-kategori').value = t.kategori;
-                                                                     
-                dompetAktif = t.dompet || "Dompet Utama";
-                localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
-                document.getElementById('tx-jumlah').value = t.jumlah;
-                document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";                           
-                document.getElementById('btn-batal-edit').style.display = "block";                                        
-                perbaruiSemuaData();
-                window.scrollTo({top: 0, behavior: 'smooth'});
+                eksekusiDataKeFormEdit(id);
             }
         });
     }
@@ -1531,7 +1540,7 @@
         let dd = String(tgl.getDate()).padStart(2, '0');
         document.getElementById('input-tanggal-cicilan').value = `${yyyy}-${mm}-${dd}`;
 
-        document.getElementById('modal-bayar-cicilan').add('active');
+        document.getElementById('modal-bayar-cicilan').classList.add('active');
         
         setTimeout(() => {
             document.getElementById('input-nominal-cicilan').focus();
@@ -1874,7 +1883,7 @@
 
 <script>
 const SUPABASE_URL = "https://bwijginbudwtgeiewcnh.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOY0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function cekSesiLogin() {
@@ -1902,18 +1911,26 @@ if (error) alert('Gagal Daftar: ' + error.message);
 else alert('Sukses mendaftar! Silakan klik tombol Masuk.');
 }
 
-// FUNGSI LOGOUT UTUK SUPABASE AUTH
+// FUNGSI LOGOUT YANG SUDAH DIPERBAIKI MENGGUNAKAN SWEETALERT2 KUSTOM
 async function handleLogout() {
-if (confirm("Apakah Anda yakin ingin keluar dari akun?")) {
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) {
-        alert("Gagal Keluar: " + error.message);
-    } else {
-        // Balikkan halaman ke Dashboard Utama agar rapi, lalu overlay login akan menutup otomatis
-        bukaHalaman('page-utama');
-        cekSesiLogin();
-    }
-}
+    customSwal().fire({
+        title: 'Keluar Akun?',
+        text: 'Apakah Anda yakin ingin keluar dari akun Buku Kas ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                customSwal().fire('Gagal Keluar', error.message, 'error');
+            } else {
+                bukaHalaman('page-utama');
+                cekSesiLogin();
+            }
+        }
+    });
 }
 
 window.addEventListener('DOMContentLoaded', cekSesiLogin);
