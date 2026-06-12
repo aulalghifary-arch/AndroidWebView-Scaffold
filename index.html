@@ -118,8 +118,7 @@
             </div>                                           
         </div>
         <form id="form-transaksi" onsubmit="simpanTransaksi(event)">                                                  
-            <h3 id="form-title" style="font-size:15px; margin-bottom:12px;">Input Transaksi Kas</h3>                  
-            <input type="hidden" id="tx-id-edit" value="">
+            <h3 style="font-size:15px; margin-bottom:12px;">Input Transaksi Kas</h3>                  
             <div class="form-row">
                 <div class="form-group">                                 
                     <label>TANGGAL</label>
@@ -150,8 +149,7 @@
                 <label>JUMLAH UANG</label>                           
                 <input type="number" id="tx-jumlah" placeholder="Masukkan nominal..." required>
             </div>                                               
-            <button type="submit" id="btn-simpan-transaksi" class="btn btn-primary">Simpan Transaksi</button>                                                              
-            <button type="button" id="btn-batal-edit" class="btn btn-secondary" style="display:none; margin-top:8px;" onclick="resetFormTransaksi()">Batal Edit</button>                                                    
+            <button type="submit" class="btn btn-primary">Simpan Transaksi</button>                                                              
         </form>
         <div style="margin-top:25px;">
             <h3 style="font-size:15px;">Riwayat Transaksi Terkini</h3>
@@ -270,7 +268,7 @@
                 <label>JUMLAH NOMINAL</label>
                 <input type="number" id="ht-nominal" placeholder="Masukkan jumlah..." required>                       
             </div>                                               
-            <button type="submit" id="btn-simpan-hutang" class="btn btn-warning" style="padding:12px; font-size:14px;">Simpan Catatan</button>                         
+            <button type="submit" class="btn btn-warning" style="padding:12px; font-size:14px;">Simpan Catatan</button>                         
         </form>                                              
         <h3 style="font-size:15px; margin-bottom:10px;">Daftar Hutang & Piutang Berjalan</h3>                     
         <div id="list-hutang-semua" style="margin-bottom:25px; padding-bottom:30px;"></div>
@@ -326,6 +324,72 @@
         </div>
     </div>
 </div>                                               
+
+<div id="modal-edit-transaksi" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Transaksi</h3>
+        <form id="form-edit-transaksi" onsubmit="prosesSimpanEditTransaksi(event)">
+            <input type="hidden" id="edit-tx-id-edit" value="">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>TANGGAL</label>
+                    <input type="date" id="edit-tx-tanggal" required>
+                </div>
+                <div class="form-group">
+                    <label>WAKTU (JAM)</label>
+                    <input type="time" id="edit-tx-jam" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>JENIS TRANSAKSI</label>
+                <select id="edit-tx-jenis" onchange="sesuaikanKategoriEdit()">
+                    <option value="masuk">Pemasukan (+)</option>
+                    <option value="keluar">Pengeluaran (-)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>KATEGORI</label>
+                <select id="edit-tx-kategori"></select>
+            </div>
+            <div class="form-group">
+                <label>JUMLAH UANG</label>
+                <input type="number" id="edit-tx-jumlah" placeholder="Nominal uang..." required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-bottom:8px;">Simpan Perubahan</button>
+            <button type="button" class="btn-action btn-gray" onclick="tutupModalEditTransaksi()">Batal</button>
+        </form>
+    </div>
+</div>
+
+<div id="modal-edit-hutang" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Data Hutang/Piutang</h3>
+        <form id="form-edit-hutang-kustom" onsubmit="prosesSimpanEditHutang(event)">
+            <input type="hidden" id="edit-ht-id" value="">
+            <div class="form-group">
+                <label>TANGGAL TRANSAKSI</label>
+                <input type="date" id="edit-ht-tanggal" required>
+            </div>
+            <div class="form-group">
+                <label>JENIS CATATAN</label>
+                <select id="edit-ht-jenis">
+                    <option value="hutang">Hutang (Uang Masuk ke Dompet)</option>
+                    <option value="piutang">Piutang (Uang Keluar ke Orang)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>NAMA ORANG</label>
+                <input type="text" id="edit-ht-nama" required>
+            </div>
+            <div class="form-group">
+                <label>JUMLAH NOMINAL</label>
+                <input type="number" id="edit-ht-nominal" required>
+            </div>
+            <button type="submit" class="btn btn-warning" style="margin-bottom:8px;">Perbarui Data</button>
+            <button type="button" class="btn-action btn-gray" onclick="tutupModalEditHutang()">Batal</button>
+        </form>
+    </div>
+</div>
 
 <div id="modal-detail-tx" class="action-modal">
     <div class="action-content">
@@ -422,7 +486,6 @@
     let filterLaporanAktif = "hari-ini";                
     let jenisLaporanSaja = "masuk";                  
     
-    // Inisialisasi Database Kategori Dinamis
     let defaultKatMasuk = ["Pendapatan", "Bonus/Insentif", "Tips Penumpang"];
     let defaultKatKeluar = ["Rokok", "Makan & Minum", "Kopi", "Bensin", "Token Listrik"];
     
@@ -432,9 +495,8 @@
     let idHutangTerpilih = null;                         
     let modeEditHutangId = null;
     let tabKategoriAktif = 'keluar';
-    let idTransaksiTerpilihModal = null; // Menyimpan state modal detail transaksi
+    let idTransaksiTerpilihModal = null; 
     
-    // Wrapper SweetAlert2 untuk support warna gelap otomatis
     function customSwal() {
         let isDark = document.body.classList.contains('dark-mode');
         return Swal.mixin({
@@ -485,14 +547,24 @@
             katSelect.appendChild(opt);
         });
 
-        // Menambahkan opsi Buat Kategori Baru di akhir
         let optBaru = document.createElement('option');
         optBaru.value = "buat_baru";
         optBaru.innerHTML = "Buat kategori baru...";
-
         optBaru.style.fontWeight = "bold";
         optBaru.style.color = "var(--primary)";
         katSelect.appendChild(optBaru);
+    }
+
+    function sesuaikanKategoriEdit() {
+        let jenis = document.getElementById('edit-tx-jenis').value;
+        let katSelect = document.getElementById('edit-tx-kategori');
+        katSelect.innerHTML = "";
+        let list = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
+        list.forEach(k => {
+            let opt = document.createElement('option');
+            opt.value = k; opt.innerText = k;
+            katSelect.appendChild(opt);
+        });
     }
     
     async function handleKategoriChange() {
@@ -645,17 +717,6 @@
         buatBilahTab('tabs-laporan', 'laporan');
         tampilkanRiwayatLaporan();                       
     }
-
-    function resetFormTransaksi() {                          
-        document.getElementById('tx-id-edit').value = "";
-        document.getElementById('form-title').innerText = "Input Transaksi Kas";
-        setTanggalHariIni();
-        document.getElementById('tx-jenis').value = "keluar";
-        sesuaikanKategori();
-        document.getElementById('tx-jumlah').value = "";                                                          
-        document.getElementById('btn-simpan-transaksi').innerText = "Simpan Transaksi";                           
-        document.getElementById('btn-batal-edit').style.display = "none";
-    }
     
     function simpanTransaksi(e) {
         e.preventDefault();                          
@@ -666,39 +727,22 @@
         }
                                                              
         let dompetDipilih = dompetAktif;
-        let editId = document.getElementById('tx-id-edit').value;                                                                                                      
-        
-        if(editId) {
-            dbTransaksi = dbTransaksi.map(t => {
-                if(t.id === editId) {
-                    t.tanggal = document.getElementById('tx-tanggal').value;                                                  
-                    t.jam = document.getElementById('tx-jam').value;
-                    t.jenis = document.getElementById('tx-jenis').value;
-                    t.kategori = kategoriDipilih;
-                    t.dompet = dompetDipilih;
-                    t.jumlah = parseFloat(document.getElementById('tx-jumlah').value);
-                }
-                return t;                                        
-            });
-        } else {
-            let transaksi = {
-                id: Date.now().toString(),
-                tanggal: document.getElementById('tx-tanggal').value,
-                jam: document.getElementById('tx-jam').value,
-                jenis: document.getElementById('tx-jenis').value,
-                kategori: kategoriDipilih,
-                dompet: dompetDipilih,
-                jumlah: parseFloat(document.getElementById('tx-jumlah').value)
-            };
-            dbTransaksi.unshift(transaksi);                  
-        }
+        let transaksi = {
+            id: Date.now().toString(),
+            tanggal: document.getElementById('tx-tanggal').value,
+            jam: document.getElementById('tx-jam').value,
+            jenis: document.getElementById('tx-jenis').value,
+            kategori: kategoriDipilih,
+            dompet: dompetDipilih,
+            jumlah: parseFloat(document.getElementById('tx-jumlah').value)
+        };
+        dbTransaksi.unshift(transaksi);                  
         localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
         perbaruiSemuaData();
-        resetFormTransaksi();
-        if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian(); // update pencarian jika disana
+        document.getElementById('tx-jumlah').value = "";
+        setTanggalHariIni();
     }
 
-    // Modal Detail Transaksi Functions
     function bukaModalDetailTx(id) {
         idTransaksiTerpilihModal = id;
         let t = dbTransaksi.find(item => item.id === id);
@@ -728,10 +772,7 @@
         if(idTransaksiTerpilihModal) {
             let currentId = idTransaksiTerpilihModal;
             tutupModalDetailTx();
-            bukaHalaman('page-utama'); // Pindah ke halaman utama form jika dari menu pencarian
-            
-            // Eksekusi pemindahan data langsung tanpa double pop-up konfirmasi
-            eksekusiDataKeFormEdit(currentId);
+            eksekusiDataKeFormEditPopUp(currentId);
         }
     }
 
@@ -743,48 +784,54 @@
         }
     }
 
-    // Mengurai data ke form input untuk diperbaiki
-    function eksekusiDataKeFormEdit(id) {
+    function eksekusiDataKeFormEditPopUp(id) {
         let t = dbTransaksi.find(item => item.id === id);                                                         
         if(!t) return;
-        document.getElementById('form-title').innerText = "Perbaiki Transaksi Kas (Edit)";
-        document.getElementById('tx-id-edit').value = t.id;
-        document.getElementById('tx-tanggal').value = t.tanggal;
-        document.getElementById('tx-jam').value = t.jam;
-        document.getElementById('tx-jenis').value = t.jenis;
-        sesuaikanKategori();                         
+        
+        document.getElementById('edit-tx-id-edit').value = t.id;
+        document.getElementById('edit-tx-tanggal').value = t.tanggal;
+        document.getElementById('edit-tx-jam').value = t.jam;
+        document.getElementById('edit-tx-jenis').value = t.jenis;
+        sesuaikanKategoriEdit();                         
         
         let listCek = (t.jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
         if(!listCek.includes(t.kategori)) {
             let opt = document.createElement('option');
             opt.value = t.kategori;
             opt.innerText = t.kategori;
-            document.getElementById('tx-kategori').insertBefore(opt, document.getElementById('tx-kategori').lastChild);
+            document.getElementById('edit-tx-kategori').appendChild(opt);
         }
-        document.getElementById('tx-kategori').value = t.kategori;
-                                                             
-        dompetAktif = t.dompet || "Dompet Utama";
-        localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
-        document.getElementById('tx-jumlah').value = t.jumlah;
-        document.getElementById('btn-simpan-transaksi').innerText = "Simpan Perubahan";                           
-        document.getElementById('btn-batal-edit').style.display = "block";                                        
-        perbaruiSemuaData();
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        document.getElementById('edit-tx-kategori').value = t.kategori;
+        document.getElementById('edit-tx-jumlah').value = t.jumlah;
+        
+        document.getElementById('modal-edit-transaksi').classList.add('active');
     }
 
-    function editTransaksi(id) {
-        customSwal().fire({
-            title: 'Edit Transaksi?',
-            text: "Apakah Anda yakin ingin memperbaiki (edit) transaksi ini?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Edit',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if(result.isConfirmed) {
-                eksekusiDataKeFormEdit(id);
+    function tutupModalEditTransaksi() {
+        document.getElementById('modal-edit-transaksi').classList.remove('active');
+    }
+
+    function prosesSimpanEditTransaksi(e) {
+        e.preventDefault();
+        let editId = document.getElementById('edit-tx-id-edit').value;
+        let kategori = document.getElementById('edit-tx-kategori').value;
+        
+        dbTransaksi = dbTransaksi.map(t => {
+            if(t.id === editId) {
+                t.tanggal = document.getElementById('edit-tx-tanggal').value;
+                t.jam = document.getElementById('edit-tx-jam').value;
+                t.jenis = document.getElementById('edit-tx-jenis').value;
+                t.kategori = kategori;
+                t.jumlah = parseFloat(document.getElementById('edit-tx-jumlah').value);
             }
+            return t;
         });
+        
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+        perbaruiSemuaData();
+        tutupModalEditTransaksi();
+        if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
+        customSwal().fire('Berhasil', 'Transaksi kas berhasil diperbarui!', 'success');
     }
     
     function toggleDaftarDompet() {
@@ -871,7 +918,6 @@
         let selectDari = document.getElementById('trf-dari');
         let selectKe = document.getElementById('trf-ke');
         
-        // Update list dompet di pencarian
         let selectCariDompet = document.getElementById('cari-dompet');
         if (selectCariDompet) {
             let dompetSebelum = selectCariDompet.value;
@@ -969,7 +1015,6 @@
         });
     }
 
-    // Fungsi Pencarian Transaksi
     function bukaHalamanPencarian() {
         bukaHalaman('page-pencarian');
         document.getElementById('cari-teks').value = "";
@@ -1308,50 +1353,31 @@
         let nama = document.getElementById('ht-nama').value;
         let nominal = parseFloat(document.getElementById('ht-nominal').value);
                                                              
-        if (modeEditHutangId) {
-            dbHutang = dbHutang.map(h => {
-                if(h.id === modeEditHutangId) {
-                    h.tanggal = tgl;                                     
-                    h.jenis = jenis;                                     
-                    h.nama = nama;
-                    h.nominal = nominal;
-                    if((h.terbayar || 0) >= nominal) {
-                        h.status = 'lunas';
-                        h.terbayar = nominal;
-                    } else {
-                        h.status = 'belum';
-                    }                             
-                }
-                return h;                                        
-            });
-            modeEditHutangId = null;
-            document.getElementById('btn-simpan-hutang').innerText = "Simpan Catatan";
-        } else {                                                 
-            let item = {
-                id: Date.now().toString(),
-                tanggal: tgl,                                        
-                nama: nama,
-                jenis: jenis,
-                nominal: nominal,
-                terbayar: 0,
-                status: 'belum'
-            };                                                   
-            dbHutang.push(item);
+        let item = {
+            id: Date.now().toString(),
+            tanggal: tgl,                                        
+            nama: nama,
+            jenis: jenis,
+            nominal: nominal,
+            terbayar: 0,
+            status: 'belum'
+        };                                                   
+        dbHutang.push(item);
 
-            let jenisKas = (jenis.toLowerCase().includes('hutang')) ? 'masuk' : 'keluar';
-            let ketKategori = (jenisKas === 'masuk') ? 'Hutang dari ' + nama : 'Piutang kepada ' + nama;  
-            let transaksiBayangan = {                                
-                id: 'hp-' + Date.now().toString(),
-                tanggal: tgl,                                        
-                jam: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', hour12: false}).replace('.', ':'),
-                jenis: jenisKas,                                     
-                kategori: ketKategori,
-                dompet: dompetAktif,
-                jumlah: nominal
-            };                                                   
-            dbTransaksi.unshift(transaksiBayangan);
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                               
-        }
+        let jenisKas = (jenis.toLowerCase().includes('hutang')) ? 'masuk' : 'keluar';
+        let ketKategori = (jenisKas === 'masuk') ? 'Hutang dari ' + nama : 'Piutang kepada ' + nama;  
+        let transaksiBayangan = {                                
+            id: 'hp-' + Date.now().toString(),
+            tanggal: tgl,                                        
+            jam: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', hour12: false}).replace('.', ':'),
+            jenis: jenisKas,                                     
+            kategori: ketKategori,
+            dompet: dompetAktif,
+            jumlah: nominal
+        };                                                   
+        dbTransaksi.unshift(transaksiBayangan);
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                               
+        
         localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
         document.getElementById('ht-nama').value = "";                                                            
         document.getElementById('ht-nominal').value = "";
@@ -1463,6 +1489,9 @@
         if(idHutangTerpilih) {
             let h = dbHutang.find(item => item.id === idHutangTerpilih);                                              
             if(h) {                                                  
+                // Menutup modal aksi lama secara instan sebelum memicu pop-up konfirmasi
+                document.getElementById('modal-aksi-hutang').classList.remove('active');
+                
                 if (h.status === 'belum') {
                     let terbayarSaatIni = h.terbayar || 0;
                     let sisa = h.nominal - terbayarSaatIni;
@@ -1496,7 +1525,9 @@
                             localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi)); 
                             localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
                             perbaruiSemuaData();
-                            tutupModalAksi();
+                            idHutangTerpilih = null;
+                        } else {
+                            idHutangTerpilih = null;
                         }
                     });
                 } else {
@@ -1511,7 +1542,9 @@
                             h.terbayar = 0;
                             localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
                             perbaruiSemuaData();
-                            tutupModalAksi();
+                            idHutangTerpilih = null;
+                        } else {
+                            idHutangTerpilih = null;
                         }
                     });                                               
                 }
@@ -1557,7 +1590,6 @@
         
         let inputNominal = document.getElementById('input-nominal-cicilan').value;
         let nominalCicilan = parseFloat(inputNominal);
-        
         let tanggalCicilan = document.getElementById('input-tanggal-cicilan').value;
 
         if (!inputNominal || isNaN(nominalCicilan) || nominalCicilan <= 0) {
@@ -1604,7 +1636,6 @@
         localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
         
         perbaruiSemuaData();
-        
         tutupModalCicilan();
         customSwal().fire('Berhasil', `Sukses mencatat cicilan sebesar ${formatRupiah(nominalCicilan)} pada tanggal ${formatTanggalIndo(tanggalCicilan)}.`, 'success');
     }
@@ -1613,18 +1644,53 @@
         if(idHutangTerpilih) {                                   
             let item = dbHutang.find(h => h.id === idHutangTerpilih);
             if(item) {                                               
-                document.getElementById('ht-tanggal').value = item.tanggal;
-                document.getElementById('ht-jenis').value = item.jenis;
-                document.getElementById('ht-nama').value = item.nama;
-                document.getElementById('ht-nominal').value = item.nominal;                                               
-                modeEditHutangId = item.id;                          
-                document.getElementById('btn-simpan-hutang').innerText = "Perbarui Data (Update)";                        
-                tutupModalAksi();                                    
-                window.scrollTo(0, 0);
+                document.getElementById('edit-ht-id').value = item.id;
+                document.getElementById('edit-ht-tanggal').value = item.tanggal;
+                document.getElementById('edit-ht-jenis').value = item.jenis;
+                document.getElementById('edit-ht-nama').value = item.nama;
+                document.getElementById('edit-ht-nominal').value = item.nominal;                                               
+                
+                document.getElementById('modal-aksi-hutang').classList.remove('active');
+                document.getElementById('modal-edit-hutang').classList.add('active');
             }                                                
         }
     }                                                
     
+    function tutupModalEditHutang() {
+        document.getElementById('modal-edit-hutang').classList.remove('active');
+        idHutangTerpilih = null;
+    }
+
+    function prosesSimpanEditHutang(e) {
+        e.preventDefault();
+        let currentId = document.getElementById('edit-ht-id').value;
+        let tgl = document.getElementById('edit-ht-tanggal').value;
+        let jenis = document.getElementById('edit-ht-jenis').value;
+        let nama = document.getElementById('edit-ht-nama').value;
+        let nominal = parseFloat(document.getElementById('edit-ht-nominal').value);
+
+        dbHutang = dbHutang.map(h => {
+            if(h.id === currentId) {
+                h.tanggal = tgl;                                     
+                h.jenis = jenis;                                     
+                h.nama = nama;
+                h.nominal = nominal;
+                if((h.terbayar || 0) >= nominal) {
+                    h.status = 'lunas';
+                    h.terbayar = nominal;
+                } else {
+                    h.status = 'belum';
+                }                             
+            }
+            return h;                                        
+        });
+
+        localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
+        perbaruiSemuaData();
+        tutupModalEditHutang();
+        customSwal().fire('Berhasil', 'Catatan Hutang/Piutang telah diperbarui!', 'success');
+    }
+
     function hapusHutangDariModal() {                        
         if(idHutangTerpilih) {                                   
             customSwal().fire({
@@ -1644,7 +1710,6 @@
             });
         }
     }                                                
-    
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
@@ -1911,7 +1976,6 @@ if (error) alert('Gagal Daftar: ' + error.message);
 else alert('Sukses mendaftar! Silakan klik tombol Masuk.');
 }
 
-// FUNGSI LOGOUT YANG SUDAH DIPERBAIKI MENGGUNAKAN SWEETALERT2 KUSTOM
 async function handleLogout() {
     customSwal().fire({
         title: 'Keluar Akun?',
