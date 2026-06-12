@@ -45,7 +45,7 @@
         .bg-masuk { background: linear-gradient(135deg, #2ecc71, #27ae60); }
         .bg-keluar { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; position: relative; }
         .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 6px; color: var(--text-color); opacity: 0.8; }
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
@@ -55,6 +55,33 @@
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-secondary { background-color: var(--border-color); color: var(--text-color); margin-bottom: 10px; }
         .btn-warning { background-color: var(--warning); color: white; }
+
+        /* Gaya Pemicu Kalender Kustom Modis */
+        .custom-calendar-trigger { display: flex; align-items: center; justify-content: space-between; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
+        .custom-calendar-trigger span { font-weight: 500; }
+        
+        /* Elemen Komponen Kalender di Dalam Modal */
+        .calendar-wrapper { display: flex; flex-direction: column; gap: 12px; }
+        .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
+        .calendar-header-nav span { font-weight: bold; font-size: 15px; }
+        .calendar-btn-nav { background: none; border: none; font-size: 15px; font-weight: bold; color: var(--primary); cursor: pointer; padding: 4px 10px; }
+        .calendar-grid-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 5px; }
+        .calendar-day-label { font-size: 11px; font-weight: bold; opacity: 0.6; padding: 4px 0; }
+        .calendar-cells { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .calendar-cell-date { padding: 8px 0; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; color: var(--text-color); }
+        .calendar-cell-date:hover { background: var(--border-color); }
+        .calendar-cell-date.empty { pointer-events: none; opacity: 0; }
+        .calendar-cell-date.selected-day { background: var(--primary) !important; color: white !important; }
+
+        /* Komponen Dropdown Kategori Kustom Dinamis */
+        .custom-dropdown-box { position: relative; width: 100%; }
+        .custom-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
+        .custom-dropdown-list { display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 2500; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .custom-dropdown-list.open { display: block; }
+        .custom-dropdown-item { padding: 11px; font-size: 14px; color: var(--text-color); cursor: pointer; border-bottom: 1px solid var(--border-color); }
+        .custom-dropdown-item:last-child { border-bottom: none; }
+        .custom-dropdown-item:hover { background-color: var(--bg-color); }
+        .custom-dropdown-item.special-add { font-weight: bold; color: var(--primary); background-color: rgba(52, 152, 219, 0.05); }
 
         .tab-scroll-container { position: relative; margin: 15px 0; display: flex; align-items: center; background: var(--bg-color); padding: 5px; border-radius: 10px; }
         .nav-arrow { background: transparent; border: none; font-size: 14px; padding: 5px 8px; cursor: pointer; color: var(--text-color); font-weight: bold; }
@@ -82,7 +109,7 @@
         .action-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }              
         .action-modal.active { display: flex; }
         .action-content { background: var(--card-bg); color: var(--text-color); width: 100%; max-width: 360px; padding: 25px 20px; border-radius: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; color: white; }               
+        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; color: white; display: block; text-align: center; text-decoration: none; }               
         .btn-green { background: #2ecc71; }                  
         .btn-blue { background: #3498db; }
         .btn-red { background: #e74c3c; }                    
@@ -122,7 +149,11 @@
             <div class="form-row">
                 <div class="form-group">                                 
                     <label>TANGGAL</label>
-                    <input type="date" id="tx-tanggal" required>                                                          
+                    <input type="hidden" id="tx-tanggal" required>
+                    <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('tx-tanggal')">
+                        <span id="label-kalender-tx-tanggal">-/-/-</span>
+                        <span>📅</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>WAKTU (JAM)</label>
@@ -138,7 +169,13 @@
             </div>
             <div class="form-group">
                 <label>KATEGORI</label>                              
-                <select id="tx-kategori" onchange="handleKategoriChange()"></select>                                         
+                <div class="custom-dropdown-box" id="dropdown-box-utama">
+                    <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-utama')">
+                        <span id="dropdown-val-utama">Pilih Kategori...</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="custom-dropdown-list" id="dropdown-list-utama"></div>
+                </div>
             </div>                                   
             <div class="form-group" style="display:none;">
                 <label>SUMBER DOMPET / E-WALLET</label>                                                                   
@@ -251,7 +288,11 @@
         <form id="form-hutang" onsubmit="simpanHutang(event)" style="margin-bottom:20px;">
             <div class="form-group">
                 <label>TANGGAL TRANSAKSI</label>                     
-                <input type="date" id="ht-tanggal" required>                                                          
+                <input type="hidden" id="ht-tanggal" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('ht-tanggal')">
+                    <span id="label-kalender-ht-tanggal">-/-/-</span>
+                    <span>📅</span>
+                </div>                                                         
             </div>
             <div class="form-group">                                 
                 <label>JENIS CATATAN</label>
@@ -282,7 +323,11 @@
         <form id="form-transfer" onsubmit="eksekusiTransfer(event)" style="margin-bottom:20px;">                      
             <div class="form-group">
                 <label>TANGGAL KIRIM SALDO</label>
-                <input type="date" id="trf-tanggal" required>
+                <input type="hidden" id="trf-tanggal" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('trf-tanggal')">
+                    <span id="label-kalender-trf-tanggal">-/-/-</span>
+                    <span>📅</span>
+                </div>
             </div>                                               
             <div class="form-group">                                 
                 <label>DARI DOMPET (SUMBER SALDO)</label>                                                                 
@@ -308,11 +353,19 @@
         <div style="margin-top: 10px;">                          
             <div class="form-group">
                 <label>TANGGAL MULAI</label>
-                <input type="date" id="inv-tgl-mulai" required>
+                <input type="hidden" id="inv-tgl-mulai" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('inv-tgl-mulai')">
+                    <span id="label-kalender-inv-tgl-mulai">-/-/-</span>
+                    <span>📅</span>
+                </div>
             </div>
             <div class="form-group">
                 <label>TANGGAL AKHIR</label>
-                <input type="date" id="inv-tgl-akhir" required>                                                       
+                <input type="hidden" id="inv-tgl-akhir" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('inv-tgl-akhir')">
+                    <span id="label-kalender-inv-tgl-akhir">-/-/-</span>
+                    <span>📅</span>
+                </div>                                                       
             </div>
             <div class="form-group">                                 
                 <label>PILIH FILTER DOMPET</label>
@@ -333,7 +386,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>TANGGAL</label>
-                    <input type="date" id="edit-tx-tanggal" required>
+                    <input type="hidden" id="edit-tx-tanggal" required>
+                    <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-tx-tanggal')">
+                        <span id="label-kalender-edit-tx-tanggal">-/-/-</span>
+                        <span>📅</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>WAKTU (JAM)</label>
@@ -349,7 +406,13 @@
             </div>
             <div class="form-group">
                 <label>KATEGORI</label>
-                <select id="edit-tx-kategori"></select>
+                <div class="custom-dropdown-box" id="dropdown-box-edit">
+                    <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-edit')">
+                        <span id="dropdown-val-edit">Pilih Kategori...</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="custom-dropdown-list" id="dropdown-list-edit"></div>
+                </div>
             </div>
             <div class="form-group">
                 <label>JUMLAH UANG</label>
@@ -368,7 +431,11 @@
             <input type="hidden" id="edit-ht-id" value="">
             <div class="form-group">
                 <label>TANGGAL TRANSAKSI</label>
-                <input type="date" id="edit-ht-tanggal" required>
+                <input type="hidden" id="edit-ht-tanggal" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-ht-tanggal')">
+                    <span id="label-kalender-edit-ht-tanggal">-/-/-</span>
+                    <span>📅</span>
+                </div>
             </div>
             <div class="form-group">
                 <label>JENIS CATATAN</label>
@@ -426,7 +493,11 @@
         
         <div class="form-group">
             <label>TANGGAL CICILAN</label>
-            <input type="date" id="input-tanggal-cicilan" required>
+            <input type="hidden" id="input-tanggal-cicilan" required>
+            <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('input-tanggal-cicilan')">
+                <span id="label-kalender-input-tanggal-cicilan">-/-/-</span>
+                <span>📅</span>
+            </div>
         </div>
 
         <div class="form-group">
@@ -476,7 +547,31 @@
         </div>                                       
         <button class="btn-action btn-gray" onclick="tutupModalDompet()">Tutup Jendela</button>               
     </div>
-</div>                                               
+</div>
+
+<div id="modal-kalender-kustom" class="action-modal" style="z-index: 4000;">
+    <div class="action-content" style="max-width: 340px; padding: 20px;">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:5px;">📅 Pilih Tanggal</h3>
+        <div class="calendar-wrapper">
+            <div class="calendar-header-nav">
+                <button class="calendar-btn-nav" onclick="navigasiBulanKalender(-1)">❮</button>
+                <span id="calendar-judul-bulan-tahun">Januari 2026</span>
+                <button class="calendar-btn-nav" onclick="navigasiBulanKalender(1)">❯</button>
+            </div>
+            <div class="calendar-grid-days">
+                <div class="calendar-day-label">Min</div>
+                <div class="calendar-day-label">Sen</div>
+                <div class="calendar-day-label">Sel</div>
+                <div class="calendar-day-label">Rab</div>
+                <div class="calendar-day-label">Kam</div>
+                <div class="calendar-day-label">Jum</div>
+                <div class="calendar-day-label">Sab</div>
+            </div>
+            <div class="calendar-cells" id="calendar-container-sel-tanggal"></div>
+        </div>
+        <button class="btn-action btn-gray" style="margin-top: 10px; padding: 10px;" onclick="tutupModalKalenderKustom()">Batal</button>
+    </div>
+</div>
 
 <script>                                                 
     let dbTransaksi = JSON.parse(localStorage.getItem('aul_kas_transaksi')) || [];
@@ -496,6 +591,16 @@
     let modeEditHutangId = null;
     let tabKategoriAktif = 'keluar';
     let idTransaksiTerpilihModal = null; 
+
+    // State Pendukung Kalender Kustom
+    let targetInputKalenderId = null;
+    let kalenderBulanAktif = new Date().getMonth();
+    let kalenderTahunAktif = new Date().getFullYear();
+    const namaBulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+    // State Pendukung Dropdown Kategori Kustom
+    let kategoriTerpilihUtama = "";
+    let kategoriTerpilihEdit = "";
     
     function customSwal() {
         let isDark = document.body.classList.contains('dark-mode');
@@ -519,89 +624,228 @@
         buatBilahTab('tabs-utama', 'utama');
         buatBilahTab('tabs-laporan', 'laporan');             
         perbaruiSemuaData();
+
+        // Event listener penutup otomatis dropdown saat klik di luar area komponen
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.custom-dropdown-box')) {
+                document.querySelectorAll('.custom-dropdown-list').forEach(list => list.classList.remove('open'));
+            }
+        });
     };                                               
     
+    // Fungsi sinkronisasi nilai input ke elemen pemicu tanggal kustom visual
+    function sinkronkanTampilanPemicuKalender(inputId) {
+        let nilaiInput = document.getElementById(inputId).value;
+        let labelEl = document.getElementById('label-kalender-' + inputId);
+        if(labelEl && nilaiInput) {
+            labelEl.innerText = formatTanggalIndo(nilaiInput);
+        }
+    }
+
     function setTanggalHariIni() {                           
         let tgl = new Date();
         let yyyy = tgl.getFullYear();                        
         let mm = String(tgl.getMonth() + 1).padStart(2, '0');                                                     
         let dd = String(tgl.getDate()).padStart(2, '0');                                                          
+        
         document.getElementById('tx-tanggal').value = `${yyyy}-${mm}-${dd}`;                                      
         document.getElementById('ht-tanggal').value = `${yyyy}-${mm}-${dd}`;
         document.getElementById('trf-tanggal').value = `${yyyy}-${mm}-${dd}`;
+
+        sinkronkanTampilanPemicuKalender('tx-tanggal');
+        sinkronkanTampilanPemicuKalender('ht-tanggal');
+        sinkronkanTampilanPemicuKalender('trf-tanggal');
 
         let jam = String(tgl.getHours()).padStart(2, '0');                                                        
         let menit = String(tgl.getMinutes()).padStart(2, '0');                                                    
         document.getElementById('tx-jam').value = `${jam}:${menit}`;                                          
     }
 
+    // MANAJEMEN KALENDER KUSTOM POP-UP
+    function bukaModalKalenderKustom(inputId) {
+        targetInputKalenderId = inputId;
+        let nilaiInputSkrg = document.getElementById(inputId).value;
+        
+        if (nilaiInputSkrg) {
+            let partSuku = nilaiInputSkrg.split('-');
+            kalenderTahunAktif = parseInt(partSuku[0]);
+            kalenderBulanAktif = parseInt(partSuku[1]) - 1;
+        } else {
+            let tglSkrg = new Date();
+            kalenderBulanAktif = tglSkrg.getMonth();
+            kalenderTahunAktif = tglSkrg.getFullYear();
+        }
+        renderKomponenKalender();
+        document.getElementById('modal-kalender-kustom').classList.add('active');
+    }
+
+    function tutupModalKalenderKustom() {
+        document.getElementById('modal-kalender-kustom').classList.remove('active');
+        targetInputKalenderId = null;
+    }
+
+    function navigasiBulanKalender(arah) {
+        kalenderBulanAktif += arah;
+        if (kalenderBulanAktif < 0) {
+            kalenderBulanAktif = 11;
+            kalenderTahunAktif -= 1;
+        } else if (kalenderBulanAktif > 11) {
+            kalenderBulanAktif = 0;
+            kalenderTahunAktif += 1;
+        }
+        renderKomponenKalender();
+    }
+
+    function renderKomponenKalender() {
+        document.getElementById('calendar-judul-bulan-tahun').innerText = namaBulanIndo[kalenderBulanAktif] + " " + kalenderTahunAktif;
+        let kontainerSel = document.getElementById('calendar-container-sel-tanggal');
+        kontainerSel.innerHTML = "";
+
+        let hariPertamaBulan = new Date(kalenderTahunAktif, kalenderBulanAktif, 1).getDay();
+        let jumlahHariBulanIni = new Date(kalenderTahunAktif, kalenderBulanAktif + 1, 0).getDate();
+        let nilaiInputSkrg = document.getElementById(targetInputKalenderId).value;
+
+        // Cetak sel kosong penyesuaian hari pertama awal minggu
+        for (let i = 0; i < hariPertamaBulan; i++) {
+            let selKosong = document.createElement('div');
+            selKosong.className = "calendar-cell-date empty";
+            kontainerSel.appendChild(selKosong);
+        }
+
+        // Cetak angka tanggal berjalan
+        for (let tglNominal = 1; tglNominal <= jumlahHariBulanIni; tglNominal++) {
+            let selTgl = document.createElement('div');
+            selTgl.className = "calendar-cell-date";
+            selTgl.innerText = tglNominal;
+
+            let stringFormatISO = `${kalenderTahunAktif}-${String(kalenderBulanAktif + 1).padStart(2, '0')}-${String(tglNominal).padStart(2, '0')}`;
+            if(stringFormatISO === nilaiInputSkrg) {
+                selTgl.classList.add('selected-day');
+            }
+
+            selTgl.onclick = function() {
+                document.getElementById(targetInputKalenderId).value = stringFormatISO;
+                sinkronkanTampilanPemicuKalender(targetInputKalenderId);
+                tutupModalKalenderKustom();
+            };
+
+            kontainerSel.appendChild(selTgl);
+        }
+    }
+
+    // MANAJEMEN KOMPONEN DROPDOWN KATEGORI KUSTOM
+    function toggleDropdownKustom(boxId) {
+        let listEl = document.getElementById(boxId).querySelector('.custom-dropdown-list');
+        let statusBuka = listEl.classList.contains('open');
+        document.querySelectorAll('.custom-dropdown-list').forEach(l => l.classList.remove('open'));
+        if(!statusBuka) listEl.classList.add('open');
+    }
+
     function sesuaikanKategori() {
         let jenis = document.getElementById('tx-jenis').value;
-        let katSelect = document.getElementById('tx-kategori');
-        katSelect.innerHTML = "";                            
-        let list = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
+        let listKontainer = document.getElementById('dropdown-list-utama');
+        listKontainer.innerHTML = "";                            
+        let listData = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
         
-        list.forEach(k => {
-            let opt = document.createElement('option');                                                               
-            opt.value = k; opt.innerText = k;
-            katSelect.appendChild(opt);
+        if(listData.length > 0) {
+            kategoriTerpilihUtama = listData[0];
+            document.getElementById('dropdown-val-utama').innerText = listData[0];
+        } else {
+            kategoriTerpilihUtama = "";
+            document.getElementById('dropdown-val-utama').innerText = "Pilih Kategori...";
+        }
+
+        listData.forEach(k => {
+            let item = document.createElement('div');
+            item.className = "custom-dropdown-item";
+            item.innerText = k;
+            item.onclick = function() {
+                kategoriTerpilihUtama = k;
+                document.getElementById('dropdown-val-utama').innerText = k;
+                listKontainer.classList.remove('open');
+            };
+            listKontainer.appendChild(item);
         });
 
-        let optBaru = document.createElement('option');
-        optBaru.value = "buat_baru";
-        optBaru.innerHTML = "Buat kategori baru...";
-        optBaru.style.fontWeight = "bold";
-        optBaru.style.color = "var(--primary)";
-        katSelect.appendChild(optBaru);
+        let tombolBuatBaru = document.createElement('div');
+        tombolBuatBaru.className = "custom-dropdown-item special-add";
+        tombolBuatBaru.innerText = "+ Buat kategori baru...";
+        tombolBuatBaru.onclick = function() {
+            listKontainer.classList.remove('open');
+            handleKategoriChange('utama');
+        };
+        listKontainer.appendChild(tombolBuatBaru);
     }
 
     function sesuaikanKategoriEdit() {
         let jenis = document.getElementById('edit-tx-jenis').value;
-        let katSelect = document.getElementById('edit-tx-kategori');
-        katSelect.innerHTML = "";
-        let list = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
-        list.forEach(k => {
-            let opt = document.createElement('option');
-            opt.value = k; opt.innerText = k;
-            katSelect.appendChild(opt);
+        let listKontainer = document.getElementById('dropdown-list-edit');
+        listKontainer.innerHTML = "";
+        let listData = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
+        
+        listData.forEach(k => {
+            let item = document.createElement('div');
+            item.className = "custom-dropdown-item";
+            item.innerText = k;
+            item.onclick = function() {
+                kategoriTerpilihEdit = k;
+                document.getElementById('dropdown-val-edit').innerText = k;
+                listKontainer.classList.remove('open');
+            };
+            listKontainer.appendChild(item);
         });
+
+        let tombolBuatBaru = document.createElement('div');
+        tombolBuatBaru.className = "custom-dropdown-item special-add";
+        tombolBuatBaru.innerText = "+ Buat kategori baru...";
+        tombolBuatBaru.onclick = function() {
+            listKontainer.classList.remove('open');
+            handleKategoriChange('edit');
+        };
+        listKontainer.appendChild(tombolBuatBaru);
     }
     
-    async function handleKategoriChange() {
-        let val = document.getElementById('tx-kategori').value;
-        if (val === 'buat_baru') {
-            const { value: namaBaru } = await customSwal().fire({
-                title: 'Kategori Baru',
-                input: 'text',
-                inputLabel: 'Masukkan nama kategori baru:',
-                showCancelButton: true,
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Nama kategori tidak boleh kosong!'
-                    }
+    async function handleKategoriChange(targetKonteks) {
+        const { value: namaBaru } = await customSwal().fire({
+            title: 'Kategori Baru',
+            input: 'text',
+            inputLabel: 'Masukkan nama kategori baru:',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Nama kategori tidak boleh kosong!'
                 }
-            });
-
-            if (namaBaru && namaBaru.trim() !== "") {
-                let jenis = document.getElementById('tx-jenis').value;
-                let bersih = namaBaru.trim();
-
-                if (jenis === 'masuk') {
-                    if(!dbKategoriMasuk.includes(bersih)) {
-                        dbKategoriMasuk.push(bersih);
-                        localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
-                    }
-                } else {
-                    if(!dbKategoriKeluar.includes(bersih)) {
-                        dbKategoriKeluar.push(bersih);
-                        localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
-                    }
-                }
-                sesuaikanKategori(); 
-                document.getElementById('tx-kategori').value = bersih; 
-            } else {
-                sesuaikanKategori(); 
             }
+        });
+
+        if (namaBaru && namaBaru.trim() !== "") {
+            let jenis = (targetKonteks === 'utama') ? document.getElementById('tx-jenis').value : document.getElementById('edit-tx-jenis').value;
+            let bersih = namaBaru.trim();
+
+            if (jenis === 'masuk') {
+                if(!dbKategoriMasuk.includes(bersih)) {
+                    dbKategoriMasuk.push(bersih);
+                    localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
+                }
+            } else {
+                if(!dbKategoriKeluar.includes(bersih)) {
+                    dbKategoriKeluar.push(bersih);
+                    localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
+                }
+            }
+
+            if(targetKonteks === 'utama') {
+                sesuaikanKategori();
+                kategoriTerpilihUtama = bersih;
+                document.getElementById('dropdown-val-utama').innerText = bersih;
+            } else {
+                sesuaikanKategoriEdit();
+                kategoriTerpilihEdit = bersih;
+                document.getElementById('dropdown-val-edit').innerText = bersih;
+            }
+        } else {
+            if(targetKonteks === 'utama') sesuaikanKategori();
+            else sesuaikanKategoriEdit();
         }
     }                                                
     
@@ -720,9 +964,8 @@
     
     function simpanTransaksi(e) {
         e.preventDefault();                          
-        let kategoriDipilih = document.getElementById('tx-kategori').value;
-        if (kategoriDipilih === 'buat_baru') {                   
-            customSwal().fire('Perhatian', 'Silakan pilih kategori yang valid!', 'warning'); 
+        if (!kategoriTerpilihUtama) {                   
+            customSwal().fire('Perhatian', 'Silakan tentukan kategori yang valid!', 'warning'); 
             return;
         }
                                                              
@@ -732,7 +975,7 @@
             tanggal: document.getElementById('tx-tanggal').value,
             jam: document.getElementById('tx-jam').value,
             jenis: document.getElementById('tx-jenis').value,
-            kategori: kategoriDipilih,
+            kategori: kategoriTerpilihUtama,
             dompet: dompetDipilih,
             jumlah: parseFloat(document.getElementById('tx-jumlah').value)
         };
@@ -790,20 +1033,16 @@
         
         document.getElementById('edit-tx-id-edit').value = t.id;
         document.getElementById('edit-tx-tanggal').value = t.tanggal;
+        sinkronkanTampilanPemicuKalender('edit-tx-tanggal');
+        
         document.getElementById('edit-tx-jam').value = t.jam;
         document.getElementById('edit-tx-jenis').value = t.jenis;
+        
         sesuaikanKategoriEdit();                         
+        kategoriTerpilihEdit = t.kategori;
+        document.getElementById('dropdown-val-edit').innerText = t.kategori;
         
-        let listCek = (t.jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
-        if(!listCek.includes(t.kategori)) {
-            let opt = document.createElement('option');
-            opt.value = t.kategori;
-            opt.innerText = t.kategori;
-            document.getElementById('edit-tx-kategori').appendChild(opt);
-        }
-        document.getElementById('edit-tx-kategori').value = t.kategori;
         document.getElementById('edit-tx-jumlah').value = t.jumlah;
-        
         document.getElementById('modal-edit-transaksi').classList.add('active');
     }
 
@@ -814,14 +1053,18 @@
     function prosesSimpanEditTransaksi(e) {
         e.preventDefault();
         let editId = document.getElementById('edit-tx-id-edit').value;
-        let kategori = document.getElementById('edit-tx-kategori').value;
         
+        if(!kategoriTerpilihEdit) {
+            customSwal().fire('Perhatian', 'Kategori tidak boleh kosong!', 'warning');
+            return;
+        }
+
         dbTransaksi = dbTransaksi.map(t => {
             if(t.id === editId) {
                 t.tanggal = document.getElementById('edit-tx-tanggal').value;
                 t.jam = document.getElementById('edit-tx-jam').value;
                 t.jenis = document.getElementById('edit-tx-jenis').value;
-                t.kategori = kategori;
+                t.kategori = kategoriTerpilihEdit;
                 t.jumlah = parseFloat(document.getElementById('edit-tx-jumlah').value);
             }
             return t;
@@ -1348,7 +1591,7 @@
     function simpanHutang(e) {
         e.preventDefault();
                                                              
-        let tgl = document.getElementById('ht-tanggal').value;
+        let tgl = document.getElementById('form-hutang').querySelector('#ht-tanggal').value;
         let jenis = document.getElementById('ht-jenis').value;
         let nama = document.getElementById('ht-nama').value;
         let nominal = parseFloat(document.getElementById('ht-nominal').value);
@@ -1562,6 +1805,7 @@
             return;
         }
 
+        // Menutup modal aksi lama secara instan sebelum membuka modal input cicilan kustom
         document.getElementById('modal-aksi-hutang').classList.remove('active');
 
         document.getElementById('lbl-nama-cicilan').innerText = `Orang: ${h.nama}`;
@@ -1572,6 +1816,7 @@
         let mm = String(tgl.getMonth() + 1).padStart(2, '0');
         let dd = String(tgl.getDate()).padStart(2, '0');
         document.getElementById('input-tanggal-cicilan').value = `${yyyy}-${mm}-${dd}`;
+        sinkronkanTampilanPemicuKalender('input-tanggal-cicilan');
 
         document.getElementById('modal-bayar-cicilan').classList.add('active');
         
@@ -1646,10 +1891,13 @@
             if(item) {                                               
                 document.getElementById('edit-ht-id').value = item.id;
                 document.getElementById('edit-ht-tanggal').value = item.tanggal;
+                sinkronkanTampilanPemicuKalender('edit-ht-tanggal');
+
                 document.getElementById('edit-ht-jenis').value = item.jenis;
                 document.getElementById('edit-ht-nama').value = item.nama;
                 document.getElementById('edit-ht-nominal').value = item.nominal;                                               
                 
+                // Menutup modal aksi lama secara instan sebelum membuka jendela form edit hutang
                 document.getElementById('modal-aksi-hutang').classList.remove('active');
                 document.getElementById('modal-edit-hutang').classList.add('active');
             }                                                
@@ -1693,6 +1941,9 @@
 
     function hapusHutangDariModal() {                        
         if(idHutangTerpilih) {                                   
+            // Menutup modal aksi lama secara instan sebelum melempar dialog konfirmasi reset database
+            document.getElementById('modal-aksi-hutang').classList.remove('active');
+
             customSwal().fire({
                 title: 'Hapus Catatan?',
                 text: "Yakin ingin menghapus catatan ini? (Info: riwayat kas bayangan tidak ikut terhapus)",
@@ -1705,7 +1956,9 @@
                     dbHutang = dbHutang.filter(h => h.id !== idHutangTerpilih);
                     localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));                                         
                     perbaruiSemuaData();
-                    tutupModalAksi();
+                    idHutangTerpilih = null;
+                } else {
+                    idHutangTerpilih = null;
                 }
             });
         }
@@ -1773,6 +2026,8 @@
 
         document.getElementById('inv-tgl-mulai').value = `${yyyy}-${mm}-01`;
         document.getElementById('inv-tgl-akhir').value = `${yyyy}-${mm}-${dd}`;
+        sinkronkanTampilanPemicuKalender('inv-tgl-mulai');
+        sinkronkanTampilanPemicuKalender('inv-tgl-akhir');
 
         let selectDompet = document.getElementById('inv-dompet');
         selectDompet.innerHTML = '<option value="semua">Semua Dompet (Gabungan)</option>';
