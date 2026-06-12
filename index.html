@@ -56,23 +56,18 @@
         .btn-secondary { background-color: var(--border-color); color: var(--text-color); margin-bottom: 10px; }
         .btn-warning { background-color: var(--warning); color: white; }
 
-        /* Gaya Pemicu Kalender & Jam Kustom Modis */
         .custom-calendar-trigger { display: flex; align-items: center; justify-content: space-between; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .custom-calendar-trigger span { font-weight: 500; }
         
-        /* Segmented UI Kustom Jenis Transaksi */
-        .segmented-control { display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 3px; gap: 4px; }
-        .segmented-item { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.2s; color: var(--text-color); }
+        .segmented-control { display: flex; gap: 6px; background-color: var(--bg-color); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .segmented-item { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; color: var(--text-color); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .segmented-item.active.masuk { background-color: #2ecc71; color: white; }
         .segmented-item.active.keluar { background-color: #e74c3c; color: white; }
 
-        /* Scrollable Time Selectors Inside SweetAlert */
-        .time-picker-wrapper { display: flex; justify-content: center; align-items: center; padding: 15px 0; }
-        .time-picker-selectors { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.03); padding: 12px 20px; border-radius: 12px; }
-        body.dark-mode .time-picker-selectors { background: rgba(255,255,255,0.05); }
-        .time-select-scroll { width: 70px !important; text-align: center; padding: 8px !important; font-size: 20px !important; font-weight: bold !important; border-radius: 8px !important; border: 1px solid var(--border-color) !important; background: var(--card-bg) !important; color: var(--text-color) !important; }
+        .time-picker-wrapper { display: flex; flex-direction: column; gap: 15px; align-items: center; padding: 10px 0; }
+        .time-picker-selectors { display: flex; align-items: center; gap: 10px; }
+        .time-select-scroll { width: 70px; padding: 8px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); }
 
-        /* Elemen Komponen Kalender di Dalam Modal */
         .calendar-wrapper { display: flex; flex-direction: column; gap: 12px; }
         .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
         .calendar-header-nav span { font-weight: bold; font-size: 15px; }
@@ -85,7 +80,6 @@
         .calendar-cell-date.empty { pointer-events: none; opacity: 0; }
         .calendar-cell-date.selected-day { background: var(--primary) !important; color: white !important; }
 
-        /* Komponen Dropdown Kategori Kustom Dinamis */
         .custom-dropdown-box { position: relative; width: 100%; }
         .custom-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .custom-dropdown-list { display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 2500; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -126,7 +120,7 @@
         .btn-blue { background: #3498db; }
         .btn-red { background: #e74c3c; }                    
         .btn-gray { background: #bdc3c7; color: #2c3e50; }                                                                                                  
-                   
+
         .chart-container { display: flex; justify-content: space-around; align-items: flex-end; height: 120px; padding: 15px 10px; background: var(--bg-color); border-radius: 10px; margin: 15px 0; border: 1px solid var(--border-color); }
         .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }                           
         .chart-bar { width: 35px; border-radius: 6px 6px 0 0; min-height: 5px; transition: height 0.5s ease; }
@@ -144,12 +138,12 @@
             <button class="btn-menu" onclick="bukaHalaman('page-menu')">☰ Menu</button>                           
         </div>
         <div class="main-dashboard">
-            <div class="dash-card bg-dompet card-large" onclick="bukaModalDompet()">                                       
+            <div class="dash-card bg-dompet card-large" onclick="bukaModalDompet()">                                     
                 <span class="lbl-card" id="lbl-saldo-utama">Saldo Dompet Utama ↗ (Ketuk Ganti Dompet)</span>
                 <span class="val-card" id="total-saldo">Rp 0</span>                                                   
             </div>
             <div class="dash-card bg-masuk" onclick="bukaHalamanLaporan('masuk')">                                        
-                <span class="lbl-card">Pemasukan Terhitung ↗</span>                                                       
+                <span class="lbl-card">Pemasukan Terhitung ↗</span>                                                         
                 <span class="val-card" id="total-pemasukan">Rp 0</span>                                             
             </div>                                               
             <div class="dash-card bg-keluar" onclick="bukaHalamanLaporan('keluar')">                        
@@ -157,7 +151,7 @@
                 <span class="val-card" id="total-pengeluaran">Rp 0</span>
             </div>                                           
         </div>
-        <form id="form-transaksi" onsubmit="simpanTransaksi(event)">                                           
+        <form id="form-transaksi" onsubmit="simpanTransaksi(event)">                                      
             <h3 style="font-size:15px; margin-bottom:12px;">Input Transaksi Kas</h3>                  
             <div class="form-row">
                 <div class="form-group">                                 
@@ -172,8 +166,8 @@
                     <label>WAKTU (JAM)</label>
                     <input type="hidden" id="tx-jam" required>
                     <div class="custom-calendar-trigger" onclick="bukaModalJamKustom('tx-jam')">
-                        <span id="label-jam-tx-jam">--:-- WIB</span>
-                        <span>⏰</span>
+                        <span id="label-jam-tx-jam">--:--</span>
+                        <span>🕒</span>
                     </div>
                 </div>
             </div>                                               
@@ -183,10 +177,10 @@
                 <div class="segmented-control">
                     <div id="seg-tx-masuk" class="segmented-item active masuk" onclick="gantiJenisTransaksiKustom('masuk')">Pemasukan (+)</div>
                     <div id="seg-tx-keluar" class="segmented-item" onclick="gantiJenisTransaksiKustom('keluar')">Pengeluaran (-)</div>
-                </div>                                       
+                </div>                                         
             </div>
             <div class="form-group">
-                <label>KATEGORI</label>                               
+                <label>KATEGORI</label>                                
                 <div class="custom-dropdown-box" id="dropdown-box-utama">
                     <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-utama')">
                         <span id="dropdown-val-utama">Pilih Kategori...</span>
@@ -194,16 +188,18 @@
                     </div>
                     <div class="custom-dropdown-list" id="dropdown-list-utama"></div>
                 </div>
-            </div>                                    
+            </div>                 
+                  
             <div class="form-group" style="display:none;">
-                <label>SUMBER DOMPET / E-WALLET</label>                                                    
+                <label>SUMBER DOMPET / E-WALLET</label>                                                 
                 <input list="list-dompet-tersimpan" id="tx-dompet">
-                <datalist id="list-dompet-tersimpan"></datalist>                                                       
-            </div>                                                                                                     
+                <datalist id="list-dompet-tersimpan"></datalist>                                               
+            </div>                       
+                                                                        
             <div class="form-group">
                 <label>JUMLAH UANG</label>                           
                 <input type="number" id="tx-jumlah" placeholder="Masukkan nominal..." required>
-            </div>                                               
+            </div>                                
             <button type="submit" class="btn btn-primary">Simpan Transaksi</button>                            
         </form>
         <div style="margin-top:25px;">
@@ -212,7 +208,7 @@
                 <button class="nav-arrow" onclick="scrollTab('tabs-utama', -80)">❮</button>
                 <div class="nav-tabs" id="tabs-utama"></div>
                 <button class="nav-arrow" onclick="scrollTab('tabs-utama', 80)">❯</button>
-            </div>                                                     
+            </div>                            
             <div class="list-transaksi" id="list-utama"></div>
         </div>
     </div>
@@ -232,6 +228,7 @@
             <button class="btn btn-secondary" style="background-color: #3498db; color: white; border: none;" onclick="exportKeJSON()">📥 Backup Seluruh Data (.JSON)</button>
             <button class="btn btn-secondary" style="background-color: #2ecc71; color: white; border: none;" onclick="pemicuImport()">📤 Pulihkan Data (JSON / CSV Lama)</button>                                               
             <input type="file" id="input-backup" accept="*/*" style="display: none;" onchange="importDataUniversal(event)">
+            
             <button class="btn btn-secondary" style="background-color: #7f8c8d; color: white; border: none; margin-top: 5px;" onclick="handleLogout()">🚪 Keluar Akun (Logout)</button>
 
             <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -289,29 +286,29 @@
             <span class="lbl-card" id="laporan-card-lbl">TERHITUNG</span>
             <span class="val-card" id="laporan-card-total">Rp 0</span>
         </div>                                   
-        <div class="tab-scroll-container">                       
+        <div class="tab-scroll-container">                   
             <button class="nav-arrow" onclick="scrollTab('tabs-laporan', -80)">❮</button>
             <div class="nav-tabs" id="tabs-laporan"></div>
             <button class="nav-arrow" onclick="scrollTab('tabs-laporan', 80)">❯</button>                    
         </div>
-        <div class="list-transaksi" id="list-laporan"></div>                                                  
+        <div class="list-transaksi" id="list-laporan"></div>              
     </div>                      
     
     <div id="page-hutang" class="sub-page">                  
-        <div class="page-header">                                
+        <div class="page-header"> 
             <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>
             <h2 style="font-size:18px;">Manajemen Hutang Piutang</h2>
         </div>
         <form id="form-hutang" onsubmit="simpanHutang(event)" style="margin-bottom:20px;">
             <div class="form-group">
-                <label>TANGGAL TRANSAKSI</label>
+                <label>TANGGAL TRANSAKSI</label>                     
                 <input type="hidden" id="ht-tanggal" required>
                 <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('ht-tanggal')">
                     <span id="label-kalender-ht-tanggal">-/-/-</span>
                     <span>📅</span>
-                </div>
+                </div>                
             </div>
-            <div class="form-group">
+            <div class="form-group">                                 
                 <label>JENIS CATATAN</label>
                 <select id="ht-jenis">
                     <option value="hutang">Hutang (Uang Masuk ke Dompet)</option>
@@ -319,25 +316,25 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>NAMA ORANG</label>
-                <input type="text" id="ht-nama" placeholder="Ketik nama..." required>
+                <label>NAMA ORANG</label>                            
+                <input type="text" id="ht-nama" placeholder="Ketik nama..." required>          
             </div>
             <div class="form-group">
                 <label>JUMLAH NOMINAL</label>
-                <input type="number" id="ht-nominal" placeholder="Masukkan jumlah..." required>
-            </div>
-            <button type="submit" class="btn btn-warning" style="padding:12px; font-size:14px;">Simpan Catatan</button>
-        </form>
-        <h3 style="font-size:15px; margin-bottom:10px;">Daftar Hutang & Piutang Berjalan</h3>
+                <input type="number" id="ht-nominal" placeholder="Masukkan jumlah..." required>              
+            </div>           
+            <button type="submit" class="btn btn-warning" style="padding:12px; font-size:14px;">Simpan Catatan</button>                         
+        </form>                                              
+        <h3 style="font-size:15px; margin-bottom:10px;">Daftar Hutang & Piutang Berjalan</h3>                     
         <div id="list-hutang-semua" style="margin-bottom:25px; padding-bottom:30px;"></div>
-    </div>
-
-    <div id="page-transfer" class="sub-page">
+    </div>                                                                                                
+    
+    <div id="page-transfer" class="sub-page">                
         <div class="page-header">
-            <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>
-            <h2 style="font-size:18px;">Transfer Antar Dompet</h2>
+            <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>                            
+            <h2 style="font-size:18px;">Transfer Antar Dompet</h2>   
         </div>
-        <form id="form-transfer" onsubmit="eksekusiTransfer(event)" style="margin-bottom:20px;">
+        <form id="form-transfer" onsubmit="eksekusiTransfer(event)" style="margin-bottom:20px;">                      
             <div class="form-group">
                 <label>TANGGAL KIRIM SALDO</label>
                 <input type="hidden" id="trf-tanggal" required>
@@ -345,29 +342,29 @@
                     <span id="label-kalender-trf-tanggal">-/-/-</span>
                     <span>📅</span>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>DARI DOMPET (SUMBER SALDO)</label>
-                <select id="trf-dari" required></select>
+            </div>                          
+            <div class="form-group">                 
+                <label>DARI DOMPET (SUMBER SALDO)</label>                                                                  
+                <select id="trf-dari" required></select>                                               
             </div>
             <div class="form-group">
                 <label>KE DOMPET (TUJUAN SALDO)</label>
                 <select id="trf-ke" required></select>
             </div>
-            <div class="form-group">
-                <label>JUMLAH NOMINAL YANG DIPINDAHKAN (RP)</label>
+            <div class="form-group">                                 
+                <label>JUMLAH NOMINAL YANG DIPINDAHKAN (RP)</label>                                                
                 <input type="number" id="trf-nominal" placeholder="Masukkan nominal transfer..." required>
             </div>
-            <button type="submit" class="btn btn-primary" style="background-color: #27ae60;">Kirim / Pindahkan Saldo</button>
+            <button type="submit" class="btn btn-primary" style="background-color: #27ae60;">Kirim / Pindahkan Saldo</button>                                    
         </form>
-    </div>
-
+    </div>                 
+                           
     <div id="page-invoice" class="sub-page">
         <div class="page-header">
-            <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>
-            <h2 style="font-size:18px;">Cetak Invoice PDF</h2>
+            <button class="btn-back" onclick="bukaHalaman('page-menu')">← Kembali</button>                             
+            <h2 style="font-size:18px;">Cetak Invoice PDF</h2>                                                    
         </div>
-        <div style="margin-top: 10px;">
+        <div style="margin-top: 10px;">                          
             <div class="form-group">
                 <label>TANGGAL MULAI</label>
                 <input type="hidden" id="inv-tgl-mulai" required>
@@ -382,9 +379,9 @@
                 <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('inv-tgl-akhir')">
                     <span id="label-kalender-inv-tgl-akhir">-/-/-</span>
                     <span>📅</span>
-                </div>
+                </div>                                         
             </div>
-            <div class="form-group">
+            <div class="form-group">                                           
                 <label>PILIH FILTER DOMPET</label>
                 <select id="inv-dompet">
                     <option value="semua">Semua Dompet</option>
@@ -393,100 +390,254 @@
             <button type="button" class="btn btn-primary" style="background-color: #9b59b6; margin-top: 15px;" onclick="prosesCetakPDF()">📥 Unduh Invoice PDF</button>
         </div>
     </div>
+</div>                                               
 
-    <div id="modal-edit-transaksi" class="action-modal">
-        <div class="action-content">
-            <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Transaksi</h3>
-            <form id="form-edit-transaksi" onsubmit="prosesSimpanEditTransaksi(event)">
-                <input type="hidden" id="edit-tx-id-edit" value="">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>TANGGAL</label>
-                        <input type="hidden" id="edit-tx-tanggal" required>
-                        <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-tx-tanggal')">
-                            <span id="label-kalender-edit-tx-tanggal">-/-/-</span>
-                            <span>📅</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>WAKTU (JAM)</label>
-                        <input type="hidden" id="edit-tx-jam" required>
-                        <div class="custom-calendar-trigger" onclick="bukaModalJamKustom('edit-tx-jam')">
-                            <span id="label-jam-edit-tx-jam">--:-- WIB</span>
-                            <span>⏰</span>
-                        </div>
+<div id="modal-edit-transaksi" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Transaksi</h3>
+        <form id="form-edit-transaksi" onsubmit="prosesSimpanEditTransaksi(event)">
+            <input type="hidden" id="edit-tx-id-edit" value="">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>TANGGAL</label>
+                    <input type="hidden" id="edit-tx-tanggal" required>
+                    <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-tx-tanggal')">
+                        <span id="label-kalender-edit-tx-tanggal">-/-/-</span>
+                        <span>📅</span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>JENIS TRANSAKSI</label>
-                    <input type="hidden" id="edit-tx-jenis" value="masuk">
-                    <div class="segmented-control">
-                        <div id="seg-edit-tx-masuk" class="segmented-item active masuk" onclick="gantiJenisTransaksiEditKustom('masuk')">Pemasukan (+)</div>
-                        <div id="seg-edit-tx-keluar" class="segmented-item" onclick="gantiJenisTransaksiEditKustom('keluar')">Pengeluaran (-)</div>
+                    <label>WAKTU (JAM)</label>
+                    <input type="hidden" id="edit-tx-jam" required>
+                    <div class="custom-calendar-trigger" onclick="bukaModalJamKustom('edit-tx-jam')">
+                        <span id="label-jam-edit-tx-jam">--:--</span>
+                        <span>🕒</span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>KATEGORI</label>
-                    <div class="custom-dropdown-box" id="dropdown-box-edit">
-                        <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-edit')">
-                            <span id="dropdown-val-edit">Pilih Kategori...</span>
-                            <span>▼</span>
-                        </div>
-                        <div class="custom-dropdown-list" id="dropdown-list-edit"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>JUMLAH NOMINAL (RP)</label>
-                    <input type="number" id="edit-tx-jumlah" required>
-                </div>
-                <div style="display:flex; gap:10px; margin-top:5px;">
-                    <button type="button" class="btn btn-gray" style="flex:1; padding:10px;" onclick="tutupModalEditTransaksi()">Batal</button>
-                    <button type="submit" class="btn btn-primary" style="flex:1; padding:10px;">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="page-login" class="sub-page">
-        <div style="text-align:center; margin-top:20px; margin-bottom:25px;">
-            <h2 style="font-size:22px; color:var(--primary); font-weight:bold;">Buku Kas Cloud</h2>
-            <p style="font-size:12px; opacity:0.7; margin-top:4px;">Sinkronisasikan database keuangan Anda secara realtime</p>
-        </div>
-        <div style="background:var(--card-bg); padding:20px; border-radius:12px; border:1px solid var(--border-color);">
+            </div>
             <div class="form-group">
-                <label>EMAIL AKUN</label>
-                <input type="email" id="auth-email" placeholder="nama@email.com">
+                <label>JENIS TRANSAKSI</label>
+                <input type="hidden" id="edit-tx-jenis" value="masuk">
+                <div class="segmented-control">
+                    <div id="seg-edit-masuk" class="segmented-item active masuk" onclick="gantiJenisEditKustom('masuk')">Pemasukan (+)</div>
+                    <div id="seg-edit-keluar" class="segmented-item" onclick="gantiJenisEditKustom('keluar')">Pengeluaran (-)</div>
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom:20px;">
-                <label>PASSWORD</label>
-                <input type="password" id="auth-password" placeholder="••••••••">
+            <div class="form-group">
+                <label>KATEGORI</label>
+                <div class="custom-dropdown-box" id="dropdown-box-edit">
+                    <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-edit')">
+                        <span id="dropdown-val-edit">Pilih Kategori...</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="custom-dropdown-list" id="dropdown-list-edit"></div>
+                </div>
             </div>
-            <button class="btn btn-primary" id="btn-login-cloud" onclick="handleSignIn()" style="margin-bottom:10px;">Masuk Aplikasi (Sign In)</button>
-            <button class="btn btn-secondary" id="btn-register-cloud" onclick="handleRegister()" style="background-color:transparent; border:1px solid var(--primary); color:var(--primary);">Daftar Akun Baru (Sign Up)</button>
-            <button class="btn btn-gray" onclick="bukaHalaman('page-utama')" style="margin-top:10px; font-size:13px; padding:8px;">Batal & Mode Offline</button>
+            <div class="form-group">
+                <label>JUMLAH UANG</label>
+                <input type="number" id="edit-tx-jumlah" placeholder="Nominal uang..." required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-bottom:8px;">Simpan Perubahan</button>
+            <button type="button" class="btn-action btn-gray" onclick="tutupModalEditTransaksi()">Batal</button>
+        </form>
+    </div>
+</div>
+
+<div id="modal-edit-hutang" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Data Hutang/Piutang</h3>
+        <form id="form-edit-hutang-kustom" onsubmit="prosesSimpanEditHutang(event)">
+            <input type="hidden" id="edit-ht-id" value="">
+            <div class="form-group">
+                <label>TANGGAL TRANSAKSI</label>
+                <input type="hidden" id="edit-ht-tanggal" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-ht-tanggal')">
+                    <span id="label-kalender-edit-ht-tanggal">-/-/-</span>
+                    <span>📅</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>JENIS CATATAN</label>
+                <select id="edit-ht-jenis">
+                    <option value="hutang">Hutang (Uang Masuk ke Dompet)</option>
+                    <option value="piutang">Piutang (Uang Keluar ke Orang)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>NAMA ORANG</label>
+                <input type="text" id="edit-ht-nama" required>
+            </div>
+            <div class="form-group">
+                <label>NOMINAL UTANG (RP)</label>
+                <input type="number" id="edit-ht-nominal" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-bottom:8px;">Simpan Perubahan</button>
+            <button type="button" class="btn-action btn-gray" onclick="tutupModalEditHutang()">Batal</button>
+        </form>
+    </div>
+</div>
+
+<div id="modal-aksi-transaksi" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:10px;">Pilih Tindakan Kas</h3>
+        <button class="btn-action btn-blue" onclick="editTransaksi()">✏️ Edit Detail Transaksi</button>
+        <button class="btn-action btn-red" onclick="hapusTransaksiDariModal()">🗑️ Hapus Transaksi</button>
+        <button class="btn-action btn-gray" onclick="tutupModalAksiTransaksi()">Batal</button>
+    </div>
+</div>
+
+<div id="modal-aksi-hutang" class="action-modal">
+    <div class="action-content">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:10px;">Pilih Tindakan Hutang</h3>
+        <button class="btn-action btn-green" onclick="bukaModalCicilanDariAksi()">💰 Bayar Cicilan / Pelunasan</button>
+        <button class="btn-action btn-blue" onclick="editHutang()">✏️ Edit Catatan Data</button>
+        <button class="btn-action btn-red" onclick="hapusHutangDariModal()">🗑️ Hapus Seluruh Catatan</button>
+        <button class="btn-action btn-gray" onclick="tutupModalAksiHutang()">Batal</button>
+    </div>
+</div>
+
+<div id="modal-dompet-kustom" class="action-modal">
+    <div class="action-content" style="max-width: 380px; padding: 20px 15px;">
+        <h3 style="text-align:center; font-size:16px;">Pilih Buku Kas Aktif</h3>
+        <div id="md-lbl-dompet-aktif" style="font-size:11px; text-align:center; font-weight:bold; color:var(--primary); margin-bottom:10px;">SALDO AKTIF: -</div>
+        <div id="md-total-saldo" style="text-align:center; font-size:22px; font-weight:bold; margin-bottom:15px; color:var(--text-color);">Rp 0</div>
+        <div id="md-daftar-per-dompet" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 12px;"></div>
+        <button class="btn-action btn-gray" onclick="tutupModalDompet()">Tutup Menu</button>
+    </div>
+</div>
+
+<div id="modal-kalender-kustom" class="action-modal">
+    <div class="action-content" style="max-width: 340px;">
+        <div class="calendar-wrapper">
+            <div class="calendar-header-nav">
+                <button type="button" class="calendar-btn-nav" onclick="navigasiBulanKalender(-1)">❮</button>
+                <span id="calendar-current-month-year">Januari 2024</span>
+                <button type="button" class="calendar-btn-nav" onclick="navigasiBulanKalender(1)">❯</button>
+            </div>
+            <div class="calendar-grid-days">
+                <div class="calendar-day-label">Min</div><div class="calendar-day-label">Sen</div><div class="calendar-day-label">Sel</div><div class="calendar-day-label">Rab</div><div class="calendar-day-label">Kam</div><div class="calendar-day-label">Jum</div><div class="calendar-day-label">Sab</div>
+            </div>
+            <div class="calendar-cells" id="calendar-grid-cells-container"></div>
+            <button type="button" class="btn-action btn-gray" style="padding:10px; margin-top:5px;" onclick="tutupModalKalenderKustom()">Batal</button>
         </div>
     </div>
+</div>
 
+<div id="modal-jam-kustom" class="action-modal">
+    <div class="action-content" style="max-width: 260px;">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:5px;">🕒 Pemilih Waktu</h3>
+        <div class="time-picker-wrapper">
+            <div class="time-picker-selectors">
+                <select id="tp-jam-select" class="time-select-scroll"></select>
+                <span style="font-weight:bold; font-size:18px;">:</span>
+                <select id="tp-menit-select" class="time-select-scroll"></select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="konfirmasiJamKustom()">Selesai Pilih</button>
+            <button type="button" class="btn-action btn-gray" style="width:100%; padding:10px;" onclick="tutupModalJamKustom()">Batal</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-cicilan-kustom" class="action-modal">
+    <div class="action-content" style="max-width: 350px;">
+        <h3 style="text-align:center; font-size:16px;" id="cc-title-nama">Bayar Cicilan</h3>
+        <div id="cc-info-sisa" style="font-size:12px; text-align:center; margin-bottom:12px; font-weight:600; opacity:0.8;">Sisa Tagihan: Rp 0</div>
+        <form id="form-bayar-cicilan" onsubmit="prosesSimpanCicilan(event)">
+            <input type="hidden" id="cc-id-hutang" value="">
+            <div class="form-group">
+                <label>TANGGAL BAYAR</label>
+                <input type="hidden" id="cc-tanggal" required>
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('cc-tanggal')">
+                    <span id="label-kalender-cc-tanggal">-/-/-</span>
+                    <span>📅</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>NOMINAL PEMBAYARAN (RP)</label>
+                <input type="number" id="cc-nominal" placeholder="Ketik jumlah bayar..." required>
+            </div>
+            <button type="submit" class="btn btn-green" style="margin-bottom:8px;">Simpan Pembayaran</button>
+            <button type="button" class="btn-action btn-gray" onclick="tutupModalCicilan()">Batal</button>
+        </form>
+        <div style="margin-top:15px; max-height:130px; overflow-y:auto; border-top:1px solid var(--border-color); padding-top:10px;">
+            <span style="font-size:11px; font-weight:bold; display:block; margin-bottom:5px;">Riwayat Cicilan Masuk:</span>
+            <div id="cc-riwayat-list" style="font-size:12px; display:flex; flex-direction:column; gap:4px;"></div>
+        </div>
+    </div>
+</div>
+
+<div id="page-auth-cloud" class="sub-page" style="display: none;">
+    <div style="text-align:center; margin-bottom:25px; margin-top:20px;">
+        <h2 style="font-size:22px; font-weight:bold; color:var(--primary);">Buku Kas Cloud</h2>
+        <p style="font-size:12px; opacity:0.7; margin-top:4px;">Sinkronisasi Database Multi-Perangkat Aman</p>
+    </div>
+    <div style="background: var(--card-bg); padding:20px; border-radius:12px; border:1px solid var(--border-color);">
+        <div class="form-group">
+            <label>ALAMAT EMAIL</label>
+            <input type="email" id="auth-email" placeholder="nama@email.com" required>
+        </div>
+        <div class="form-group">
+            <label>KATA SANDI (PASSWORD)</label>
+            <input type="password" id="auth-password" placeholder="Minimal 6 karakter..." required>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-auth-masuk" onclick="handleLogin()" style="margin-bottom:12px; margin-top:5px;">Masuk Aplikasi</button>
+        <button type="button" class="btn btn-secondary" id="btn-auth-daftar" onclick="handleRegister()" style="background-color:transparent; border:1px solid var(--primary); color:var(--primary);">Belum Punya Akun? Daftar Akun</button>
+    </div>
+    <div style="text-align:center; margin-top:30px;">
+        <button class="btn-back" onclick="bukaHalaman('page-utama')" style="background-color:var(--border-color); color:var(--text-color);">← Kembali Gunakan Mode Offline</button>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://wzxtskbywstfofvjxtgq.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_MvEhcXf5OOEg_QrA2Z_8IA_nRyCYFhT";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = "https://xclgttvsmgqreovvstbg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjbGd0dHZzbWdxcmVvdnZzdGJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5MzA4OTYsImV4cCI6MjAzMTUxMDg5Nn0.Vb6_pY_mS_7D1-0zD-iWJ-8N9yPzZ0O9N9_Z9_Z9_Z9";
 
-let sessionUserGlobal = null;
-let lockCloudSyncGlobal = false;
+let supabaseClient = null;
+try {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+    console.error("Gagal memuat library Supabase:", e.message);
+}
 
 let dbTransaksi = [];
 let dbHutang = [];
-let dbKategoriMasuk = ["Gaji", "Bonus", "Investasi", "Penjualan", "Lainnya"];
-let dbKategoriKeluar = ["Makanan", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Lainnya"];
-let daftarDompetGlobal = ["Dompet Utama"];
-let dompetAktifGlobal = "Dompet Utama";
+let dbKategoriMasuk = ['Gaji', 'Penjualan', 'Investasi', 'Transfer Masuk', 'Lainnya'];
+let dbKategoriKeluar = ['Makanan', 'Transportasi', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Pendidikan', 'Transfer Keluar', 'Lainnya'];
+
+const DAFTAR_DOMPET_SISTEM = ['Dompet Utama', 'BSI', 'DANA', 'GoPay', 'OVO', 'Tunai'];
+let dompetAktifGlobal = 'Dompet Utama';
+let sessionUserGlobal = null;
+let lockCloudSyncGlobal = false;
+
+function formatRupiah(angka) {
+    let rev = parseInt(angka, 10).toString().split('').reverse().join('');
+    let rev2 = '';
+    for (let i = 0; i < rev.length; i++) {
+        rev2 += rev[i];
+        if ((i + 1) % 3 === 0 && i !== (rev.length - 1)) rev2 += '.';
+    }
+    return 'Rp ' + rev2.split('').reverse().join('');
+}
+
+function dapatkanTanggalHariIni() {
+    let d = new Date();
+    let m = '' + (d.getMonth() + 1), h = '' + d.getDate(), y = d.getFullYear();
+    if (m.length < 2) m = '0' + m;
+    if (h.length < 2) h = '0' + h;
+    return [y, m, h].join('-');
+}
+
+function dapatkanJamMenitSekarang() {
+    let d = new Date();
+    let j = '' + d.getHours(), m = '' + d.getMinutes();
+    if (j.length < 2) j = '0' + j;
+    if (m.length < 2) m = '0' + m;
+    return j + ':' + m;
+}
 
 function customSwal() {
-    const isDark = document.body.classList.contains('dark-mode');
+    let isDark = document.body.classList.contains('dark-mode');
     return Swal.mixin({
         background: isDark ? '#1e1e1e' : '#ffffff',
         color: isDark ? '#e0e0e0' : '#2c3e50',
@@ -495,1129 +646,150 @@ function customSwal() {
     });
 }
 
-function formatRupiah(angka) {
-    let rev = parseInt(angka, 10).toString().split('').reverse().join('');
-    let rev2 = '';
-    for (let i = 0; i < rev.length; i++) {
-        rev2 += rev[i];
-        if ((i + 1) % 3 === 0 && i !== (rev.length - 1)) {
-            rev2 += '.';
-        }
-    }
-    return 'Rp ' + rev2.split('').reverse().join('');
-}
-
-function dapatkanTanggalHariIni() {
-    const d = new Date();
-    let m = '' + (d.getMonth() + 1), hari = '' + d.getDate(), y = d.getFullYear();
-    if (m.length < 2) m = '0' + m;
-    if (hari.length < 2) hari = '0' + hari;
-    return [y, m, hari].join('-');
-}
-
-function dapatkanWaktuSekarang() {
-    const d = new Date();
-    let j = String(d.getHours()).padStart(2, '0');
-    let m = String(d.getMinutes()).padStart(2, '0');
-    return `${j}:${m}`;
-}
-
-function aturWaktuDefaultForm() {
-    const tglHariIni = dapatkanTanggalHariIni();
-    const jamSekarang = dapatkanWaktuSekarang();
-    
-    document.getElementById('tx-tanggal').value = tglHariIni;
-    document.getElementById('label-kalender-tx-tanggal').innerText = balikFormatTanggal(tglHariIni);
-    
-    document.getElementById('tx-jam').value = jamSekarang;
-    document.getElementById('label-jam-tx-jam').innerText = jamSekarang + ' WIB';
-}
-
-function balikFormatTanggal(strYMD) {
-    if(!strYMD) return '-/-/-';
-    let p = strYMD.split('-');
-    if(p.length !== 3) return strYMD;
-    return `${p[2]}/${p[1]}/${p[0]}`;
-}
-
-// FUNGSI POPUP JAM KUSTOM (SWEETALERT2)
-function bukaModalJamKustom(targetInputId) {
-    const inputJam = document.getElementById(targetInputId);
-    let nilaiSekarang = inputJam.value || dapatkanWaktuSekarang();
-    let [jamDefault, menitDefault] = nilaiSekarang.split(':');
-
-    customSwal().fire({
-        title: 'Pilih Waktu (Jam & Menit)',
-        html: `
-            <div class="time-picker-wrapper">
-                <div class="time-picker-selectors">
-                    <input type="number" id="swal-jam" class="time-select-scroll" min="0" max="23" value="${jamDefault.padStart(2, '0')}" onchange="this.value=String(Math.max(0,Math.min(23,parseInt(this.value)||0))).padStart(2,'0')">
-                    <span style="font-weight:bold; font-size:24px; color: var(--text-color); margin: 0 4px;">:</span>
-                    <input type="number" id="swal-menit" class="time-select-scroll" min="0" max="59" value="${menitDefault.padStart(2, '0')}" onchange="this.value=String(Math.max(0,Math.min(59,parseInt(this.value)||0))).padStart(2,'0')">
-                </div>
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Atur Waktu',
-        cancelButtonText: 'Batal',
-        preConfirm: () => {
-            let j = document.getElementById('swal-jam').value.padStart(2, '0');
-            let m = document.getElementById('swal-menit').value.padStart(2, '0');
-            return `${j}:${m}`;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            inputJam.value = result.value;
-            if (targetInputId === 'tx-jam') {
-                document.getElementById('label-jam-tx-jam').innerText = result.value + ' WIB';
-            } else if (targetInputId === 'edit-tx-jam') {
-                document.getElementById('label-jam-edit-tx-jam').innerText = result.value + ' WIB';
-            }
-        }
-    });
-}
-
-// FUNGSI SEGMENTED CONTROL JENIS TRANSAKSI
-function gantiJenisTransaksiKustom(jenis) {
-    document.getElementById('tx-jenis').value = jenis;
-    document.getElementById('seg-tx-masuk').classList.remove('active', 'masuk');
-    document.getElementById('seg-tx-keluar').classList.remove('active', 'keluar');
-
-    if (jenis === 'masuk') {
-        document.getElementById('seg-tx-masuk').classList.add('active', 'masuk');
-    } else {
-        document.getElementById('seg-tx-keluar').classList.add('active', 'keluar');
-    }
-    sesuaikanKategori();
-}
-
-function gantiJenisTransaksiEditKustom(jenis) {
-    document.getElementById('edit-tx-jenis').value = jenis;
-    document.getElementById('seg-edit-tx-masuk').classList.remove('active', 'masuk');
-    document.getElementById('seg-edit-tx-keluar').classList.remove('active', 'keluar');
-
-    if (jenis === 'masuk') {
-        document.getElementById('seg-edit-tx-masuk').classList.add('active', 'masuk');
-    } else {
-        document.getElementById('seg-edit-tx-keluar').classList.add('active', 'keluar');
-    }
-    sesuaikanKategoriEdit();
-}
-
 function bukaHalaman(pageId) {
     document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(pageId);
-    if(target) target.classList.add('active');
-    window.scrollTo(0,0);
-    
-    if(pageId === 'page-utama') {
-        aturWaktuDefaultForm();
-        gantiJenisTransaksiKustom('masuk');
+    let t = document.getElementById(pageId);
+    if(t) {
+        t.classList.add('active');
+        window.scrollTo(0, 0);
     }
-}
-
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    let isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('buku-kas-darkmode', isDark ? '1' : '0');
-    document.getElementById('theme-color-meta').setAttribute('content', isDark ? '#121212' : '#f4f7f6');
-}
-
-function loadDarkMode() {
-    if(localStorage.getItem('buku-kas-darkmode') === '1') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('theme-color-meta').setAttribute('content', '#121212');
-    }
-}
-
-function muatDatabaseLokal() {
-    try {
-        let t = localStorage.getItem('bk_transaksi');
-        let h = localStorage.getItem('bk_hutang');
-        let km = localStorage.getItem('bk_kat_masuk');
-        let kk = localStorage.getItem('bk_kat_keluar');
-        let d = localStorage.getItem('bk_daftar_dompet');
-        let da = localStorage.getItem('bk_dompet_aktif');
-
-        if(t) dbTransaksi = JSON.parse(t);
-        if(h) dbHutang = JSON.parse(h);
-        if(km) dbKategoriMasuk = JSON.parse(km);
-        if(kk) dbKategoriKeluar = JSON.parse(kk);
-        if(d) daftarDompetGlobal = JSON.parse(d);
-        if(da) dompetAktifGlobal = da;
-    } catch(e) {
-        console.error("Gagal memuat DB lokal", e);
-    }
-}
-
-function simpanDatabaseLokal() {
-    localStorage.setItem('bk_transaksi', JSON.stringify(dbTransaksi));
-    localStorage.setItem('bk_hutang', JSON.stringify(dbHutang));
-    localStorage.setItem('bk_kat_masuk', JSON.stringify(dbKategoriMasuk));
-    localStorage.setItem('bk_kat_keluar', JSON.stringify(dbKategoriKeluar));
-    localStorage.setItem('bk_daftar_dompet', JSON.stringify(daftarDompetGlobal));
-    localStorage.setItem('bk_dompet_aktif', dompetAktifGlobal);
-}
-
-function perbaruiSemuaData() {
-    simpanDatabaseLokal();
-    hitungDashboardUtama();
-    renderRiwayatUtama();
-    isiDatalistDompet();
-    kirimDataKeCloudSupabase();
-}
-
-function hitungDashboardUtama() {
-    let masuk = 0, keluar = 0;
-    dbTransaksi.forEach(item => {
-        if(item.dompet === dompetAktifGlobal) {
-            if(item.jenis === 'masuk') masuk += item.jumlah;
-            else keluar += item.jumlah;
-        }
-    });
-    
-    let saldo = masuk - keluar;
-    document.getElementById('total-pemasukan').innerText = formatRupiah(masuk);
-    document.getElementById('total-pengeluaran').innerText = formatRupiah(keluar);
-    document.getElementById('total-saldo').innerText = formatRupiah(saldo);
-    document.getElementById('lbl-saldo-utama').innerText = `Buku Kas: ${dompetAktifGlobal} ↗ (Ganti)`;
-}
-
-function isiDatalistDompet() {
-    let dl = document.getElementById('list-dompet-tersimpan');
-    if(dl) {
-        dl.innerHTML = '';
-        daftarDompetGlobal.forEach(d => {
-            let opt = document.createElement('option');
-            opt.value = d;
-            dl.appendChild(opt);
-        });
-    }
-}
-
-function toggleDropdownKustom(boxId) {
-    let listNode = document.querySelector(`#${boxId} .custom-dropdown-list`);
-    if(listNode) {
-        let sudahBuka = listNode.classList.contains('open');
-        tutupSemuaDropdownKustom();
-        if(!sudahBuka) listNode.classList.add('open');
-    }
-}
-
-function tutupSemuaDropdownKustom() {
-    document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.remove('open'));
-}
-
-window.addEventListener('click', function(e) {
-    if(!e.target.closest('.custom-dropdown-box')) {
-        tutupSemuaDropdownKustom();
-    }
-});
-
-function sesuaikanKategori() {
-    let jenis = document.getElementById('tx-jenis').value;
-    let listKat = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
-    let container = document.getElementById('dropdown-list-utama');
-    let headerText = document.getElementById('dropdown-val-utama');
-    
-    if(!container) return;
-    container.innerHTML = '';
-    
-    listKat.forEach(k => {
-        let div = document.createElement('div');
-        div.className = 'custom-dropdown-item';
-        div.innerText = k;
-        div.onclick = function() {
-            headerText.innerText = k;
-            tutupSemuaDropdownKustom();
-        };
-        container.appendChild(div);
-    });
-    
-    let divAdd = document.createElement('div');
-    divAdd.className = 'custom-dropdown-item special-add';
-    divAdd.innerText = '+ Buat Kategori Baru...';
-    divAdd.onclick = function() {
-        tutupSemuaDropdownKustom();
-        bukaHalamanKategori();
-    };
-    container.appendChild(divAdd);
-    
-    if(listKat.length > 0) {
-        headerText.innerText = listKat[0];
-    } else {
-        headerText.innerText = 'Pilih Kategori...';
-    }
-}
-
-function sesuaikanKategoriEdit() {
-    let jenis = document.getElementById('edit-tx-jenis').value;
-    let listKat = (jenis === 'masuk') ? dbKategoriMasuk : dbKategoriKeluar;
-    let container = document.getElementById('dropdown-list-edit');
-    let headerText = document.getElementById('dropdown-val-edit');
-    
-    if(!container) return;
-    container.innerHTML = '';
-    
-    listKat.forEach(k => {
-        let div = document.createElement('div');
-        div.className = 'custom-dropdown-item';
-        div.innerText = k;
-        div.onclick = function() {
-            headerText.innerText = k;
-            tutupSemuaDropdownKustom();
-        };
-        container.appendChild(div);
-    });
-    
-    if(listKat.indexOf(headerText.innerText) === -1 && listKat.length > 0) {
-        headerText.innerText = listKat[0];
-    }
-}
-
-function simpanTransaksi(event) {
-    event.preventDefault();
-    let tgl = document.getElementById('tx-tanggal').value;
-    let jam = document.getElementById('tx-jam').value;
-    let jenis = document.getElementById('tx-jenis').value;
-    let kat = document.getElementById('dropdown-val-utama').innerText;
-    let jml = parseInt(document.getElementById('tx-jumlah').value, 10);
-    
-    if(!tgl || !jam || !kat || kat.includes('Pilih') || isNaN(jml) || jml <= 0) {
-        customSwal().fire('Gagal', 'Mohon lengkapi seluruh kolom input dengan benar!', 'error');
-        return;
-    }
-    
-    let item = {
-        id: 'tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        tanggal: tgl,
-        jam: jam,
-        jenis: jenis,
-        kategori: kat,
-        dompet: dompetAktifGlobal,
-        jumlah: jml
-    };
-    
-    dbTransaksi.unshift(item);
-    document.getElementById('tx-jumlah').value = '';
-    perbaruiSemuaData();
-    customSwal().fire('Berhasil', 'Transaksi kas berhasil disimpan!', 'success');
-}
-
-function dapatkanUnikBulanTahunDompet() {
-    let setBulan = new Set();
-    dbTransaksi.forEach(item => {
-        if(item.dompet === dompetAktifGlobal && item.tanggal) {
-            let p = item.tanggal.split('-');
-            if(p.length === 3) {
-                setBulan.add(`${p[0]}-${p[1]}`);
-            }
-        }
-    });
-    
-    let arr = Array.from(setBulan);
-    arr.sort((a,b) => b.localeCompare(a));
-    return arr;
-}
-
-function formatNamaBulanIndo(ymString) {
-    let p = ymString.split('-');
-    let namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    let idx = parseInt(p[1], 10) - 1;
-    return `${namaBulan[idx]} ${p[0]}`;
-}
-
-let filterBulanAktifGlobal = "semua";
-
-function renderRiwayatUtama() {
-    let tabsContainer = document.getElementById('tabs-utama');
-    let listContainer = document.getElementById('list-utama');
-    if(!tabsContainer || !listContainer) return;
-    
-    let daftarBulan = dapatkanUnikBulanTahunDompet();
-    
-    if(filterBulanAktifGlobal !== 'semua' && daftarBulan.indexOf(filterBulanAktifGlobal) === -1) {
-        filterBulanAktifGlobal = "semua";
-    }
-    
-    let htmlTabs = `<div class="tab-item ${(filterBulanAktifGlobal === 'semua') ? 'active' : ''}" onclick="setFilterBulanUtama('semua')">Semua Riwayat</div>`;
-    daftarBulan.forEach(b => {
-        htmlTabs += `<div class="tab-item ${(filterBulanAktifGlobal === b) ? 'active' : ''}" onclick="setFilterBulanUtama('${b}')">${formatNamaBulanIndo(b)}</div>`;
-    });
-    tabsContainer.innerHTML = htmlTabs;
-    
-    let transaksiFilter = dbTransaksi.filter(item => {
-        if(item.dompet !== dompetAktifGlobal) return false;
-        if(filterBulanAktifGlobal === 'semua') return true;
-        return item.tanggal.startsWith(filterBulanAktifGlobal);
-    });
-    
-    if(transaksiFilter.length === 0) {
-        listContainer.innerHTML = '<p style="text-align:center; padding:20px; font-size:12px; opacity:0.6;">Belum ada riwayat keuangan transaksi bulan ini.</p>';
-        return;
-    }
-    
-    let htmlList = '';
-    transaksiFilter.forEach(item => {
-        let clsColor = (item.jenis === 'masuk') ? 'txt-masuk' : 'txt-keluar';
-        let tanda = (item.jenis === 'masuk') ? '+' : '-';
-        htmlList += `
-            <div class="item-transaksi" onclick="bukaOpsiAksiTransaksi('${item.id}')">
-                <div class="item-left">
-                    <span class="item-name">${item.kategori}</span>
-                    <span class="item-date">${balikFormatTanggal(item.tanggal)} • ${item.jam || '00:00'}</span>
-                </div>
-                <div class="item-right ${clsColor}">
-                    ${tanda}${formatRupiah(item.jumlah)}
-                </div>
-                <div class="item-actions">
-                    <button class="btn-icon">↗</button>
-                </div>
-            </div>
-        `;
-    });
-    listContainer.innerHTML = htmlList;
-}
-
-function setFilterBulanUtama(bln) {
-    filterBulanAktifGlobal = bln;
-    renderRiwayatUtama();
-}
-
-function scrollTab(elementId, distance) {
-    let el = document.getElementById(elementId);
-    if(el) el.scrollBy({ left: distance, behavior: 'smooth' });
-}
-
-function bukaOpsiAksiTransaksi(id) {
-    let tx = dbTransaksi.find(item => item.id === id);
-    if(!tx) return;
-    
-    customSwal().fire({
-        title: 'Kelola Transaksi',
-        text: `Kategori: ${tx.kategori} (${formatRupiah(tx.jumlah)})`,
-        icon: 'info',
-        showCancelButton: true,
-        showDenyButton: true,
-        confirmButtonText: '✏️ Edit Data',
-        denyButtonText: '🗑️ Hapus',
-        cancelButtonText: 'Tutup',
-        confirmButtonColor: '#3498db',
-        denyButtonColor: '#e74c3c'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            bukaModalEditTransaksi(id);
-        } else if (result.isDenied) {
-            customSwal().fire({
-                title: 'Hapus Transaksi?',
-                text: "Apakah Anda yakin ingin menghapus catatan transaksi kas ini secara permanen?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal'
-            }).then((resHapus) => {
-                if (resHapus.isConfirmed) {
-                    dbTransaksi = dbTransaksi.filter(item => item.id !== id);
-                    perbaruiSemuaData();
-                    customSwal().fire('Terhapus!', 'Transaksi kas berhasil dihapus.', 'success');
-                }
-            });
-        }
-    });
-}
-
-function bukaModalEditTransaksi(id) {
-    let tx = dbTransaksi.find(item => item.id === id);
-    if(!tx) return;
-    
-    document.getElementById('edit-tx-id-edit').value = tx.id;
-    document.getElementById('edit-tx-tanggal').value = tx.tanggal;
-    document.getElementById('label-kalender-edit-tx-tanggal').innerText = balikFormatTanggal(tx.tanggal);
-    
-    document.getElementById('edit-tx-jam').value = tx.jam || '00:00';
-    document.getElementById('label-jam-edit-tx-jam').innerText = (tx.jam || '00:00') + ' WIB';
-    
-    document.getElementById('dropdown-val-edit').innerText = tx.kategori;
-    document.getElementById('edit-tx-jumlah').value = tx.jumlah;
-    
-    gantiJenisTransaksiEditKustom(tx.jenis || 'masuk');
-    
-    document.getElementById('modal-edit-transaksi').classList.add('active');
-}
-
-function tutupModalEditTransaksi() {
-    document.getElementById('modal-edit-transaksi').classList.remove('active');
-}
-
-function prosesSimpanEditTransaksi(e) {
-    e.preventDefault();
-    let id = document.getElementById('edit-tx-id-edit').value;
-    let tgl = document.getElementById('edit-tx-tanggal').value;
-    let jam = document.getElementById('edit-tx-jam').value;
-    let jenis = document.getElementById('edit-tx-jenis').value;
-    let kat = document.getElementById('dropdown-val-edit').innerText;
-    let jml = parseInt(document.getElementById('edit-tx-jumlah').value, 10);
-    
-    let idx = dbTransaksi.findIndex(item => item.id === id);
-    if(idx !== -1) {
-        dbTransaksi[idx].tanggal = tgl;
-        dbTransaksi[idx].jam = jam;
-        dbTransaksi[idx].jenis = jenis;
-        dbTransaksi[idx].kategori = kat;
-        dbTransaksi[idx].jumlah = jml;
-        
-        tutupModalEditTransaksi();
+    if (pageId === 'page-utama') {
         perbaruiSemuaData();
-        customSwal().fire('Sukses', 'Data transaksi berhasil diperbarui!', 'success');
     }
 }
 
-function bukaModalDompet() {
-    let htmlSelect = `<select id="swal-pilih-dompet" class="swal2-select" style="display:block; width:100%; margin:10px 0;">`;
-    daftarDompetGlobal.forEach(d => {
-        let sel = (d === dompetAktifGlobal) ? 'selected' : '';
-        htmlSelect += `<option value="${d}" ${sel}>${d}</option>`;
-    });
-    htmlSelect += `</select>`;
-
-    customSwal().fire({
-        title: 'Ganti Buku Kas / Dompet',
-        html: `
-            <p style="font-size:12px; opacity:0.8;">Pilih buku kas yang ingin ditampilkan:</p>
-            ${htmlSelect}
-            <input type="text" id="swal-dompet-baru" class="swal2-input" placeholder="Atau ketuk nama dompet baru..." style="margin-top:15px; font-size:14px; height:40px;">
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Terapkan / Buat',
-        cancelButtonText: 'Batal',
-        preConfirm: () => {
-            return {
-                pilihan: document.getElementById('swal-pilih-dompet').value,
-                baru: document.getElementById('swal-dompet-baru').value.trim()
-            };
-        }
-    }).then((result) => {
-        if(result.isConfirmed) {
-            let res = result.value;
-            if(res.baru) {
-                if(daftarDompetGlobal.indexOf(res.baru) === -1) {
-                    daftarDompetGlobal.push(res.baru);
-                }
-                dompetAktifGlobal = res.baru;
-            } else {
-                dompetAktifGlobal = res.pilihan;
-            }
-            perbaruiSemuaData();
-            customSwal().fire('Berganti!', `Sekarang membuka buku kas: ${dompetAktifGlobal}`, 'success');
-        }
-    });
-}
-
-function bukaHalamanKategori() {
-    bukaHalaman('page-kategori');
-    switchTabKategori('keluar');
-}
-
-let jenisTabKategoriGlobal = 'keluar';
-
-function switchTabKategori(j) {
-    jenisTabKategoriGlobal = j;
-    document.getElementById('tab-kat-pengeluaran').classList.remove('active');
-    document.getElementById('tab-kat-pemasukan').classList.remove('active');
-    
-    if(j === 'keluar') document.getElementById('tab-kat-pengeluaran').classList.add('active');
-    else document.getElementById('tab-kat-pemasukan').classList.add('active');
-    
-    renderDaftarManajemenKategori();
-}
-
-function renderDaftarManajemenKategori() {
-    let listContainer = document.getElementById('list-kategori-manage');
-    if(!listContainer) return;
-    
-    let arr = (jenisTabKategoriGlobal === 'keluar') ? dbKategoriKeluar : dbKategoriMasuk;
-    let html = `
-        <div style="padding: 10px; display: flex; gap: 8px;">
-            <input type="text" id="input-kat-baru-nama" placeholder="Ketik kategori baru..." style="flex:1; padding:8px;">
-            <button class="btn btn-primary" onclick="tambahKategoriProses()" style="width:auto; padding:8px 15px; font-size:13px;">+ Tambah</button>
-        </div>
-    `;
-    
-    if(arr.length === 0) {
-        html += '<p style="text-align:center; padding:20px; opacity:0.5; font-size:12px;">Belum ada kategori custom.</p>';
-    } else {
-        arr.forEach((k, idx) => {
-            html += `
-                <div class="item-transaksi" style="cursor:default;">
-                    <div class="item-left">
-                        <span class="item-name">${k}</span>
-                    </div>
-                    <button class="btn-icon" style="color:var(--danger); font-weight:bold; font-size:16px;" onclick="hapusKategoriProses(${idx})">×</button>
-                </div>
-            `;
-        });
-    }
-    listContainer.innerHTML = html;
-}
-
-function tambahKategoriProses() {
-    let inp = document.getElementById('input-kat-baru-nama');
-    if(!inp) return;
-    let val = inp.value.trim();
-    if(!val) return;
-    
-    let arr = (jenisTabKategoriGlobal === 'keluar') ? dbKategoriKeluar : dbKategoriMasuk;
-    if(arr.indexOf(val) === -1) {
-        arr.push(val);
-        simpanDatabaseLokal();
-        renderDaftarManajemenKategori();
-        sesuaikanKategori();
-        inp.value = '';
-    } else {
-        customSwal().fire('Info', 'Nama kategori tersebut sudah ada.', 'info');
-    }
-}
-
-function hapusKategoriProses(idx) {
-    customSwal().fire({
-        title: 'Hapus Kategori?',
-        text: 'Apakah Anda yakin ingin menghapus opsi kategori ini dari daftar?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            let arr = (jenisTabKategoriGlobal === 'keluar') ? dbKategoriKeluar : dbKategoriMasuk;
-            arr.splice(idx, 1);
-            simpanDatabaseLokal();
-            renderDaftarManajemenKategori();
-            sesuaikanKategori();
-        }
-    });
-}
-
-function bukaHalamanPencarian() {
-    bukaHalaman('page-pencarian');
-    let sel = document.getElementById('cari-dompet');
-    if(sel) {
-        sel.innerHTML = '<option value="semua">Semua Buku Kas / Dompet</option>';
-        daftarDompetGlobal.forEach(d => {
-            let opt = document.createElement('option');
-            opt.value = d;
-            opt.innerText = d;
-            sel.appendChild(opt);
-        });
-    }
-    eksekusiPencarian();
-}
-
-function eksekusiPencarian() {
-    let teks = document.getElementById('cari-teks').value.toLowerCase().trim();
-    let jenis = document.getElementById('cari-jenis').value;
-    let dompet = document.getElementById('cari-dompet').value;
-    let container = document.getElementById('hasil-pencarian');
-    
-    if(!container) return;
-    
-    let hasil = dbTransaksi.filter(item => {
-        if(dompet !== 'semua' && item.dompet !== dompet) return false;
-        if(jenis !== 'semua' && item.jenis !== jenis) return false;
-        
-        if(teks) {
-            let mKat = (item.kategori || '').toLowerCase().includes(teks);
-            let mNom = String(item.jumlah).includes(teks);
-            let mDmp = (item.dompet || '').toLowerCase().includes(teks);
-            return (mKat || mNom || mDmp);
-        }
-        return true;
-    });
-    
-    if(hasil.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding:20px; font-size:12px; opacity:0.6;">Pencarian nihil. Transaksi tidak ditemukan.</p>';
-        return;
-    }
-    
-    let html = '';
-    hasil.forEach(item => {
-        let clsColor = (item.jenis === 'masuk') ? 'txt-masuk' : 'txt-keluar';
-        let tanda = (item.jenis === 'masuk') ? '+' : '-';
-        html += `
-            <div class="item-transaksi" onclick="bukaOpsiAksiTransaksi('${item.id}')">
-                <div class="item-left">
-                    <span class="item-name">${item.kategori} <small style="font-weight:normal; opacity:0.7;">(${item.dompet})</small></span>
-                    <span class="item-date">${balikFormatTanggal(item.tanggal)} • ${item.jam || '00:00'}</span>
-                </div>
-                <div class="item-right ${clsColor}">
-                    ${tanda}${formatRupiah(item.jumlah)}
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-let jenisLaporanGlobal = 'masuk';
-let filterBulanLaporanGlobal = 'semua';
-
-function bukaHalamanLaporan(jenis) {
-    jenisLaporanGlobal = jenis;
-    bukaHalaman('page-laporan');
-    
-    let tTitle = document.getElementById('laporan-title');
-    let cBg = document.getElementById('laporan-card-bg');
-    let cLbl = document.getElementById('laporan-card-lbl');
-    
-    if(jenis === 'masuk') {
-        tTitle.innerText = "Laporan Pemasukan";
-        cBg.className = "dash-card card-large bg-masuk";
-        cLbl.innerText = "TOTAL PEMASUKAN TERCONTOH";
-    } else {
-        tTitle.innerText = "Laporan Pengeluaran";
-        cBg.className = "dash-card card-large bg-keluar";
-        cLbl.innerText = "TOTAL PENGELUARAN TERCONTOH";
-    }
-    
-    let daftarBulan = dapatkanUnikBulanTahunDompet();
-    if(filterBulanLaporanGlobal !== 'semua' && daftarBulan.indexOf(filterBulanLaporanGlobal) === -1) {
-        filterBulanLaporanGlobal = "semua";
-    }
-    
-    let tabsContainer = document.getElementById('tabs-laporan');
-    let htmlTabs = `<div class="tab-item ${(filterBulanLaporanGlobal === 'semua') ? 'active' : ''}" onclick="setFilterBulanLaporan('semua')">Semua Bulan</div>`;
-    daftarBulan.forEach(b => {
-        htmlTabs += `<div class="tab-item ${(filterBulanLaporanGlobal === b) ? 'active' : ''}" onclick="setFilterBulanLaporan('${b}')">${formatNamaBulanIndo(b)}</div>`;
-    });
-    tabsContainer.innerHTML = htmlTabs;
-    
-    renderKontenLaporan();
-}
-
-function setFilterBulanLaporan(b) {
-    filterBulanLaporanGlobal = b;
-    bukaHalamanLaporan(jenisLaporanGlobal);
-}
-
-function renderKontenLaporan() {
-    let container = document.getElementById('list-laporan');
-    let totalLabel = document.getElementById('laporan-card-total');
-    if(!container) return;
-    
-    let filtered = dbTransaksi.filter(item => {
-        if(item.dompet !== dompetAktifGlobal) return false;
-        if(item.jenis !== jenisLaporanGlobal) return false;
-        if(filterBulanLaporanGlobal !== 'semua' && !item.tanggal.startsWith(filterBulanLaporanGlobal)) return false;
-        return true;
-    });
-    
-    let totalSum = 0;
-    let petaKategori = {};
-    
-    filtered.forEach(item => {
-        totalSum += item.jumlah;
-        petaKategori[item.kategori] = (petaKategori[item.kategori] || 0) + item.jumlah;
-    });
-    
-    totalLabel.innerText = formatRupiah(totalSum);
-    
-    let urutKat = Object.keys(petaKategori).map(k => {
-        return { nama: k, nominal: petaKategori[k] };
-    });
-    urutKat.sort((a,b) => b.nominal - a.nominal);
-    
-    if(urutKat.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding:30px; font-size:12px; opacity:0.6;">Tidak ada data sirkulasi untuk laporan ini.</p>';
-        return;
-    }
-    
-    let html = '<div style="margin-top:10px; background:var(--card-bg); border-radius:10px; border:1px solid var(--border-color);">';
-    urutKat.forEach(item => {
-        let persen = totalSum > 0 ? Math.round((item.nominal / totalSum) * 100) : 0;
-        html += `
-            <div class="item-transaksi" style="cursor:default;">
-                <div class="item-left">
-                    <span class="item-name">${item.nama} <small style="color:var(--primary); font-weight:bold; margin-left:5px;">${persen}%</small></span>
-                    <div style="width:100%; background:var(--border-color); height:6px; border-radius:3px; margin-top:6px; overflow:hidden;">
-                        <div style="background:${jenisLaporanGlobal==='masuk'?'#2ecc71':'#e74c3c'}; width:${persen}%; height:100%;"></div>
-                    </div>
-                </div>
-                <div class="item-right" style="margin-left:15px;">
-                    ${formatRupiah(item.nominal)}
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function exportKeJSON() {
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-        transaksi: dbTransaksi,
-        hutang: dbHutang,
-        kategori_masuk: dbKategoriMasuk,
-        kategori_keluar: dbKategoriKeluar,
-        daftar_dompet: daftarDompetGlobal,
-        versi: "8.0"
-    }));
-    let dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", `BukuKasAul_Backup_${dapatkanTanggalHariIni()}.json`);
-    dlAnchorElem.click();
-}
-
-function pemicuImport() {
-    document.getElementById('input-backup').click();
-}
-
-function importDataUniversal(event) {
-    let file = event.target.files[0];
-    if (!file) return;
-    
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            let json = JSON.parse(e.target.result);
-            if(json.transaksi) {
-                dbTransaksi = json.transaksi;
-                if(json.hutang) dbHutang = json.hutang;
-                if(json.kategori_masuk) dbKategoriMasuk = json.kategori_masuk;
-                if(json.kategori_keluar) dbKategoriKeluar = json.kategori_keluar;
-                if(json.daftar_dompet) daftarDompetGlobal = json.daftar_dompet;
-                
-                if(daftarDompetGlobal.length > 0) dompetAktifGlobal = daftarDompetGlobal[0];
-                perbaruiSemuaData();
-                customSwal().fire('Berhasil Restore', 'Seluruh data berkas JSON berhasil diimpor masuk!', 'success');
-            } else {
-                customSwal().fire('Gagal', 'Format file backup tidak dikenali.', 'error');
-            }
-        } catch(err) {
-            customSwal().fire('Error', 'Gagal memproses file: ' + err.message, 'error');
-        }
-    };
-    reader.readAsText(file);
-}
-
-function hapusSemuaData() {
-    customSwal().fire({
-        title: 'Reset Total Database?',
-        text: 'Tindakan ini akan menghapus seluruh data transaksi, hutang, dan buku kas secara permanen!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e74c3c',
-        confirmButtonText: 'Ya, Reset Semua',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            localStorage.clear();
-            dbTransaksi = [];
-            dbHutang = [];
-            dbKategoriMasuk = ["Gaji", "Bonus", "Investasi", "Penjualan", "Lainnya"];
-            dbKategoriKeluar = ["Makanan", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Lainnya"];
-            daftarDompetGlobal = ["Dompet Utama"];
-            dompetAktifGlobal = "Dompet Utama";
-            
-            perbaruiSemuaData();
-            bukaHalaman('page-utama');
-            customSwal().fire('Selesai Reset', 'Database aplikasi kembali bersih seperti baru.', 'success');
-        }
-    });
-}
-
-function bukaHalamanInvoice() {
-    bukaHalaman('page-invoice');
-    let tgl = dapatkanTanggalHariIni();
-    document.getElementById('inv-tgl-mulai').value = tgl;
-    document.getElementById('label-kalender-inv-tgl-mulai').innerText = balikFormatTanggal(tgl);
-    document.getElementById('inv-tgl-akhir').value = tgl;
-    document.getElementById('label-kalender-inv-tgl-akhir').innerText = balikFormatTanggal(tgl);
-    
-    let sel = document.getElementById('inv-dompet');
-    if(sel) {
-        sel.innerHTML = '<option value="semua">Semua Dompet / Buku Kas</option>';
-        daftarDompetGlobal.forEach(d => {
-            let opt = document.createElement('option');
-            opt.value = d;
-            opt.innerText = d;
-            sel.appendChild(opt);
-        });
-    }
-}
-
-function prosesCetakPDF() {
-    let tglMulai = document.getElementById('inv-tgl-mulai').value;
-    let tglAkhir = document.getElementById('inv-tgl-akhir').value;
-    let dompetFilter = document.getElementById('inv-dompet').value;
-    
-    let filtered = dbTransaksi.filter(tx => {
-        if(dompetFilter !== 'semua' && tx.dompet !== dompetFilter) return false;
-        return (tx.tanggal >= tglMulai && tx.tanggal <= tglAkhir);
-    });
-    
-    filtered.sort((a,b) => a.tanggal.localeCompare(b.tanggal));
-    
-    let tMasuk = 0, tKeluar = 0;
-    let htmlBaris = '';
-    
-    filtered.forEach((tx, i) => {
-        if(tx.jenis === 'masuk') tMasuk += tx.jumlah;
-        else tKeluar += tx.jumlah;
-        
-        htmlBaris += `
-            <tr style="border-bottom:1px solid #ddd; font-size:11px;">
-                <td style="padding:8px; text-align:center;">${i+1}</td>
-                <td style="padding:8px;">${balikFormatTanggal(tx.tanggal)}<br><small style="opacity:0.6">${tx.jam||''}</small></td>
-                <td style="padding:8px;"><b>${tx.kategori}</b><br><small style="color:#7f8c8d;">Buku: ${tx.dompet}</small></td>
-                <td style="padding:8px; color:#2ecc71; text-align:right;">${tx.jenis==='masuk'?formatRupiah(tx.jumlah):'-'}</td>
-                <td style="padding:8px; color:#e74c3c; text-align:right;">${tx.jenis==='keluar'?formatRupiah(tx.jumlah):'-'}</td>
-            </tr>
-        `;
-    });
-    
-    let sAkhir = tMasuk - tKeluar;
-    
-    let templateHTML = `
-        <div style="padding:30px; color:#2c3e50; font-family:'Segoe UI',sans-serif;">
-            <div style="text-align:center; margin-bottom:25px; border-bottom:3px double #2c3e50; padding-bottom:15px;">
-                <h1 style="font-size:24px; margin:0; color:#3498db;">BUKU KAS AUL LAPORAN</h1>
-                <p style="font-size:12px; margin:5px 0 0 0; opacity:0.8;">Periode: ${balikFormatTanggal(tglMulai)} s.d ${balikFormatTanggal(tglAkhir)} | Filter: ${dompetFilter==='semua'?'Semua Buku Kas':dompetFilter}</p>
-            </div>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-                <thead>
-                    <tr style="background-color:#34495e; color:white; font-size:12px;">
-                        <th style="padding:10px; width:5%;">NO</th>
-                        <th style="padding:10px; width:15%; text-align:left;">TANGGAL</th>
-                        <th style="padding:10px; width:40%; text-align:left;">KATEGORI & SUMBER</th>
-                        <th style="padding:10px; width:20%; text-align:right;">DEBIT (MASUK)</th>
-                        <th style="padding:10px; width:20%; text-align:right;">KREDIT (KELUAR)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${htmlBaris || '<tr><td colspan="5" style="text-align:center; padding:20px; opacity:0.5; font-size:12px;">Tidak ditemukan data transaksi pada periode ini.</td></tr>'}
-                </tbody>
-            </table>
-            <div style="margin-top:30px; width:50%; margin-left:50%; font-size:13px;">
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-                    <span>Total Pemasukan (Debit):</span><span style="font-weight:bold; color:#2ecc71;">${formatRupiah(tMasuk)}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-                    <span>Total Pengeluaran (Kredit):</span><span style="font-weight:bold; color:#e74c3c;">${formatRupiah(tKeluar)}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; padding:10px 0; background:#f9f9f9; border-top:2px solid #2c3e50; margin-top:5px; padding-left:5px;">
-                    <span style="font-weight:bold;">SALDO AKHIR PERIODE:</span><span style="font-weight:bold; color:#3498db;">${formatRupiah(sAkhir)}</span>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    let elementSantara = document.createElement('div');
-    elementSantara.innerHTML = templateHTML;
-    
-    let opsiEkspor = {
-        margin: 5,
-        filename: `Laporan_BukuKas_Aul_${tglMulai}_to_${tglAkhir}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    
-    customSwal().fire({
-        title: 'Sedang Memproses',
-        text: 'Mohon tunggu berkas PDF Anda sedang dibuat...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-    });
-    
-    html2pdf().set(opsiEkspor).from(elementSantara).save().then(() => {
-        customSwal().fire('Berhasil Cetak', 'File PDF Laporan Keuangan Anda otomatis terunduh!', 'success');
-    }).catch(e => {
-        customSwal().fire('Gagal PDF', 'Terjadi kesalahan sistem: ' + e.message, 'error');
-    });
-}
-
-// KALENDER KUSTOM UNIVERSAL MODAL INTERAKTIF
-let inputTargetKalenderGlobal = "";
-let tanggalKalenderSiklusObj = new Date();
-
-function bukaModalKalenderKustom(targetId) {
-    inputTargetKalenderGlobal = targetId;
-    let nVal = document.getElementById(targetId).value;
-    if(nVal) tanggalKalenderSiklusObj = new Date(nVal);
-    else tanggalKalenderSiklusObj = new Date();
-    
-    renderStrukturKalenderSwal();
-}
-
-function renderStrukturKalenderSwal() {
-    let thn = tanggalKalenderSiklusObj.getFullYear();
-    let bln = tanggalKalenderSiklusObj.getMonth();
-    
-    let namaBulanList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    let teksHeader = `${namaBulanList[bln]} ${thn}`;
-    
-    let barisHariLabel = ['M', 'S', 'S', 'R', 'K', 'J', 'S'].map(h => `<div class="calendar-day-label">${h}</div>`).join('');
-    
-    let hariPertamaIdx = new Date(thn, bln, 1).getDay();
-    let totalHariBulanIni = new Date(thn, bln + 1, 0).getDate();
-    
-    let tglAktifTerpilih = document.getElementById(inputTargetKalenderGlobal).value;
-    
-    let htmlSel = '';
-    for(let i=0; i<hariPertamaIdx; i++) {
-        htmlSel += `<div class="calendar-cell-date empty"></div>`;
-    }
-    
-    for(let t=1; t<=totalHariBulanIni; t++) {
-        let stringYMD = `${thn}-${String(bln+1).padStart(2,'0')}-${String(t).padStart(2,'0')}`;
-        let clsPilih = (tglAktifTerpilih === stringYMD) ? "selected-day" : "";
-        htmlSel += `<div class="calendar-cell-date ${clsPilih}" onclick="pilihTanggalKustomSelesai('${stringYMD}')">${t}</div>`;
-    }
-    
-    let templateHTML = `
-        <div class="calendar-wrapper">
-            <div class="calendar-header-nav">
-                <button class="calendar-btn-nav" onclick="navigasiBulanKalender(-1)">❮ Prev</button>
-                <span style="color: var(--text-color);">${teksHeader}</span>
-                <button class="calendar-btn-nav" onclick="navigasiBulanKalender(1)">Next ❯</button>
-            </div>
-            <div class="calendar-grid-days">${barisHariLabel}</div>
-            <div class="calendar-cells">${htmlSel}</div>
-        </div>
-    `;
-    
-    if(Swal.isVisible() && document.getElementById('swal-holder-calendar')) {
-        document.getElementById('swal-holder-calendar').innerHTML = templateHTML;
-    } else {
-        customSwal().fire({
-            title: 'Pilih Tanggal',
-            html: `<div id="swal-holder-calendar">${templateHTML}</div>`,
-            showConfirmButton: false,
-            showCancelButton: true,
-            cancelButtonText: 'Batal'
-        });
-    }
-}
-
-function navigasiBulanKalender(arah) {
-    tanggalKalenderSiklusObj.setMonth(tanggalKalenderSiklusObj.getMonth() + arah);
-    renderStrukturKalenderSwal();
-}
-
-function pilihTanggalKustomSelesai(strYMD) {
-    document.getElementById(inputTargetKalenderGlobal).value = strYMD;
-    document.getElementById('label-kalender-' + inputTargetKalenderGlobal).innerText = balikFormatTanggal(strYMD);
-    Swal.close();
-    
-    if(inputTargetKalenderGlobal === 'cari-teks') eksekusiPencarian();
-}
-
-// MANAJEMEN DAN SINKRONISASI SUPABASE CLOUD (PERBAIKAN ALERT -> SWEETALERT2)
 async function cekSesiLogin() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if(session && session.user) {
-        sessionUserGlobal = session.user;
-        bukaHalaman('page-utama');
-        await tarikDataDariCloudSupabase();
-    } else {
-        sessionUserGlobal = null;
-        bukaHalaman('page-login');
+    if(!supabaseClient) return;
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        
+        if(session && session.user) {
+            sessionUserGlobal = session.user;
+            document.getElementById('lbl-saldo-utama').innerText = `Buku Kas: ${dompetAktifGlobal} ↗ (${sessionUserGlobal.email})`;
+            await unduhDataDariCloudSupabase();
+        } else {
+            sessionUserGlobal = null;
+            document.getElementById('lbl-saldo-utama').innerText = `Saldo ${dompetAktifGlobal} ↗ (Mode Offline Local)`;
+        }
+    } catch(err) {
+        console.error("Gagal memvalidasi sesi cloud:", err.message);
     }
+    perbaruiSemuaData();
 }
 
-async function handleSignIn() {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const loginBtn = document.getElementById('btn-login-cloud');
-    
-    if(!email || !password) {
-        return customSwal().fire('Data Kosong', 'Silakan isi email dan password Anda!', 'warning');
-    }
-
-    if (loginBtn) {
-        loginBtn.disabled = true;
-        loginBtn.innerText = 'Memverifikasi...';
-    }
-
+async function handleLogin() {
+    const btn = document.getElementById('btn-auth-masuk');
     try {
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        
+        if(!email || !password) {
+            return customSwal().fire('Peringatan', 'Isi email dan password!', 'warning');
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Memproses Masuk...";
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
         if (error) {
             customSwal().fire('Gagal Masuk', error.message, 'error');
         } else {
+            customSwal().fire({
+                title: 'Sukses',
+                text: 'Berhasil masuk ke cloud server!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            bukaHalaman('page-utama');
             await cekSesiLogin();
         }
     } catch (err) {
-        customSwal().fire('Error', err.message, 'error');
+        customSwal().fire('Kesalahan Sistem', err.message, 'error');
     } finally {
-        if (loginBtn) {
-            loginBtn.disabled = false;
-            loginBtn.innerText = 'Masuk Aplikasi (Sign In)';
-        }
+        btn.disabled = false;
+        btn.innerText = "Masuk Aplikasi";
     }
 }
 
 async function handleRegister() {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const registerBtn = document.getElementById('btn-register-cloud');
-    
-    if(!email || !password) {
-        return customSwal().fire('Data Kosong', 'Silakan isi email dan password baru untuk mendaftar!', 'warning');
-    }
-
-    if (registerBtn) {
-        registerBtn.disabled = true;
-        registerBtn.innerText = 'Mendaftar Akun...';
-    }
-
+    const btn = document.getElementById('btn-auth-daftar');
     try {
-        const { error } = await supabaseClient.auth.signUp({ email, password });
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        
+        if(!email || !password) {
+            return customSwal().fire('Peringatan', 'Isi email dan password untuk mendaftar!', 'warning');
+        }
+        if(password.length < 6) {
+            return customSwal().fire('Peringatan', 'Password minimal harus 6 karakter!', 'warning');
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Mendaftarkan Akun...";
+
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password
+        });
+
         if (error) {
             customSwal().fire('Gagal Daftar', error.message, 'error');
         } else {
-            customSwal().fire({
-                icon: 'success',
-                title: 'Sukses Mendaftar!',
-                text: 'Silakan periksa kotak masuk email Anda untuk verifikasi, lalu ketuk tombol Masuk.',
-                confirmButtonColor: '#3498db'
-            });
+            customSwal().fire('Sukses', 'Pendaftaran berhasil! Jika verifikasi email aktif silakan cek inbox Anda, atau Anda bisa langsung mencoba klik tombol Masuk.', 'success');
         }
     } catch (err) {
-        customSwal().fire('Error', err.message, 'error');
+        customSwal().fire('Kesalahan Sistem', err.message, 'error');
     } finally {
-        if (registerBtn) {
-            registerBtn.disabled = false;
-            registerBtn.innerText = 'Daftar Akun Baru (Sign Up)';
-        }
+        btn.disabled = false;
+        btn.innerText = "Belum Punya Akun? Daftar Akun";
     }
 }
 
 async function handleLogout() {
     customSwal().fire({
         title: 'Keluar Akun?',
-        text: 'Apakah Anda yakin ingin keluar dari sesi sinkronisasi cloud Buku Kas ini?',
+        text: 'Apakah Anda yakin ingin keluar dari akun Buku Kas ini?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ya, Keluar',
         cancelButtonText: 'Batal'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                customSwal().fire('Gagal Keluar', error.message, 'error');
-            } else {
-                sessionUserGlobal = null;
-                bukaHalaman('page-utama');
-                cekSesiLogin();
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    customSwal().fire('Gagal Keluar', error.message, 'error');
+                } else {
+                    sessionUserGlobal = null;
+                    dompetAktifGlobal = 'Dompet Utama';
+                    customSwal().fire({
+                        title: 'Keluar',
+                        text: 'Anda sekarang berada di Mode Offline.',
+                        icon: 'info',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    bukaHalaman('page-utama');
+                    await cekSesiLogin();
+                }
+            } catch (err) {
+                customSwal().fire('Kesalahan Sistem', err.message, 'error');
             }
         }
     });
 }
 
-async function tarikDataDariCloudSupabase() {
+async function unduhDataDariCloudSupabase() {
     if (!sessionUserGlobal) return;
     lockCloudSyncGlobal = true;
     try {
-        let { data, error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('buku_kas_cloud')
             .select('payload_data')
             .eq('user_id', sessionUserGlobal.id)
@@ -1631,15 +803,11 @@ async function tarikDataDariCloudSupabase() {
             if(p.hutang) dbHutang = p.hutang;
             if(p.kategori_masuk) dbKategoriMasuk = p.kategori_masuk;
             if(p.kategori_keluar) dbKategoriKeluar = p.kategori_keluar;
-            if(p.daftar_dompet) daftarDompetGlobal = p.daftar_dompet;
         }
     } catch (err) {
         console.error("Cloud down, menggunakan database offline: ", err.message);
     } finally {
         lockCloudSyncGlobal = false;
-        if(daftarDompetGlobal.indexOf(dompetAktifGlobal) === -1 && daftarDompetGlobal.length > 0) {
-            dompetAktifGlobal = daftarDompetGlobal[0];
-        }
         perbaruiSemuaData();
         sesuaikanKategori();
     }
@@ -1653,7 +821,6 @@ async function kirimDataKeCloudSupabase() {
             hutang: dbHutang,
             kategori_masuk: dbKategoriMasuk,
             kategori_keluar: dbKategoriKeluar,
-            daftar_dompet: daftarDompetGlobal,
             last_sync: new Date().toISOString()
         };
 
@@ -1669,19 +836,1262 @@ async function kirimDataKeCloudSupabase() {
     }
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    loadDarkMode();
-    muatDatabaseLokal();
-    
-    aturWaktuDefaultForm();
-    gantiJenisTransaksiKustom('masuk');
-    
-    hitungDashboardUtama();
-    renderRiwayatUtama();
-    isiDatalistDompet();
-    
+window.addEventListener('DOMContentLoaded', () => {
+    let t = localStorage.getItem('aul_buku_kas_transaksi');
+    let h = localStorage.getItem('aul_buku_kas_hutang');
+    let km = localStorage.getItem('aul_buku_kas_kat_masuk');
+    let kk = localStorage.getItem('aul_buku_kas_kat_keluar');
+    let dm = localStorage.getItem('aul_buku_kas_mode_gelap');
+
+    if(t) dbTransaksi = JSON.parse(t);
+    if(h) dbHutang = JSON.parse(h);
+    if(km) dbKategoriMasuk = JSON.parse(km);
+    if(kk) dbKategoriKeluar = JSON.parse(kk);
+    if(dm === 'ya') document.body.classList.add('dark-mode');
+
+    document.getElementById('tx-tanggal').value = dapatkanTanggalHariIni();
+    document.getElementById('label-kalender-tx-tanggal').innerText = formatTanggalIndo(dapatkanTanggalHariIni());
+    document.getElementById('tx-jam').value = dapatkanJamMenitSekarang();
+    document.getElementById('label-jam-tx-jam').innerText = dapatkanJamMenitSekarang();
+
     cekSesiLogin();
+    setupDropdownLuarTutup();
 });
+
+function simpanKeLocalStorageLocal() {
+    localStorage.setItem('aul_buku_kas_transaksi', JSON.stringify(dbTransaksi));
+    localStorage.setItem('aul_buku_kas_hutang', JSON.stringify(dbHutang));
+    localStorage.setItem('aul_buku_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
+    localStorage.setItem('aul_buku_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
+    kirimDataKeCloudSupabase();
+}
+
+function perbaruiSemuaData() {
+    let sUtama = hitungSaldoPerDompet(dompetAktifGlobal);
+    document.getElementById('total-saldo').innerText = formatRupiah(sUtama);
+
+    let pin = 0, pout = 0;
+    dbTransaksi.forEach(x => {
+        if(x.dompet === dompetAktifGlobal) {
+            if(x.jenis === 'masuk') pin += parseInt(x.jumlah);
+            else pout += parseInt(x.jumlah);
+        }
+    });
+    document.getElementById('total-pemasukan').innerText = formatRupiah(pin);
+    document.getElementById('total-pengeluaran').innerText = formatRupiah(pout);
+
+    renderRiwayatUtama();
+    sesuaikanKategori();
+    isiPilihanSelectDompetOtomatis();
+}
+
+function hitungSaldoPerDompet(namaDompet) {
+    let t = 0;
+    dbTransaksi.forEach(x => {
+        if(x.dompet === namaDompet) {
+            if(x.jenis === 'masuk') t += parseInt(x.jumlah);
+            else t -= parseInt(x.jumlah);
+        }
+    });
+    return t;
+}
+
+function formatTanggalIndo(s) {
+    if(!s) return '-';
+    let p = s.split('-');
+    if(p.length !== 3) return s;
+    return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function renderRiwayatUtama() {
+    let container = document.getElementById('list-utama');
+    let tabs = document.getElementById('tabs-utama');
+    if(!container || !tabs) return;
+
+    let filterData = dbTransaksi.filter(x => x.dompet === dompetAktifGlobal);
+    filterData.sort((a,b) => {
+        let da = a.tanggal + 'T' + (a.jam || '00:00');
+        let db = b.tanggal + 'T' + (b.jam || '00:00');
+        return db.localeCompare(da);
+    });
+
+    let grup = {};
+    filterData.forEach(x => {
+        let blnThn = x.tanggal.substring(0, 7);
+        if(!grup[blnThn]) grup[blnThn] = [];
+        grup[blnThn].push(x);
+    });
+
+    let keys = Object.keys(grup).sort((a,b) => b.localeCompare(a));
+    let tabAktif = localStorage.getItem('aul_tab_aktif_utama') || keys[0] || 'all';
+    if(!keys.includes(tabAktif)) tabAktif = keys[0] || 'all';
+
+    tabs.innerHTML = '';
+    if(keys.length === 0) {
+        tabs.innerHTML = '<div class="tab-item active">Semua Bulan</div>';
+        container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px; padding:20px 0;">Belum ada riwayat kas.</p>';
+        return;
+    }
+
+    keys.forEach(k => {
+        let p = k.split('-');
+        let lbl = namaBulanIndo(p[1]) + ' ' + p[2].substring(2);
+        let div = document.createElement('div');
+        div.className = `tab-item ${tabAktif === k ? 'active' : ''}`;
+        div.innerText = lbl;
+        div.onclick = () => {
+            localStorage.setItem('aul_tab_aktif_utama', k);
+            renderRiwayatUtama();
+        };
+        tabs.appendChild(div);
+    });
+
+    container.innerHTML = '';
+    let listData = grup[tabAktif] || [];
+    if(listData.length === 0) {
+        container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px; padding:20px 0;">Tidak ada data.</p>';
+        return;
+    }
+
+    listData.forEach(x => {
+        let item = document.createElement('div');
+        item.className = 'item-transaksi';
+        item.onclick = () => bukaAksiTransaksi(x.id);
+
+        let sJam = x.jam ? ' • ' + x.jam : '';
+        item.innerHTML = `
+            <div class="item-left">
+                <span class="item-name">${x.kategori}</span>
+                <span class="item-date">${formatTanggalIndo(x.tanggal)}${sJam}</span>
+            </div>
+            <div class="item-right ${x.jenis === 'masuk' ? 'txt-masuk' : 'txt-keluar'}">
+                ${x.jenis === 'masuk' ? '+' : '-'}${formatRupiah(x.jumlah)}
+            </div>
+            <div class="item-actions">
+                <button class="btn-icon">▶</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function namaBulanIndo(m) {
+    let idx = parseInt(m, 10) - 1;
+    let b = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return b[idx] || '';
+}
+
+function scrollTab(id, diff) {
+    let el = document.getElementById(id);
+    if(el) el.scrollLeft += diff;
+}
+
+function gantiJenisTransaksiKustom(j) {
+    document.getElementById('tx-jenis').value = j;
+    let sm = document.getElementById('seg-tx-masuk');
+    let sk = document.getElementById('seg-tx-keluar');
+    sm.className = 'segmented-item';
+    sk.className = 'segmented-item';
+    if(j==='masuk') {
+        sm.className = 'segmented-item active masuk';
+    } else {
+        sk.className = 'segmented-item active keluar';
+    }
+    sesuaikanKategori();
+}
+
+function gantiJenisEditKustom(j) {
+    document.getElementById('edit-tx-jenis').value = j;
+    let sm = document.getElementById('seg-edit-masuk');
+    let sk = document.getElementById('seg-edit-keluar');
+    sm.className = 'segmented-item';
+    sk.className = 'segmented-item';
+    if(j==='masuk') {
+        sm.className = 'segmented-item active masuk';
+    } else {
+        sk.className = 'segmented-item active keluar';
+    }
+    sesuaikanKategoriEdit();
+}
+
+function sesuaikanKategori() {
+    let jenis = document.getElementById('tx-jenis').value;
+    let list = jenis === 'masuk' ? dbKategoriMasuk : dbKategoriKeluar;
+    let container = document.getElementById('dropdown-list-utama');
+    if(!container) return;
+
+    container.innerHTML = '';
+    list.forEach(k => {
+        let div = document.createElement('div');
+        div.className = 'custom-dropdown-item';
+        div.innerText = k;
+        div.onclick = () => pilihDropdownKustomValue('dropdown-box-utama', k);
+        container.appendChild(div);
+    });
+
+    let divAdd = document.createElement('div');
+    divAdd.className = 'custom-dropdown-item special-add';
+    divAdd.innerText = '➕ Buat Kategori Baru...';
+    divAdd.onclick = () => tambahKategoriBaruPrompt(jenis);
+    container.appendChild(divAdd);
+
+    let h = document.getElementById('dropdown-val-utama');
+    if(h && !list.includes(h.innerText)) {
+        h.innerText = 'Pilih Kategori...';
+    }
+}
+
+function sesuaikanKategoriEdit() {
+    let jenis = document.getElementById('edit-tx-jenis').value;
+    let list = jenis === 'masuk' ? dbKategoriMasuk : dbKategoriKeluar;
+    let container = document.getElementById('dropdown-list-edit');
+    if(!container) return;
+
+    container.innerHTML = '';
+    list.forEach(k => {
+        let div = document.createElement('div');
+        div.className = 'custom-dropdown-item';
+        div.innerText = k;
+        div.onclick = () => pilihDropdownKustomValue('dropdown-box-edit', k);
+        container.appendChild(div);
+    });
+
+    let h = document.getElementById('dropdown-val-edit');
+    if(h && !list.includes(h.innerText)) {
+        h.innerText = list[0] || 'Pilih Kategori...';
+    }
+}
+
+function toggleDropdownKustom(boxId) {
+    let box = document.getElementById(boxId);
+    if(!box) return;
+    let list = box.querySelector('.custom-dropdown-list');
+    if(list.classList.contains('open')) {
+        list.classList.remove('open');
+    } else {
+        document.querySelectorAll('.custom-dropdown-list').forEach(l => l.classList.remove('open'));
+        list.classList.add('open');
+    }
+}
+
+function pilihDropdownKustomValue(boxId, val) {
+    let box = document.getElementById(boxId);
+    if(!box) return;
+    let headSpan = box.querySelector('.custom-dropdown-header span:first-child');
+    if(headSpan) headSpan.innerText = val;
+    box.querySelector('.custom-dropdown-list').classList.remove('open');
+}
+
+function setupDropdownLuarTutup() {
+    document.addEventListener('click', (e) => {
+        if(!e.target.closest('.custom-dropdown-box')) {
+            document.querySelectorAll('.custom-dropdown-list').forEach(l => l.classList.remove('open'));
+        }
+    });
+}
+
+function tambahKategoriBaruPrompt(jenis) {
+    document.querySelectorAll('.custom-dropdown-list').forEach(l => l.classList.remove('open'));
+    customSwal().fire({
+        title: 'Kategori Baru',
+        text: `Masukkan nama kategori ${jenis === 'masuk' ? 'Pemasukan' : 'Pengeluaran'} baru:`,
+        input: 'text',
+        showCancelButton: true,
+        confirmButtonText: 'Simpan'
+    }).then(res => {
+        if(res.isConfirmed && res.value) {
+            let v = res.value.trim();
+            if(!v) return;
+            if(jenis==='masuk') {
+                if(!dbKategoriMasuk.includes(v)) dbKategoriMasuk.push(v);
+                pilihDropdownKustomValue('dropdown-box-utama', v);
+            } else {
+                if(!dbKategoriKeluar.includes(v)) dbKategoriKeluar.push(v);
+                pilihDropdownKustomValue('dropdown-box-utama', v);
+            }
+            simpanKeLocalStorageLocal();
+            sesuaikanKategori();
+        }
+    });
+}
+
+function simpanTransaksi(e) {
+    e.preventDefault();
+    let tgl = document.getElementById('tx-tanggal').value;
+    let jam = document.getElementById('tx-jam').value;
+    let jns = document.getElementById('tx-jenis').value;
+    let jml = document.getElementById('tx-jumlah').value;
+    let kat = document.getElementById('dropdown-val-utama').innerText;
+
+    if(!kat || kat === 'Pilih Kategori...') {
+        return customSwal().fire('Peringatan', 'Silakan tentukan Kategori transaksi!', 'warning');
+    }
+
+    let item = {
+        id: 'tx_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+        tanggal: tgl,
+        jam: jam || '12:00',
+        jenis: jns,
+        kategori: kat,
+        jumlah: parseInt(jml),
+        dompet: dompetAktifGlobal
+    };
+
+    dbTransaksi.push(item);
+    simpanKeLocalStorageLocal();
+    perbaruiSemuaData();
+
+    document.getElementById('tx-jumlah').value = '';
+    document.getElementById('dropdown-val-utama').innerText = 'Pilih Kategori...';
+    customSwal().fire({ title: 'Tersimpan', text: 'Kas berhasil dicatat!', icon: 'success', timer: 1000, showConfirmButton: false });
+}
+
+let idAksiTargetGlobal = null;
+function bukaAksiTransaksi(id) {
+    idAksiTargetGlobal = id;
+    let modal = document.getElementById('modal-aksi-transaksi');
+    if(modal) modal.classList.add('active');
+}
+function tutupModalAksiTransaksi() {
+    let modal = document.getElementById('modal-aksi-transaksi');
+    if(modal) modal.classList.remove('active');
+}
+
+function hapusTransaksiDariModal() {
+    if(!idAksiTargetGlobal) return;
+    customSwal().fire({
+        title: 'Hapus Transaksi?',
+        text: 'Data kas ini akan dihapus permanen!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus'
+    }).then(res => {
+        if(res.isConfirmed) {
+            dbTransaksi = dbTransaksi.filter(x => x.id !== idAksiTargetGlobal);
+            simpanKeLocalStorageLocal();
+            perbaruiSemuaData();
+            tutupModalAksiTransaksi();
+            customSwal().fire('Terhapus', 'Transaksi sukses dikeluarkan.', 'success');
+        }
+    });
+}
+
+function editTransaksi() {
+    if(!idAksiTargetGlobal) return;
+    let x = dbTransaksi.find(t => t.id === idAksiTargetGlobal);
+    if(!x) return;
+
+    tutupModalAksiTransaksi();
+    document.getElementById('edit-tx-id-edit').value = x.id;
+    document.getElementById('edit-tx-tanggal').value = x.tanggal;
+    document.getElementById('label-kalender-edit-tx-tanggal').innerText = formatTanggalIndo(x.tanggal);
+    document.getElementById('edit-tx-jam').value = x.jam || '12:00';
+    document.getElementById('label-jam-edit-tx-jam').innerText = x.jam || '12:00';
+    document.getElementById('edit-tx-jumlah').value = x.jumlah;
+    
+    gantiJenisEditKustom(x.jenis);
+    pilihDropdownKustomValue('dropdown-box-edit', x.kategori);
+
+    document.getElementById('modal-edit-transaksi').classList.add('active');
+}
+
+function tutupModalEditTransaksi() {
+    document.getElementById('modal-edit-transaksi').classList.remove('active');
+}
+
+function prosesSimpanEditTransaksi(e) {
+    e.preventDefault();
+    let id = document.getElementById('edit-tx-id-edit').value;
+    let x = dbTransaksi.find(t => t.id === id);
+    if(!x) return;
+
+    let kat = document.getElementById('dropdown-val-edit').innerText;
+    if(!kat || kat === 'Pilih Kategori...') {
+        return customSwal().fire('Peringatan', 'Pilih Kategori valid!', 'warning');
+    }
+
+    x.tanggal = document.getElementById('edit-tx-tanggal').value;
+    x.jam = document.getElementById('edit-tx-jam').value;
+    x.jenis = document.getElementById('edit-tx-jenis').value;
+    x.jumlah = parseInt(document.getElementById('edit-tx-jumlah').value);
+    x.kategori = kat;
+
+    simpanKeLocalStorageLocal();
+    perbaruiSemuaData();
+    tutupModalEditTransaksi();
+    customSwal().fire('Berhasil', 'Perubahan transaksi disimpan.', 'success');
+}
+
+function bukaModalDompet() {
+    let modal = document.getElementById('modal-dompet-kustom');
+    if(!modal) return;
+    modal.classList.add('active');
+
+    let lbl = document.getElementById('md-lbl-dompet-aktif');
+    lbl.innerText = `BUKU KAS AKTIF: ${dompetAktifGlobal.toUpperCase()}`;
+    document.getElementById('md-total-saldo').innerText = formatRupiah(hitungSaldoPerDompet(dompetAktifGlobal));
+
+    let container = document.getElementById('md-daftar-per-dompet');
+    container.innerHTML = '';
+    DAFTAR_DOMPET_SISTEM.forEach(d => {
+        let div = document.createElement('div');
+        div.style.padding = '12px';
+        div.style.borderBottom = '1px solid var(--border-color)';
+        div.style.cursor = 'pointer';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.background = (d === dompetAktifGlobal) ? 'rgba(52, 152, 219, 0.15)' : 'transparent';
+        div.style.fontWeight = (d === dompetAktifGlobal) ? 'bold' : 'normal';
+
+        div.onclick = () => {
+            dompetAktifGlobal = d;
+            let ses = sessionUserGlobal ? ` (${sessionUserGlobal.email})` : ' (Mode Offline Local)';
+            document.getElementById('lbl-saldo-utama').innerText = `Buku Kas: ${dompetAktifGlobal} ↗${ses}`;
+            tutupModalDompet();
+            perbaruiSemuaData();
+        };
+
+        div.innerHTML = `<span>${d}</span> <span style="font-weight:bold; color:(hitungSaldoPerDompet(d)<0?'#e74c3c':'inherit')">${formatRupiah(hitungSaldoPerDompet(d))}</span>`;
+        container.appendChild(div);
+    });
+}
+
+function tutupModalDompet() {
+    document.getElementById('modal-dompet-kustom').classList.remove('active');
+}
+
+function isiPilihanSelectDompetOtomatis() {
+    let sd = document.getElementById('cari-dompet');
+    let td = document.getElementById('trf-dari');
+    let tk = document.getElementById('trf-ke');
+    let id= document.getElementById('inv-dompet');
+
+    if(sd) {
+        sd.innerHTML = '<option value="semua">Semua Buku Kas</option>';
+        DAFTAR_DOMPET_SISTEM.forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
+    }
+    if(td && tk) {
+        let prevDari = td.value, prevKe = tk.value;
+        td.innerHTML = ''; tk.innerHTML = '';
+        DAFTAR_DOMPET_SISTEM.forEach(d => {
+            td.innerHTML += `<option value="${d}">${d}</option>`;
+            tk.innerHTML += `<option value="${d}">${d}</option>`;
+        });
+        if(prevDari) td.value = prevDari; else td.value = DAFTAR_DOMPET_SISTEM[0];
+        if(prevKe) tk.value = prevKe; else tk.value = DAFTAR_DOMPET_SISTEM[1];
+    }
+    if(id) {
+        id.innerHTML = '<option value="semua">Semua Dompet</option>';
+        DAFTAR_DOMPET_SISTEM.forEach(d => id.innerHTML += `<option value="${d}">${d}</option>`);
+    }
+}
+
+function bukaHalamanPencarian() {
+    bukaHalaman('page-pencarian');
+    eksekusiPencarian();
+}
+
+function eksekusiPencarian() {
+    let teks = document.getElementById('cari-teks').value.toLowerCase().trim();
+    let jenis = document.getElementById('cari-jenis').value;
+    let dompet = document.getElementById('cari-dompet').value;
+    let container = document.getElementById('hasil-pencarian');
+
+    let res = dbTransaksi.filter(x => {
+        if(jenis !== 'semua' && x.jenis !== jenis) return false;
+        if(dompet !== 'semua' && x.dompet !== dompet) return false;
+        if(teks) {
+            let kMatch = x.kategori.toLowerCase().includes(teks);
+            let nMatch = x.jumlah.toString().includes(teks);
+            if(!kMatch && !nMatch) return false;
+        }
+        return true;
+    });
+
+    res.sort((a,b) => (b.tanggal + 'T' + (b.jam||'00:00')).localeCompare(a.tanggal + 'T' + (a.jam||'00:00')));
+
+    container.innerHTML = '';
+    if(res.length === 0) {
+        container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px; padding:30px 0;">Pencarian tidak menemukan kecocokan.</p>';
+        return;
+    }
+
+    res.forEach(x => {
+        let item = document.createElement('div');
+        item.className = 'item-transaksi';
+        item.onclick = () => { bukaAksiTransaksi(x.id); tutupModalAksiTransaksi(); };
+        item.innerHTML = `
+            <div class="item-left">
+                <span class="item-name">${x.kategori} <small style="opacity:0.6;font-weight:normal;">[${x.dompet}]</small></span>
+                <span class="item-date">${formatTanggalIndo(x.tanggal)} ${x.jam||''}</span>
+            </div>
+            <div class="item-right ${x.jenis === 'masuk' ? 'txt-masuk' : 'txt-keluar'}">
+                ${x.jenis === 'masuk' ? '+' : '-'}${formatRupiah(x.jumlah)}
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+let tabKategoriAktifGlobal = 'keluar';
+function bukaHalamanKategori() {
+    bukaHalaman('page-kategori');
+    renderManajemenKategoriList();
+}
+function switchTabKategori(j) {
+    tabKategoriAktifGlobal = j;
+    document.getElementById('tab-kat-pengeluaran').className = j === 'keluar' ? 'tab-item active' : 'tab-item';
+    document.getElementById('tab-kat-pemasukan').className = j === 'masuk' ? 'tab-item active' : 'tab-item';
+    renderManajemenKategoriList();
+}
+function renderManajemenKategoriList() {
+    let list = tabKategoriAktifGlobal === 'masuk' ? dbKategoriMasuk : dbKategoriKeluar;
+    let container = document.getElementById('list-kategori-manage');
+    container.innerHTML = '';
+
+    list.forEach(k => {
+        let div = document.createElement('div');
+        div.className = 'item-transaksi';
+        div.style.cursor = 'default';
+        div.innerHTML = `
+            <div class="item-left"><span class="item-name">${k}</span></div>
+            <div><button class="btn-icon" style="color:#e74c3c; font-weight:bold; font-size:16px;" onclick="hapusKategoriSpesifik('${k}')">🗑️</button></div>
+        `;
+        container.appendChild(div);
+    });
+
+    let divAdd = document.createElement('div');
+    divAdd.className = 'item-transaksi';
+    divAdd.style.background = 'rgba(52, 152, 219, 0.08)';
+    divAdd.innerHTML = `<div style="text-align:center;width:100%;color:var(--primary);font-weight:bold;">➕ Tambah Kategori Baru</div>`;
+    divAdd.onclick = () => tambahKategoriBaruPrompt(tabKategoriAktifGlobal);
+    container.appendChild(divAdd);
+}
+function hapusKategoriSpesifik(kName) {
+    customSwal().fire({
+        title: 'Hapus Kategori?',
+        text: `Kategori "${kName}" akan dihapus dari opsi. Transaksi yang sudah tercatat dengan kategori ini tidak akan hilang.`,
+        icon: 'warning',
+        showCancelButton: true
+    }).then(res => {
+        if(res.isConfirmed) {
+            if(tabKategoriAktifGlobal === 'masuk') {
+                dbKategoriMasuk = dbKategoriMasuk.filter(x => x !== kName);
+            } else {
+                dbKategoriKeluar = dbKategoriKeluar.filter(x => x !== kName);
+            }
+            simpanKeLocalStorageLocal();
+            renderManajemenKategoriList();
+            sesuaikanKategori();
+        }
+    });
+}
+
+let jenisLaporanGlobal = 'masuk';
+function bukaHalamanLaporan(jenis) {
+    jenisLaporanGlobal = jenis;
+    bukaHalaman('page-laporan');
+
+    let title = document.getElementById('laporan-title');
+    let cardBg = document.getElementById('laporan-card-bg');
+    let cardLbl = document.getElementById('laporan-card-lbl');
+
+    if(jenis === 'masuk') {
+        title.innerText = 'Laporan Pemasukan';
+        cardBg.className = 'dash-card card-large bg-masuk';
+        cardLbl.innerText = 'TOTAL PEMASUKAN DOMPET SEKARANG';
+    } else {
+        title.innerText = 'Laporan Pengeluaran';
+        cardBg.className = 'dash-card card-large bg-keluar';
+        cardLbl.innerText = 'TOTAL PENGELUARAN DOMPET SEKARANG';
+    }
+    renderLaporanHalamanUtama();
+}
+function renderLaporanHalamanUtama() {
+    let container = document.getElementById('list-laporan');
+    let tabs = document.getElementById('tabs-laporan');
+    let totalLabel = document.getElementById('laporan-card-total');
+
+    let filterData = dbTransaksi.filter(x => x.dompet === dompetAktifGlobal && x.jenis === jenisLaporanGlobal);
+    let grup = {};
+    filterData.forEach(x => {
+        let b = x.tanggal.substring(0,7);
+        if(!grup[b]) grup[b] = [];
+        grup[b].push(x);
+    });
+
+    let keys = Object.keys(grup).sort((a,b) => b.localeCompare(a));
+    let tabLaporAktif = localStorage.getItem('aul_tab_lapor_aktif') || keys[0] || 'all';
+    if(!keys.includes(tabLaporAktif)) tabLaporAktif = keys[0] || 'all';
+
+    tabs.innerHTML = '';
+    if(keys.length === 0) {
+        tabs.innerHTML = '<div class="tab-item active">Kosong</div>';
+        container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px; padding:30px 0;">Tidak ada catatan analisis.</p>';
+        totalLabel.innerText = 'Rp 0';
+        return;
+    }
+
+    keys.forEach(k => {
+        let p = k.split('-');
+        let lbl = namaBulanIndo(p[1]) + ' ' + p[2].substring(2);
+        let div = document.createElement('div');
+        div.className = `tab-item ${tabLaporAktif === k ? 'active' : ''}`;
+        div.innerText = lbl;
+        div.onclick = () => {
+            localStorage.setItem('aul_tab_lapor_aktif', k);
+            renderLaporanHalamanUtama();
+        };
+        tabs.appendChild(div);
+    });
+
+    let listData = grup[tabLaporAktif] || [];
+    let grandTotal = 0;
+    let katSum = {};
+
+    listData.forEach(x => {
+        grandTotal += parseInt(x.jumlah);
+        katSum[x.kategori] = (katSum[x.kategori] || 0) + parseInt(x.jumlah);
+    });
+
+    totalLabel.innerText = formatRupiah(grandTotal);
+
+    let arrKat = Object.keys(katSum).map(k => ({ nama: k, total: katSum[k] }));
+    arrKat.sort((a,b) => b.total - a.total);
+
+    container.innerHTML = '';
+    
+    let chartHtml = '<div class="chart-container">';
+    let maxVal = Math.max(...arrKat.map(o => o.total)) || 1;
+    let cArr = arrKat.slice(0, 4);
+    cArr.forEach(c => {
+        let hPercent = Math.max(5, Math.round((c.total / maxVal) * 100));
+        let cls = jenisLaporanGlobal === 'masuk' ? 'bar-masuk' : 'bar-keluar';
+        chartHtml += `
+            <div class="chart-bar-wrapper">
+                <span class="chart-val">${Math.round(c.total/1000)}k</span>
+                <div class="chart-bar ${cls}" style="height: ${hPercent}px;"></div>
+                <span class="chart-label">${c.nama.substring(0,5)}</span>
+            </div>
+        `;
+    });
+    chartHtml += '</div>';
+    
+    if(arrKat.length > 0) {
+        let wrapper = document.createElement('div');
+        wrapper.innerHTML = chartHtml;
+        container.appendChild(wrapper);
+    }
+
+    arrKat.forEach(x => {
+        let pct = grandTotal > 0 ? Math.round((x.total / grandTotal)*100) : 0;
+        let item = document.createElement('div');
+        item.className = 'item-transaksi';
+        item.style.cursor = 'default';
+        item.innerHTML = `
+            <div class="item-left">
+                <span class="item-name">${x.nama}</span>
+                <span class="item-date">${pct}% porsi dari total bulanan</span>
+            </div>
+            <div class="item-right" style="margin-right:0; font-size:15px;">
+                ${formatRupiah(x.total)}
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function simpanHutang(e) {
+    e.preventDefault();
+    let tgl = document.getElementById('ht-tanggal').value;
+    let jns = document.getElementById('ht-jenis').value;
+    let nama = document.getElementById('ht-nama').value.trim();
+    let nom = document.getElementById('ht-nominal').value;
+
+    if(!tgl) return customSwal().fire('Peringatan', 'Isi Tanggal Catatan!', 'warning');
+
+    let item = {
+        id: 'ht_' + Date.now(),
+        tanggal: tgl,
+        jenis: jns,
+        nama: nama,
+        nominal: parseInt(nom),
+        cicilan: [],
+        lunas: false,
+        dompet_asal: dompetAktifGlobal
+    };
+
+    dbHutang.push(item);
+
+    let txItem = {
+        id: 'tx_ht_' + Date.now(),
+        tanggal: tgl,
+        jam: dapatkanJamMenitSekarang(),
+        jenis: jns === 'hutang' ? 'masuk' : 'keluar',
+        kategori: jns === 'hutang' ? '[Hutang] ' + nama : '[Piutang] ' + nama,
+        jumlah: parseInt(nom),
+        dompet: dompetAktifGlobal
+    };
+    dbTransaksi.push(txItem);
+
+    simpanKeLocalStorageLocal();
+    perbaruiSemuaData();
+    renderHutangHalaman();
+
+    document.getElementById('ht-nama').value = '';
+    document.getElementById('ht-nominal').value = '';
+    customSwal().fire('Tersimpan', 'Catatan Hutang Piutang Ditambahkan & Kas otomatis disesuaikan!', 'success');
+}
+
+function renderHutangHalaman() {
+    let container = document.getElementById('list-hutang-semua');
+    if(!container) return;
+    container.innerHTML = '';
+
+    if(dbHutang.length === 0) {
+        container.innerHTML = '<p style="text-align:center; opacity:0.6; font-size:12px; padding:20px 0;">Tidak Ada Tanggungan Hutang/Piutang.</p>';
+        return;
+    }
+
+    let urut = [...dbHutang].reverse();
+    urut.forEach(x => {
+        let tBayar = 0;
+        x.cicilan.forEach(c => tBayar += parseInt(c.nominal));
+        let sisa = x.nominal - tBayar;
+        if(sisa <= 0) x.lunas = true;
+
+        let div = document.createElement('div');
+        div.style.background = 'var(--card-bg)';
+        div.style.padding = '12px';
+        div.style.borderRadius = '10px';
+        div.style.marginBottom = '10px';
+        div.style.border = '1px solid var(--border-color)';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        if(x.lunas) div.style.opacity = '0.55';
+
+        let lblJenis = x.jenis === 'hutang' ? '<span style="color:#f39c12;font-weight:bold;font-size:10px;">HUTANG KITA</span>' : '<span style="color:#3498db;font-weight:bold;font-size:10px;">PIUTANG ORANG</span>';
+        let txtCetakLunas = x.lunas ? ' <span style="color:#2ecc71; font-weight:bold;">[LUNAS]</span>' : '';
+
+        div.onclick = () => bukaAksiHutangModal(x.id);
+
+        div.innerHTML = `
+            <div style="flex:1; display:flex; flex-direction:column;">
+                ${lblJenis}
+                <span style="font-weight:bold; font-size:14px; margin-top:2px;">${x.nama}${txtCetakLunas}</span>
+                <span style="font-size:11px; color:#7f8c8d;">Awal: ${formatRupiah(x.nominal)} • Sisa: <b>${formatRupiah(sisa)}</b></span>
+            </div>
+            <div><button class="btn-icon" style="font-size:15px;">⚙️</button></div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+let idHutangAksiTargetGlobal = null;
+function bukaAksiHutangModal(id) {
+    idHutangAksiTargetGlobal = id;
+    document.getElementById('modal-aksi-hutang').classList.add('active');
+}
+function tutupModalAksiHutang() {
+    document.getElementById('modal-aksi-hutang').classList.remove('active');
+}
+
+function hapusHutangDariModal() {
+    if(!idHutangAksiTargetGlobal) return;
+    customSwal().fire({
+        title: 'Hapus Catatan?',
+        text: 'Seluruh riwayat cicilan ini dicabut tanpa mempengaruhi saldo riwayat utama.',
+        icon: 'warning',
+        showCancelButton: true
+    }).then(r => {
+        if(r.isConfirmed) {
+            dbHutang = dbHutang.filter(x => x.id !== idHutangAksiTargetGlobal);
+            simpanKeLocalStorageLocal();
+            tutupModalAksiHutang();
+            renderHutangHalaman();
+            customSwal().fire('Terhapus', 'Catatan dibersihkan.', 'success');
+        }
+    });
+}
+
+function editHutang() {
+    if(!idHutangAksiTargetGlobal) return;
+    let x = dbHutang.find(h => h.id === idHutangAksiTargetGlobal);
+    if(!x) return;
+
+    tutupModalAksiHutang();
+    document.getElementById('edit-ht-id').value = x.id;
+    document.getElementById('edit-ht-tanggal').value = x.tanggal;
+    document.getElementById('label-kalender-edit-ht-tanggal').innerText = formatTanggalIndo(x.tanggal);
+    document.getElementById('edit-ht-jenis').value = x.jenis;
+    document.getElementById('edit-ht-nama').value = x.nama;
+    document.getElementById('edit-ht-nominal').value = x.nominal;
+
+    document.getElementById('modal-edit-hutang').classList.add('active');
+}
+function tutupModalEditHutang() {
+    document.getElementById('modal-edit-hutang').classList.remove('active');
+}
+function prosesSimpanEditHutang(e) {
+    e.preventDefault();
+    let id = document.getElementById('edit-ht-id').value;
+    let x = dbHutang.find(h => h.id === id);
+    if(!x) return;
+
+    x.tanggal = document.getElementById('edit-ht-tanggal').value;
+    x.jenis = document.getElementById('edit-ht-jenis').value;
+    x.nama = document.getElementById('edit-ht-nama').value.trim();
+    x.nominal = parseInt(document.getElementById('edit-ht-nominal').value);
+
+    simpanKeLocalStorageLocal();
+    tutupModalEditHutang();
+    renderHutangHalaman();
+    perbaruiSemuaData();
+    customSwal().fire('Disimpan', 'Perubahan utang diupdate.', 'success');
+}
+
+function bukaModalCicilanDariAksi() {
+    if(!idHutangAksiTargetGlobal) return;
+    let x = dbHutang.find(h => h.id === idHutangAksiTargetGlobal);
+    if(!x) return;
+
+    tutupModalAksiHutang();
+    document.getElementById('cc-id-hutang').value = x.id;
+    document.getElementById('cc-title-nama').innerText = `Cicilan / Pelunasan: ${x.nama}`;
+    document.getElementById('cc-tanggal').value = dapatkanTanggalHariIni();
+    document.getElementById('label-kalender-cc-tanggal').innerText = formatTanggalIndo(dapatkanTanggalHariIni());
+
+    let tBayar = 0;
+    x.cicilan.forEach(c => tBayar += parseInt(c.nominal));
+    let sisa = x.nominal - tBayar;
+
+    document.getElementById('cc-info-sisa').innerText = `Sisa Tagihan Berjalan: ${formatRupiah(sisa)}`;
+    document.getElementById('cc-nominal').value = sisa > 0 ? sisa : '';
+
+    let rList = document.getElementById('cc-riwayat-list');
+    rList.innerHTML = '';
+    if(x.cicilan.length === 0) rList.innerHTML = '<span style="opacity:0.5; font-style:italic;">Belum ada pembayaran masuk.</span>';
+    x.cicilan.forEach((c, idx) => {
+        rList.innerHTML += `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color); padding:3px 0;">
+                <span>${idx+1}. ${formatTanggalIndo(c.tanggal)}</span>
+                <b>${formatRupiah(c.nominal)}</b>
+            </div>
+        `;
+    });
+
+    document.getElementById('modal-cicilan-kustom').classList.add('active');
+}
+function tutupModalCicilan() {
+    document.getElementById('modal-cicilan-kustom').classList.remove('active');
+}
+function prosesSimpanCicilan(e) {
+    e.preventDefault();
+    let id = document.getElementById('cc-id-hutang').value;
+    let x = dbHutang.find(h => h.id === id);
+    if(!x) return;
+
+    let tgl = document.getElementById('cc-tanggal').value;
+    let nom = parseInt(document.getElementById('cc-nominal').value);
+
+    x.cicilan.push({ tanggal: tgl, nominal: nom });
+
+    let tBayar = 0;
+    x.cicilan.forEach(c => tBayar += parseInt(c.nominal));
+    if(tBayar >= x.nominal) x.lunas = true;
+
+    let txItem = {
+        id: 'tx_cc_' + Date.now(),
+        tanggal: tgl,
+        jam: dapatkanJamMenitSekarang(),
+        jenis: x.jenis === 'hutang' ? 'keluar' : 'masuk',
+        kategori: x.jenis === 'hutang' ? `[Cicil Hutang] ${x.nama}` : `[Cicil Piutang] ${x.nama}`,
+        jumlah: nom,
+        dompet: dompetAktifGlobal
+    };
+    dbTransaksi.push(txItem);
+
+    simpanKeLocalStorageLocal();
+    perbaruiSemuaData();
+    tutupModalCicilan();
+    renderHutangHalaman();
+    customSwal().fire('Sukses', 'Pembayaran cicilan dicatat ke saldo dompet aktif!', 'success');
+}
+
+function eksekusiTransfer(e) {
+    e.preventDefault();
+    let tgl = document.getElementById('trf-tanggal').value;
+    let dari = document.getElementById('trf-dari').value;
+    let ke = document.getElementById('trf-ke').value;
+    let nom = parseInt(document.getElementById('trf-nominal').value);
+
+    if(dari === ke) {
+        return customSwal().fire('Eror Transfer', 'Buku Kas asal dan tujuan tidak boleh sama!', 'error');
+    }
+    let sDari = hitungSaldoPerDompet(dari);
+    if(sDari < nom) {
+        return customSwal().fire('Saldo Kurang', `Saldo di ${dari} tidak cukup (Tersedia ${formatRupiah(sDari)})`, 'warning');
+    }
+
+    let idGrup = 'trf_group_' + Date.now();
+
+    dbTransaksi.push({
+        id: 'tx_trf_out_' + Date.now() + '_1',
+        tanggal: tgl,
+        jam: dapatkanJamMenitSekarang(),
+        jenis: 'keluar',
+        kategori: `🔄 Trf ke ${ke}`,
+        jumlah: nom,
+        dompet: dari,
+        transfer_group: idGrup
+    });
+
+    dbTransaksi.push({
+        id: 'tx_trf_in_' + Date.now() + '_2',
+        tanggal: tgl,
+        jam: dapatkanJamMenitSekarang(),
+        jenis: 'masuk',
+        kategori: `🔄 Trf dari ${dari}`,
+        jumlah: nom,
+        dompet: ke,
+        transfer_group: idGrup
+    });
+
+    simpanKeLocalStorageLocal();
+    perbaruiSemuaData();
+    document.getElementById('trf-nominal').value = '';
+    customSwal().fire('Transfer Berhasil', `Dana dipindahkan dari ${dari} ke ${ke} sebesar ${formatRupiah(nom)}`, 'success');
+    bukaHalaman('page-utama');
+}
+
+function toggleDarkMode() {
+    let b = document.body;
+    b.classList.toggle('dark-mode');
+    if(b.classList.contains('dark-mode')) {
+        localStorage.setItem('aul_buku_kas_mode_gelap', 'ya');
+    } else {
+        localStorage.setItem('aul_buku_kas_mode_gelap', 'tidak');
+    }
+}
+
+function exportKeJSON() {
+    let paket = {
+        aplikasi: "Buku Kas Aul v8 Pro",
+        waktu_backup: new Date().toISOString(),
+        transaksi: dbTransaksi,
+        hutang: dbHutang,
+        kategori_masuk: dbKategoriMasuk,
+        kategori_keluar: dbKategoriKeluar
+    };
+    let str = JSON.stringify(paket, null, 2);
+    let blob = new Blob([str], { type: "application/json" });
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Backup_BukuKas_Aul_v8_Pro_${dapatkanTanggalHariIni()}.json`;
+    a.click();
+}
+
+function pemicuImport() {
+    document.getElementById('input-backup').click();
+}
+function importDataUniversal(e) {
+    let file = e.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            let res = JSON.parse(evt.target.result);
+            if(res.transaksi || res.hutang) {
+                if(res.transaksi) dbTransaksi = res.transaksi;
+                if(res.hutang) dbHutang = res.hutang;
+                if(res.kategori_masuk) dbKategoriMasuk = res.kategori_masuk;
+                if(res.kategori_keluar) dbKategoriKeluar = res.kategori_keluar;
+
+                simpanKeLocalStorageLocal();
+                perbaruiSemuaData();
+                customSwal().fire('Restore Berhasil', 'Database lokal berhasil dipulihkan secara utuh!', 'success');
+            } else {
+                customSwal().fire('Format Salah', 'File JSON tidak kompatibel dengan skema Buku Kas Pro.', 'error');
+            }
+        } catch(err) {
+            customSwal().fire('Gagal', 'File rusak atau bukan format JSON valid.', 'error');
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+}
+
+function hapusSemuaData() {
+    customSwal().fire({
+        title: 'Reset Total Database?',
+        text: 'PERINGATAN! Seluruh data kas lokal offline Anda akan dimusnahkan. Tindakan ini permanen.',
+        icon: 'danger',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Bersihkan!'
+    }).then(res => {
+        if(res.isConfirmed) {
+            dbTransaksi = []; dbHutang = [];
+            dbKategoriMasuk = ['Gaji', 'Penjualan', 'Investasi', 'Transfer Masuk', 'Lainnya'];
+            dbKategoriKeluar = ['Makanan', 'Transportasi', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Pendidikan', 'Transfer Keluar', 'Lainnya'];
+            simpanKeLocalStorageLocal();
+            perbaruiSemuaData();
+            customSwal().fire('Reset Berhasil', 'Aplikasi bersih seperti baru.', 'success');
+        }
+    });
+}
+
+function bukaHalamanInvoice() {
+    bukaHalaman('page-invoice');
+    document.getElementById('inv-tgl-mulai').value = dapatkanTanggalHariIni();
+    document.getElementById('label-kalender-inv-tgl-mulai').innerText = formatTanggalIndo(dapatkanTanggalHariIni());
+    document.getElementById('inv-tgl-akhir').value = dapatkanTanggalHariIni();
+    document.getElementById('label-kalender-inv-tgl-akhir').innerText = formatTanggalIndo(dapatkanTanggalHariIni());
+}
+
+function prosesCetakPDF() {
+    let tMulai = document.getElementById('inv-tgl-mulai').value;
+    let tAkhir = document.getElementById('inv-tgl-akhir').value;
+    let dom = document.getElementById('inv-dompet').value;
+
+    if(!tMulai || !tAkhir) return customSwal().fire('Gagal', 'Tentukan rentang tanggal invoice!', 'error');
+
+    let f = dbTransaksi.filter(x => {
+        if(dom !== 'semua' && x.dompet !== dom) return false;
+        return (x.tanggal >= tMulai && x.tanggal <= tAkhir);
+    });
+
+    f.sort((a,b) => (a.tanggal + 'T' + (a.jam||'00:00')).localeCompare(b.tanggal + 'T' + (b.jam||'00:00')));
+
+    let totalIn = 0, totalOut = 0;
+    let tbodyHtml = '';
+    if(f.length === 0) {
+        tbodyHtml = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">Tidak ada catatan transaksi pada filter rentang ini.</td></tr>';
+    } else {
+        f.forEach((x, i) => {
+            if(x.jenis === 'masuk') totalIn += parseInt(x.jumlah);
+            else totalOut += parseInt(x.jumlah);
+            let sJumlah = x.jenis==='masuk' ? `+${formatRupiah(x.jumlah)}` : `-${formatRupiah(x.jumlah)}`;
+            let cColor = x.jenis==='masuk' ? '#2ecc71' : '#e74c3c';
+            tbodyHtml += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px; text-align:center;">${i+1}</td>
+                    <td style="padding:10px;">${formatTanggalIndo(x.tanggal)} <small style="color:#777;">${x.jam||''}</small></td>
+                    <td style="padding:10px;">${x.kategori} <br><small style="color:#999; font-size:10px;">Buku: ${x.dompet}</small></td>
+                    <td style="padding:10px; font-weight:bold; color:${cColor}; text-align:right;">${sJumlah}</td>
+                </tr>
+            `;
+        });
+    }
+
+    let isDarkNow = document.body.classList.contains('dark-mode');
+    let colorTextDoc = '#2c3e50';
+    let colorBgDoc = '#ffffff';
+
+    let htmlInvoiceNode = document.createElement('div');
+    htmlInvoiceNode.style.padding = '30px';
+    htmlInvoiceNode.style.fontFamily = "'Segoe UI', Helvetica, Arial, sans-serif";
+    htmlInvoiceNode.style.color = colorTextDoc;
+    htmlInvoiceNode.style.background = colorBgDoc;
+
+    htmlInvoiceNode.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #3498db; padding-bottom:15px; margin-bottom:25px;">
+            <div>
+                <h1 style="font-size:24px; margin:0; color:#3498db; font-weight:bold;">BUKU KAS LAPORAN RESMI</h1>
+                <p style="font-size:12px; color:#555; margin:3px 0 0 0;">Aplikasi Manajemen Keuangan Pro • User: ${sessionUserGlobal?sessionUserGlobal.email:'Offline Local'}</p>
+            </div>
+            <div style="text-align:right;">
+                <span style="font-size:14px; font-weight:bold; background:#3498db; color:white; padding:4px 10px; border-radius:5px;">INVOICE PDF</span>
+            </div>
+        </div>
+        <div style="margin-bottom:20px; font-size:13px; display:flex; justify-content:space-between; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+            <div>
+                <b>Filter Cakupan Dompet:</b> ${dom==='semua'?'Semua Buku Kas Sistem':dom}<br>
+                <b>Rentang Tanggal Pencetakan:</b> ${formatTanggalIndo(tMulai)} s/d ${formatTanggalIndo(tAkhir)}
+            </div>
+            <div style="text-align:right;">
+                <b>Tanggal Unduh Dokumen:</b> ${formatTanggalIndo(dapatkanTanggalHariIni())} ${dapatkanJamMenitSekarang()}
+            </div>
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:25px;">
+            <thead>
+                <tr style="background:#3498db; color:white; text-align:left;">
+                    <th style="padding:10px; text-align:center; width:50px;">NO</th>
+                    <th style="padding:10px;">WAKTU</th>
+                    <th style="padding:10px;">KATEGORI & SUMBER</th>
+                    <th style="padding:10px; text-align:right;">NOMINAL MUTASI</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tbodyHtml}
+            </tbody>
+        </table>
+        <div style="display:flex; justify-content:flex-end; font-size:13px;">
+            <table style="width:260px; border-collapse:collapse;">
+                <tr>
+                    <td style="padding:6px 0; color:#2ecc71; font-weight:600;">Total Aliran Masuk:</td>
+                    <td style="text-align:right; font-weight:bold; color:#2ecc71;">+${formatRupiah(totalIn)}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #ddd;">
+                    <td style="padding:6px 0; color:#e74c3c; font-weight:600;">Total Aliran Keluar:</td>
+                    <td style="text-align:right; font-weight:bold; color:#e74c3c;">-${formatRupiah(totalOut)}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; font-weight:bold; font-size:14px;">Akumulasi Bersih:</td>
+                    <td style="text-align:right; font-weight:bold; font-size:14px; color:${(totalIn-totalOut)<0?'#e74c3c':'#27ae60'}">${formatRupiah(totalIn - totalOut)}</td>
+                </tr>
+            </table>
+        </div>
+        <div style="margin-top:60px; border-top:1px solid #eee; padding-top:10px; text-align:center; font-size:11px; color:#aaa;">
+            Dokumen ini digenerate secara otomatis oleh sistem Buku Kas Aul v8 Pro dan sah tanpa tanda tangan fisik.
+        </div>
+    `;
+
+    let opsi = {
+        margin: 10,
+        filename: `Laporan_Kas_${dom}_${tMulai}_to_${tAkhir}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opsi).from(htmlInvoiceNode).save().then(() => {
+        customSwal().fire('Berhasil Unduh', 'Invoice cetak PDF berhasil disimpan ke folder download perangkat Anda.', 'success');
+    });
+}
+
+let inputIdTargetKalenderGlobal = null;
+let bulanKalenderKustomGlobal = new Date().getMonth();
+let tahunKalenderKustomGlobal = new Date().getFullYear();
+function bukaModalKalenderKustom(inputId) {
+    inputIdTargetKalenderGlobal = inputId;
+    let modal = document.getElementById('modal-kalender-kustom');
+    if(!modal) return;
+    
+    let currentVal = document.getElementById(inputId).value;
+    if(currentVal) {
+        let p = currentVal.split('-');
+        if(p.length === 3) {
+            tahunKalenderKustomGlobal = parseInt(p[0]);
+            bulanKalenderKustomGlobal = parseInt(p[1]) - 1;
+        }
+    } else {
+        let d = new Date();
+        bulanKalenderKustomGlobal = d.getMonth();
+        tahunKalenderKustomGlobal = d.getFullYear();
+    }
+    modal.classList.add('active');
+    renderElemenSelSelKalenderKustom();
+}
+function tutupModalKalenderKustom() {
+    let modal = document.getElementById('modal-kalender-kustom');
+    if(modal) modal.classList.remove('active');
+}
+function navigasiBulanKalender(diff) {
+    bulanKalenderKustomGlobal += diff;
+    if(bulanKalenderKustomGlobal < 0) { bulanKalenderKustomGlobal = 11; tahunKalenderKustomGlobal--; }
+    else if(bulanKalenderKustomGlobal > 11) { bulanKalenderKustomGlobal = 0; tahunKalenderKustomGlobal++; }
+    renderElemenSelSelKalenderKustom();
+}
+function renderElemenSelSelKalenderKustom() {
+    let container = document.getElementById('calendar-grid-cells-container');
+    let lblHeader = document.getElementById('calendar-current-month-year');
+    if(!container || !lblHeader) return;
+
+    let bNama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    lblHeader.innerText = bNama[bulanKalenderKustomGlobal] + ' ' + tahunKalenderKustomGlobal;
+
+    container.innerHTML = '';
+    let fDayIdx = new Date(tahunKalenderKustomGlobal, bulanKalenderKustomGlobal, 1).getDay();
+    let totalDays = new Date(tahunKalenderKustomGlobal, bulanKalenderKustomGlobal + 1, 0).getDate();
+
+    for(let i=0; i<fDayIdx; i++) {
+        let emptyDiv = document.createElement('div');
+        emptyDiv.className = 'calendar-cell-date empty';
+        container.appendChild(emptyDiv);
+    }
+
+    let targetInputNode = document.getElementById(inputIdTargetKalenderGlobal);
+    let currentStrVal = targetInputNode ? targetInputNode.value : '';
+
+    for(let h=1; h<=totalDays; h++) {
+        let mm = '' + (bulanKalenderKustomGlobal + 1); if(mm.length < 2) mm = '0' + mm;
+        let hh = '' + h; if(hh.length < 2) hh = '0' + hh;
+        let isoStr = `${tahunKalenderKustomGlobal}-${mm}-${hh}`;
+
+        let cell = document.createElement('div');
+        cell.className = 'calendar-cell-date';
+        cell.innerText = h;
+        if(isoStr === currentStrVal) {
+            cell.classList.add('selected-day');
+        }
+
+        cell.onclick = () => {
+            if(targetInputNode) {
+                targetInputNode.value = isoStr;
+                let lblGrup = inputIdTargetKalenderGlobal.replace('edit-', '');
+                let labelNode = document.getElementById('label-kalender-' + inputIdTargetKalenderGlobal);
+                if(labelNode) labelNode.innerText = formatTanggalIndo(isoStr);
+            }
+            tutupModalKalenderKustom();
+        };
+
+        container.appendChild(cell);
+    }
+}
+
+let inputIdTargetJamGlobal = null;
+function bukaModalJamKustom(inputId) {
+    inputIdTargetJamGlobal = inputId;
+    let modal = document.getElementById('modal-jam-kustom');
+    if(!modal) return;
+
+    let sj = document.getElementById('tp-jam-select');
+    let sm = document.getElementById('tp-menit-select');
+    sj.innerHTML = ''; sm.innerHTML = '';
+    
+    for(let i=0; i<24; i++) {
+        let v = i < 10 ? '0'+i : ''+i;
+        sj.innerHTML += `<option value="${v}">${v}</option>`;
+    }
+    for(let i=0; i<60; i+=1) {
+        let v = i < 10 ? '0'+i : ''+i;
+        sm.innerHTML += `<option value="${v}">${v}</option>`;
+    }
+
+    let currentVal = document.getElementById(inputId).value || '12:00';
+    let p = currentVal.split(':');
+    if(p.length === 2) {
+        sj.value = p[0];
+        sm.value = p[1];
+    }
+
+    modal.classList.add('active');
+}
+function tutupModalJamKustom() {
+    document.getElementById('modal-jam-kustom').classList.remove('active');
+}
+function konfirmasiJamKustom() {
+    let j = document.getElementById('tp-jam-select').value;
+    let m = document.getElementById('tp-menit-select').value;
+    let strTime = j + ':' + m;
+
+    let inputNode = document.getElementById(inputIdTargetJamGlobal);
+    if(inputNode) {
+        inputNode.value = strTime;
+        let labelNode = document.getElementById('label-jam-' + inputIdTargetJamGlobal);
+        if(labelNode) labelNode.innerText = strTime;
+    }
+    tutupModalJamKustom();
+}
+
+function bukaHalamanMenuSistem() {
+    bukaHalaman('page-menu');
+}
+function bukaHalamanMenuAwal() {
+    bukaHalaman('page-utama');
+}
 </script>
 </body>
 </html>
