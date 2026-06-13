@@ -1132,28 +1132,39 @@
         tampilkanRiwayatLaporan();
     }
     
-    function simpanTransaksi(e) {
-        e.preventDefault();
-        if (!kategoriTerpilihUtama) {                   
-            customSwal().fire('Perhatian', 'Silakan tentukan kategori yang valid!', 'warning');
-            return;
-        }
-                                                             
-        let dompetDipilih = dompetAktif;
-        let transaksi = {
-            id: Date.now().toString(),
-            tanggal: document.getElementById('tx-tanggal').value,
-            jam: document.getElementById('tx-jam').value,
-            jenis: document.getElementById('tx-jenis').value,
-            kategori: kategoriTerpilihUtama,
-            dompet: dompetDipilih,
-            jumlah: parseFloat(document.getElementById('tx-jumlah').value)
-        };
-        dbTransaksi.unshift(transaksi);                  
-        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
-        perbaruiSemuaData();
-        document.getElementById('tx-jumlah').value = "";
-        setTanggalHariIni();
+    async function simpanTransaksi(e) {
+    e.preventDefault();
+    const { data: { user } } = await supabaseClient.auth.getUser();
+if (!kategoriTerpilihUtama) {
+        customSwal().fire('Perhatian', 'Silakan tentukan kategori yang valid!', 'warning');
+        return;
+    }
+
+    let dompetDipilih = dompetAktif;
+let transaksi = {
+        id: Date.now().toString(),
+        user_id: user.id, // WAJIB untuk RLS
+        tanggal: document.getElementById('tx-tanggal').value,
+        jam: document.getElementById('tx-jam').value,
+        keterangan: document.getElementById('tx-keterangan').value,
+        jumlah: parseInt(document.getElementById('tx-jumlah').value),
+        dompet: dompetDipilih
+    };
+    
+        // Tambahkan 'tipe' jika diperlukan, contoh: tipe: tipe
+const { data, error } = await supabaseClient
+        .from('transaksi')
+        .insert([transaksi]);
+
+    if (error) {
+        console.error('Error:', error);
+        customSwal().fire('Gagal', 'Terjadi kesalahan: ' + error.message, 'error');
+    } else {
+        customSwal().fire('Sukses', 'Transaksi berhasil disimpan!', 'success');
+        // Tambahkan di sini jika ingin mereset form, contoh:
+        // document.getElementById('form-transaksi').reset();
+    }
+    }
     }
 
     function bukaModalDetailTx(id) {
