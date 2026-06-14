@@ -786,10 +786,12 @@
 
         Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
+        // Ganti baris 789-792 dengan ini:
+const { data, error } = await supabaseClient.auth.signInWithPassword({
+  email: email.value, // Anda lupa menambahkan .value
+  password: password.value, // Anda lupa menambahkan .value
+});
+
 
         if (error) {
             customSwal().fire('Gagal Masuk', error.message, 'error');
@@ -809,10 +811,12 @@
             return;
         }
 
-        Swal.fire({ title: 'Mendaftarkan Akun...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+        // Ganti baris 814-817 dengan ini:
+const { data, error } = await supabaseClient.auth.signUp({
+  email: email.value, // Jangan lupa .value
+  password: password.value, // Jangan lupa .value
+});
 
-        const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
             password: password,
         });
 
