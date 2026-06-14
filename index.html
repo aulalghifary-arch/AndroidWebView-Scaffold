@@ -1338,6 +1338,7 @@
         daftarTab.push({ id: 'hari-ini', teks: 'Hari Ini' });
         daftarTab.push({ id: 'minggu-ini', teks: 'Minggu Ini' });
         daftarTab.push({ id: 'bulan-ini', teks: 'Bulan Ini' });                                           
+        daftarTab.push({ id: 'tahun-ini', teks: 'Tahun Ini' });                                           
         
         daftarTab.forEach(tab => {
             let act = (filterSkrg === tab.id) ? 'active' : '';
@@ -1528,10 +1529,11 @@
             title: 'Pilih Rentang Waktu',
             input: 'radio',
             inputOptions: {
-                'hari-ini': 'Hari Ini',
                 'kemarin': 'Kemarin',
+                'hari-ini': 'Hari Ini',
                 'minggu-ini': 'Minggu Ini',
-                'bulan-ini': 'Bulan Ini'
+                'bulan-ini': 'Bulan Ini',
+                'tahun-ini': 'Tahun Ini'
             },
             inputValue: valSkrg,
             showCancelButton: true,
@@ -1544,10 +1546,11 @@
                 
                 // Ubah teks visual di UI
                 let labelTeks = '';
-                if(result.value === 'hari-ini') labelTeks = 'Hari Ini';
                 if(result.value === 'kemarin') labelTeks = 'Kemarin';
+                if(result.value === 'hari-ini') labelTeks = 'Hari Ini';
                 if(result.value === 'minggu-ini') labelTeks = 'Minggu Ini';
                 if(result.value === 'bulan-ini') labelTeks = 'Bulan Ini';
+                if(result.value === 'tahun-ini') labelTeks = 'Tahun Ini';
                 
                 document.getElementById('label-filter-waktu').innerText = labelTeks;
                 
@@ -1682,6 +1685,10 @@
         }
         
         if (filterId === 'bulan-ini') return tglData.getMonth() === tglSekarang.getMonth() && tglData.getFullYear() === tglSekarang.getFullYear();
+        
+        // Logika baru untuk Tahun Ini
+        if (filterId === 'tahun-ini') return tglData.getFullYear() === tglSekarang.getFullYear();
+
         return itemTanggal === filterId;
     }                                                                                                
     
