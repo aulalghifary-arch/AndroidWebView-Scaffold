@@ -179,7 +179,10 @@
     <div id="page-utama" class="sub-page">            
         <div class="app-header">
             <div class="app-title">Buku Kas Aul v8 Pro</div>
-            <button class="btn-menu" onclick="bukaHalaman('page-menu')">☰ Menu</button>                           
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img id="fotoProfilUser" src="" alt="Profil" style="width: 33px; height: 33px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <button class="btn-menu" onclick="bukaHalaman('page-menu')">☰ Menu</button>                           
+            </div>
         </div>
         <div class="main-dashboard">
             <div class="dash-card bg-dompet card-large" onclick="bukaModalDompet()">         
@@ -265,7 +268,7 @@
     <div id="page-menu" class="sub-page">
         <div class="page-header">                                
             <button class="btn-back" onclick="bukaHalaman('page-utama')">← Kembali</button>
-            <h2 style="font-size:18px;">Menu Utama</h2>
+            <h2 id="emailUserMenu" style="font-size:14px; font-weight:600; word-break: break-all; margin:0; color: var(--text-color);">Memuat info...</h2>
         </div>
         <div style="margin-top: 20px;">
             <button class="btn btn-secondary" onclick="bukaHalamanPencarian()" style="background-color: #34495e; color: white; border: none;">🔍 Pencarian Transaksi</button>
@@ -738,6 +741,40 @@
     }
 
     // ==========================================
+    // FUNGSI UNTUK MEMUAT FOTO DAN EMAIL
+    // ==========================================
+    async function muatProfilPengguna() {
+        try {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error) throw error;
+
+            if (user) {
+                const emailPengguna = user.email;
+                // Cek apakah ada profil picture dari provider
+                // Jika tidak ada, panggil ui-avatars berdasarkan alamat email
+                const fotoUrl = user.user_metadata?.avatar_url || 
+                                user.user_metadata?.picture || 
+                                `https://ui-avatars.com/api/?name=${encodeURIComponent(emailPengguna)}&background=random&color=fff`;
+
+                // 1. Tampilkan email di sidebar menggantikan "Menu Utama"
+                const elemenEmail = document.getElementById('emailUserMenu');
+                if (elemenEmail) {
+                    elemenEmail.textContent = emailPengguna;
+                }
+
+                // 2. Tampilkan Foto Profil di main page (sebelah tombol menu)
+                const elemenFoto = document.getElementById('fotoProfilUser');
+                if (elemenFoto) {
+                    elemenFoto.src = fotoUrl;
+                    elemenFoto.style.display = 'block'; // tampilkan gambar
+                }
+            }
+        } catch (err) {
+            console.error("Gagal memuat profil pengguna:", err.message);
+        }
+    }
+
+    // ==========================================
     // INISIALISASI SAAT APLIKASI DIBUKA
     // ==========================================
     window.onload = async function() {                             
@@ -760,6 +797,7 @@
         if (session) {
             // Jika sudah login
             inisialisasiAplikasiUtama();
+            muatProfilPengguna(); // Panggil fungsi muat profil di sini
             bukaHalaman('page-utama');
         } else {
             // Jika belum login
@@ -803,6 +841,7 @@
             } else {
                 customSwal().fire('Berhasil', 'Selamat datang kembali!', 'success');
                 inisialisasiAplikasiUtama();
+                muatProfilPengguna(); // Panggil fungsi muat profil saat berhasil login
                 bukaHalaman('page-utama');
             }
         } catch (err) {
@@ -864,6 +903,14 @@
                 Swal.close();
                 document.getElementById('login-email').value = "";
                 document.getElementById('login-password').value = "";
+                
+                // Hapus Tampilan Foto & Email agar tidak membekas
+                const elemenFoto = document.getElementById('fotoProfilUser');
+                if (elemenFoto) elemenFoto.style.display = 'none';
+                
+                const elemenEmail = document.getElementById('emailUserMenu');
+                if (elemenEmail) elemenEmail.textContent = 'Memuat info...';
+                
                 bukaHalaman('page-login');
             }
          });
