@@ -11,19 +11,38 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* CSS TIDAK DIUBAH SAMA SEKALI - TETAP SEPERTI ASLINYA */
-        :root { --primary: #3498db; --success: #2ecc71; --danger: #e74c3c; --warning: #f39c12; --dark: #2c3e50; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #2c3e50; --border-color: #e2e8f0; }
-        body.dark-mode { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --border-color: #333333; }
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #e2e8f0;
+        }
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333333;
+        }
+
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; transition: all 0.3s ease; }
         html, body { overscroll-behavior-y: contain; }
         .container { max-width: 500px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .app-title { font-size: 20px; font-weight: bold; }
         .btn-menu { background-color: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+
+        /* Halaman Login Styles */
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; }
         .login-logo { font-size: 45px; margin-bottom: 10px; }
         .login-box { width: 100%; max-width: 340px; background: var(--bg-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
+
         .main-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .dash-card { padding: 15px; border-radius: 12px; color: white; display: flex; flex-direction: column; cursor: pointer; }
         .card-large { grid-column: span 2; padding: 20px; }
@@ -33,17 +52,21 @@
         .bg-dompet { background: linear-gradient(135deg, #4a90e2, #357abd); }
         .bg-masuk { background: linear-gradient(135deg, #2ecc71, #27ae60); }
         .bg-keluar { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
         .form-group { margin-bottom: 15px; position: relative; }
         .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 6px; color: var(--text-color); opacity: 0.8; }
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
+
         input, select { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); color: var(--text-color); font-size: 14px; outline: none; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-secondary { background-color: var(--border-color); color: var(--text-color); margin-bottom: 10px; }
         .btn-warning { background-color: var(--warning); color: white; }
+
         .custom-trigger-box { display: flex; align-items: center; justify-content: space-between; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .custom-trigger-box span { font-weight: 500; }
+        
         .time-grid-container { display: flex; gap: 15px; }
         .time-col { flex: 1; }
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
@@ -53,6 +76,7 @@
         .time-cell:hover { background: var(--border-color); }
         .time-cell.active { background: var(--primary); color: white; border-color: var(--primary); }
         .time-label { font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; color: var(--text-color); opacity: 0.8; }
+
         .jenis-card { display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; background: var(--bg-color); }
         .jenis-card.active-masuk { border-color: var(--success); background: rgba(46, 204, 113, 0.08); }
         .jenis-card.active-keluar { border-color: var(--danger); background: rgba(231, 76, 60, 0.08); }
@@ -62,6 +86,7 @@
         .radio-circle-inner { width: 12px; height: 12px; border-radius: 50%; background: transparent; transition: all 0.2s; }
         .jenis-card.active-masuk .radio-circle-inner { background: var(--success); }
         .jenis-card.active-keluar .radio-circle-inner { background: var(--danger); }
+
         .calendar-wrapper { display: flex; flex-direction: column; gap: 12px; }
         .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
         .calendar-header-nav span { font-weight: bold; font-size: 15px; }
@@ -73,6 +98,7 @@
         .calendar-cell-date:hover { background: var(--border-color); }
         .calendar-cell-date.empty { pointer-events: none; opacity: 0; }
         .calendar-cell-date.selected-day { background: var(--primary) !important; color: white !important; }
+
         .custom-dropdown-box { position: relative; width: 100%; }
         .custom-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .custom-dropdown-list { display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 2500; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -81,11 +107,12 @@
         .custom-dropdown-item:last-child { border-bottom: none; }
         .custom-dropdown-item:hover { background-color: var(--bg-color); }
         .custom-dropdown-item.special-add { font-weight: bold; color: var(--primary); background-color: rgba(52, 152, 219, 0.05); }
+
         .tab-scroll-container { position: relative; margin: 15px 0; display: flex; align-items: center; background: var(--bg-color); padding: 5px; border-radius: 10px; }
         .nav-arrow { background: transparent; border: none; font-size: 14px; padding: 5px 8px; cursor: pointer; color: var(--text-color); font-weight: bold; }
         .nav-tabs { display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth; flex: 1; -webkit-overflow-scrolling: touch; scrollbar-width: none;}
         .nav-tabs::-webkit-scrollbar { display: none; }
-        .tab-item { padding: 8px 14px; background-color: transparent; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; color: var(--text-color); transition: all 0.2s; }
+        .tab-item { padding: 8px 14px; background-color: transparent; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; color: var(--text-color); transition: all 0.2s; }
         .tab-item.active { background-color: var(--primary); color: white; }                              
         .list-transaksi { margin-top: 15px; max-height: 280px; overflow-y: auto; }
         .item-transaksi { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; transition: background 0.2s; cursor: pointer;}
@@ -98,11 +125,14 @@
         .btn-icon { background: none; border: none; font-size: 14px; cursor: pointer; padding: 4px; }             
         .txt-masuk { color: #2ecc71; }                       
         .txt-keluar { color: #e74c3c; }
+        
         .sub-page { display: none; }                         
         .sub-page.active { display: block; }
+        
         .page-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
         .btn-back { width: auto; padding: 8px 15px; font-size: 13px; background-color: var(--dark); color: white; border-radius: 6px; border: none; cursor: pointer; }
         body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a !important; font-weight: bold; border: 1px solid #cbd5e1; }
+
         .action-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }              
         .action-modal.active { display: flex; }
         .action-content { background: var(--card-bg); color: var(--text-color); width: 100%; max-width: 360px; padding: 25px 20px; border-radius: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
@@ -111,6 +141,7 @@
         .btn-blue { background: #3498db; }
         .btn-red { background: #e74c3c; }                    
         .btn-gray { background: #bdc3c7; color: #2c3e50; }                                                                                                  
+        
         .chart-container { display: flex; justify-content: space-around; align-items: flex-end; height: 120px; padding: 15px 10px; background: var(--bg-color); border-radius: 10px; margin: 15px 0; border: 1px solid var(--border-color); }
         .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }                           
         .chart-bar { width: 35px; border-radius: 6px 6px 0 0; min-height: 5px; transition: height 0.5s ease; }
@@ -656,10 +687,12 @@
 
 <script>
     // ==========================================
-    // KONFIGURASI SUPABASE
+    // KONFIGURASI SUPABASE (WAJIB DIGANTI!)
+    // Pastikan URL diawali https:// 
+    // Pastikan URL dan Key ditulis langsung (hardcoded) di sini
     // ==========================================
-    const SUPABASE_URL = 'https://bwijginbudwtgeiewcnh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo';
+    const SUPABASE_URL = 'https://bwijginbudwtgeiewcnh.supabase.co'; // <--- Ganti Ini! Harus diawali https://
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo'; // <--- Ganti Ini!
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -708,71 +741,6 @@
     }
 
     // ==========================================
-    // FUNGSI BARU: AUTO-RESTORE CLOUD SUPABASE
-    // ==========================================
-    async function muatDataDariCloud() {
-        try {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return;
-            
-            // Tampilkan indikator saat mengambil data
-            Swal.fire({ title: 'Menyinkronkan Data...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
-            // Ambil data transaksi khusus untuk user yang login
-            const { data, error } = await supabaseClient
-                .from('transaksi')
-                .select('*')
-                .order('tanggal', { ascending: false });
-
-            if (error) throw error;
-
-            if(data && data.length > 0) {
-                dbTransaksi = data;
-                localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
-                
-                // --- REKONSTRUKSI HUTANG OTOMATIS DARI TRANSAKSI CLOUD ---
-                // Karena hutang adalah transaksi bayangan yang tersimpan di cloud,
-                // kita bisa membangun ulang dbHutang dari data transaksi cloud ini
-                let reconstructedHutang = [];
-                dbTransaksi.forEach(t => {                              
-                    if (t.kategori.startsWith("Hutang dari ") || t.kategori.startsWith("Piutang kepada ")) {
-                        let jenis = t.kategori.startsWith("Hutang dari ") ? "hutang" : "piutang";
-                        let nama = t.kategori.replace("Hutang dari ", "").replace("Piutang kepada ", "");                                                  
-                        let kataKunciLunas = jenis === "hutang" ? "Bayar Hutang ke " + nama : "Pelunasan Piutang dari " + nama;
-                        let sudahLunas = dbTransaksi.some(l => l.kategori === kataKunciLunas && Math.abs(l.jumlah) === Math.abs(t.jumlah));
-                        let originalId = t.id.replace("hp-", "");
-
-                        reconstructedHutang.push({
-                            id: originalId, 
-                            tanggal: t.tanggal,
-                            nama: nama,                          
-                            jenis: jenis,
-                            nominal: t.jumlah,
-                            terbayar: sudahLunas ? t.jumlah : 0,
-                            status: sudahLunas ? 'lunas' : 'belum'
-                        });
-                    }
-                });
-                
-                dbHutang = reconstructedHutang;
-                localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
-            } else {
-                // User benar-benar baru, belum ada data di cloud
-                dbTransaksi = [];
-                dbHutang = [];
-            }
-            
-            perbaruiSemuaData();
-            Swal.close();
-            
-        } catch (err) {
-            Swal.close();
-            console.error("Gagal sinkronisasi cloud:", err.message);
-            // Tetap izinkan masuk dengan data lokal jika koneksi cloud gagal
-        }
-    }
-
-    // ==========================================
     // FUNGSI UNTUK MEMUAT FOTO DAN EMAIL
     // ==========================================
     async function muatProfilPengguna() {
@@ -782,19 +750,23 @@
 
             if (user) {
                 const emailPengguna = user.email;
+                // Cek apakah ada profil picture dari provider
+                // Jika tidak ada, panggil ui-avatars berdasarkan alamat email
                 const fotoUrl = user.user_metadata?.avatar_url || 
                                 user.user_metadata?.picture || 
                                 `https://ui-avatars.com/api/?name=${encodeURIComponent(emailPengguna)}&background=random&color=fff`;
 
+                // 1. Tampilkan email di sidebar menggantikan "Menu Utama"
                 const elemenEmail = document.getElementById('emailUserMenu');
                 if (elemenEmail) {
                     elemenEmail.textContent = emailPengguna;
                 }
 
+                // 2. Tampilkan Foto Profil di main page (sebelah tombol menu)
                 const elemenFoto = document.getElementById('fotoProfilUser');
                 if (elemenFoto) {
                     elemenFoto.src = fotoUrl;
-                    elemenFoto.style.display = 'block';
+                    elemenFoto.style.display = 'block'; // tampilkan gambar
                 }
             }
         } catch (err) {
@@ -813,30 +785,31 @@
             document.getElementById('theme-color-meta').content = "#f4f7f6";
         }
 
+        // Event listener penutup otomatis dropdown saat klik di luar area komponen
         document.addEventListener('click', function(e) {
             if(!e.target.closest('.custom-dropdown-box')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(list => list.classList.remove('open'));
             }
         });
 
+        // Cek Autentikasi Supabase
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
+            // Jika sudah login
             inisialisasiAplikasiUtama();
-            muatProfilPengguna(); 
+            muatProfilPengguna(); // Panggil fungsi muat profil di sini
             bukaHalaman('page-utama');
         } else {
+            // Jika belum login
             bukaHalaman('page-login');
         }
     };
 
-    // [UBAHAN KRUSIAL 1]: Panggil fungsi muat data cloud saat inisialisasi
-    async function inisialisasiAplikasiUtama() {
+    function inisialisasiAplikasiUtama() {
         setTanggalHariIni();
         sesuaikanKategori();
         buatBilahTab('tabs-utama', 'utama');
         buatBilahTab('tabs-laporan', 'laporan');             
-        
-        await muatDataDariCloud(); // Sinkronkan data sebelum merender
         perbaruiSemuaData();
     }
 
@@ -859,20 +832,24 @@
                 password: password,
             });
             if (error) {
+                // Modifikasi Tangkapan Error agar mudah dipahami
                 if (error.message === 'Failed to fetch') {
-                    customSwal().fire('Koneksi Gagal', 'Pastikan URL menggunakan "https://" dan URL/Key valid.', 'error');
+                    customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
                 } else {
                     customSwal().fire('Gagal Masuk', error.message, 'error');
                 }
             } else {
                 customSwal().fire('Berhasil', 'Selamat datang kembali!', 'success');
-                // Setelah login, inisialisasi akan memanggil muatDataDariCloud
-                await inisialisasiAplikasiUtama();
-                muatProfilPengguna(); 
+                inisialisasiAplikasiUtama();
+                muatProfilPengguna(); // Panggil fungsi muat profil saat berhasil login
                 bukaHalaman('page-utama');
             }
         } catch (err) {
-            customSwal().fire('Error', 'Terjadi kesalahan sistem.', 'error');
+            if (err.message === 'Failed to fetch') {
+                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+            } else {
+                customSwal().fire('Error', 'Terjadi kesalahan sistem.', 'error');
+            }
         }
     }
 
@@ -892,19 +869,28 @@
                 password: password,
             });
             if (error) {
-                customSwal().fire('Gagal Daftar', error.message, 'error');
+                // Modifikasi Tangkapan Error agar mudah dipahami
+                if (error.message === 'Failed to fetch') {
+                    customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+                } else {
+                    customSwal().fire('Gagal Daftar', error.message, 'error');
+                }
             } else {
-                customSwal().fire('Pendaftaran Berhasil!', 'Akun Anda telah dibuat. Silakan klik Masuk Aplikasi.', 'success');
+                customSwal().fire('Pendaftaran Berhasil!', 'Akun Anda telah dibuat. Silakan cek kotak masuk email untuk verifikasi (jika aktif), atau langsung klik Masuk Aplikasi.', 'success');
             }
         } catch (err) {
-             customSwal().fire('Error', 'Terjadi kesalahan koneksi ke Supabase.', 'error');
+             if (err.message === 'Failed to fetch') {
+                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+            } else {
+                customSwal().fire('Error', 'Terjadi kesalahan koneksi ke Supabase.', 'error');
+            }
         }
     }
 
     async function handleLogout() {
         customSwal().fire({
             title: 'Keluar Akun?',
-            text: "Sesi Anda akan diakhiri dan data lokal akan dibersihkan demi keamanan.",
+            text: "Apakah Anda yakin ingin keluar dari sesi aplikasi? (Data offline tetap aman di perangkat ini)",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#e74c3c',
@@ -914,17 +900,11 @@
                 Swal.fire({ title: 'Keluar...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 
                 await supabaseClient.auth.signOut();
-                
-                // Bersihkan memori HP secara total agar akun lain tidak mewarisi data
-                localStorage.removeItem('aul_kas_transaksi');
-                localStorage.removeItem('aul_kas_hutang');
-                dbTransaksi = [];
-                dbHutang = [];
-                
                 Swal.close();
                 document.getElementById('login-email').value = "";
                 document.getElementById('login-password').value = "";
                 
+                // Hapus Tampilan Foto & Email agar tidak membekas
                 const elemenFoto = document.getElementById('fotoProfilUser');
                 if (elemenFoto) elemenFoto.style.display = 'none';
                 
@@ -936,9 +916,7 @@
          });
     }
     
-    // ==========================================
-    // FUNGSI KOMPONEN UI & BANTUAN (TETAP SAMA)
-    // ==========================================
+    // Fungsi sinkronisasi nilai input ke elemen pemicu tanggal kustom visual
     function sinkronkanTampilanPemicuKalender(inputId) {
         let nilaiInput = document.getElementById(inputId).value;
         let labelEl = document.getElementById('label-kalender-' + inputId);
@@ -1386,23 +1364,12 @@
         tampilkanRiwayatLaporan();
     }
     
-    // ==========================================
-    // UBAHAN KRUSIAL 2: FUNGSI CRUD TERHUBUNG KE CLOUD
-    // ==========================================
-    async function simpanTransaksi(e) {
+    function simpanTransaksi(e) {
         e.preventDefault();
         if (!kategoriTerpilihUtama) {                   
             customSwal().fire('Perhatian', 'Silakan tentukan kategori yang valid!', 'warning');
             return;
         }
-
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) {
-            customSwal().fire('Error', 'Sesi login tidak valid. Silakan logout dan login kembali.', 'error');
-            return;
-        }
-
-        Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                                                              
         let dompetDipilih = dompetAktif;
         let transaksi = {
@@ -1412,27 +1379,13 @@
             jenis: document.getElementById('tx-jenis').value,
             kategori: kategoriTerpilihUtama,
             dompet: dompetDipilih,
-            jumlah: parseFloat(document.getElementById('tx-jumlah').value),
-            user_id: user.id // <-- INI YANG AKAN MELOLOSKAN RLS
+            jumlah: parseFloat(document.getElementById('tx-jumlah').value)
         };
-
-        try {
-            // 1. Simpan ke Cloud Supabase
-            const { error } = await supabaseClient.from('transaksi').insert([transaksi]);
-            if (error) throw error;
-
-            // 2. Jika sukses cloud, simpan ke lokal HP
-            dbTransaksi.unshift(transaksi);                  
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
-            
-            perbaruiSemuaData();
-            document.getElementById('tx-jumlah').value = "";
-            setTanggalHariIni();
-            Swal.close();
-        } catch (err) {
-            Swal.close();
-            customSwal().fire('Gagal Simpan', err.message, 'error');
-        }
+        dbTransaksi.unshift(transaksi);                  
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
+        perbaruiSemuaData();
+        document.getElementById('tx-jumlah').value = "";
+        setTanggalHariIni();
     }
 
     function bukaModalDetailTx(id) {
@@ -1507,7 +1460,7 @@
         document.getElementById('modal-edit-transaksi').classList.remove('active');
     }
 
-    async function prosesSimpanEditTransaksi(e) {
+    function prosesSimpanEditTransaksi(e) {
         e.preventDefault();
         let editId = document.getElementById('edit-tx-id-edit').value;
         if(!kategoriTerpilihEdit) {
@@ -1515,37 +1468,22 @@
             return;
         }
 
-        Swal.fire({ title: 'Memperbarui...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
-        let dataUpdate = {
-            tanggal: document.getElementById('edit-tx-tanggal').value,
-            jam: document.getElementById('edit-tx-jam').value,
-            jenis: document.getElementById('edit-tx-jenis').value,
-            kategori: kategoriTerpilihEdit,
-            jumlah: parseFloat(document.getElementById('edit-tx-jumlah').value)
-        };
-
-        try {
-            // Update ke Cloud
-            const { error } = await supabaseClient.from('transaksi').update(dataUpdate).eq('id', editId);
-            if (error) throw error;
-
-            // Update Lokal
-            dbTransaksi = dbTransaksi.map(t => {
-                if(t.id === editId) { return { ...t, ...dataUpdate }; }
-                return t;
-            });
-            
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
-            perbaruiSemuaData();
-            tutupModalEditTransaksi();
-            if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
-            Swal.close();
-            customSwal().fire('Berhasil', 'Transaksi kas diperbarui.', 'success');
-        } catch (err) {
-            Swal.close();
-            customSwal().fire('Gagal Edit', err.message, 'error');
-        }
+        dbTransaksi = dbTransaksi.map(t => {
+            if(t.id === editId) {
+                t.tanggal = document.getElementById('edit-tx-tanggal').value;
+                t.jam = document.getElementById('edit-tx-jam').value;
+                t.jenis = document.getElementById('edit-tx-jenis').value;
+                t.kategori = kategoriTerpilihEdit;
+                t.jumlah = parseFloat(document.getElementById('edit-tx-jumlah').value);
+            }
+            return t;
+        });
+        
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+        perbaruiSemuaData();
+        tutupModalEditTransaksi();
+        if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
+        customSwal().fire('Berhasil', 'Transaksi kas berhasil diperbarui!', 'success');
     }
     
     function toggleDaftarDompet() {
@@ -1786,25 +1724,13 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e74c3c'
-            }).then(async (result) => {
+            }).then((result) => {
                 if(result.isConfirmed) {
-                    Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                     let coreTimestamp = t.id.replace('trf-out-', '').replace('trf-in-', '');                                  
-                    
-                    try {
-                        // Hapus dari cloud dengan like
-                        await supabaseClient.from('transaksi').delete().like('id', `%${coreTimestamp}`);
-                        
-                        // Hapus lokal
-                        dbTransaksi = dbTransaksi.filter(item => !item.id.endsWith(coreTimestamp));
-                        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
-                        perbaruiSemuaData();
-                        if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
-                        Swal.close();
-                    } catch(err) {
-                        Swal.close();
-                        customSwal().fire('Gagal', err.message, 'error');
-                    }
+                    dbTransaksi = dbTransaksi.filter(item => !item.id.endsWith(coreTimestamp));
+                    localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                                   
+                    perbaruiSemuaData();
+                    if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
                 }
             });
             return;
@@ -1817,22 +1743,12 @@
             showCancelButton: true,
             confirmButtonColor: '#e74c3c',
             confirmButtonText: 'Ya, Hapus'
-        }).then(async (result) => {
+        }).then((result) => {
             if(result.isConfirmed) {
-                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                try {
-                    const { error } = await supabaseClient.from('transaksi').delete().eq('id', id);
-                    if (error) throw error;
-
-                    dbTransaksi = dbTransaksi.filter(item => item.id !== id);                                                 
-                    localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
-                    perbaruiSemuaData();
-                    if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
-                    Swal.close();
-                } catch(err) {
-                    Swal.close();
-                    customSwal().fire('Gagal', err.message, 'error');
-                }
+                dbTransaksi = dbTransaksi.filter(item => item.id !== id);                                                 
+                localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+                perbaruiSemuaData();
+                if(document.getElementById('page-pencarian').classList.contains('active')) eksekusiPencarian();
             }
         });
     }
@@ -1960,17 +1876,17 @@
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = async function(e) {                            
+        reader.onload = function(e) {                            
             const content = e.target.result.trim();
             if (content.startsWith('{') || content.startsWith('[')) {                                                     
                 try {                          
                     let backup = JSON.parse(content);
                     customSwal().fire({
                         title: 'Pulihkan Data JSON?',
-                        text: "Memulihkan ke lokal selesai, apakah Anda ingin mengunggah ke Cloud juga? (Hanya untuk Transaksi)",
+                        text: "Pulihkan seluruh data transaksi dan daftar hutang secara sempurna?",
                         icon: 'question',
                         showCancelButton: true
-                    }).then(async (result) => {
+                    }).then((result) => {
                         if (result.isConfirmed) {
                             if (backup.transaksi) dbTransaksi = backup.transaksi;
                             if (backup.hutang) dbHutang = backup.hutang;
@@ -1981,15 +1897,6 @@
                             localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
                             localStorage.setItem('aul_kas_kat_masuk', JSON.stringify(dbKategoriMasuk));
                             localStorage.setItem('aul_kas_kat_keluar', JSON.stringify(dbKategoriKeluar));
-
-                            // Optional Push to Cloud
-                            const { data: { user } } = await supabaseClient.auth.getUser();
-                            if(user && backup.transaksi) {
-                                Swal.fire({ title: 'Menyinkronkan ke Cloud...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                                let dataCloud = backup.transaksi.map(tx => ({...tx, user_id: user.id}));
-                                await supabaseClient.from('transaksi').upsert(dataCloud);
-                                Swal.close();
-                            }
                             
                             perbaruiSemuaData();
                             sesuaikanKategori();
@@ -2003,7 +1910,6 @@
                 return;
             }                                        
             
-            // Logika CSV lama tetap ada
             const baris = content.split('\n');
             if (baris.length <= 1) {                                 
                 customSwal().fire('Error', "File tidak dikenal atau kosong!", 'error');
@@ -2039,24 +1945,16 @@
             if (dataDiimport.length > 0) {
                 customSwal().fire({
                     title: 'Pulihkan CSV Lama?',
-                    text: `Menemukan ${dataDiimport.length} riwayat kas. Lanjutkan upload ke cloud?`,
+                    text: `Menemukan ${dataDiimport.length} riwayat kas. Mulai pemulihan & jalankan rekonstruksi daftar Hutang/Piutang otomatis?`,
                     icon: 'question',
                     showCancelButton: true
-                }).then(async (result) => {
+                }).then((result) => {
                     if (result.isConfirmed) {
                         let idLama = dbTransaksi.map(t => t.id);  
                         let dataBaruBukanDuplikat = dataDiimport.filter(t => !idLama.includes(t.id));
                         dbTransaksi = [...dataBaruBukanDuplikat, ...dbTransaksi];
                         localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));               
                        
-                        const { data: { user } } = await supabaseClient.auth.getUser();
-                        if(user) {
-                            Swal.fire({ title: 'Menyinkronkan ke Cloud...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                            let dataCloud = dataBaruBukanDuplikat.map(tx => ({...tx, user_id: user.id}));
-                            await supabaseClient.from('transaksi').upsert(dataCloud);
-                            Swal.close();
-                        }
-
                         let reconstructedHutang = [];
                         dataDiimport.forEach(t => {                              
                             if (t.kategori.startsWith("Hutang dari ") || t.kategori.startsWith("Piutang kepada ")) {
@@ -2087,7 +1985,7 @@
                                                                              
                         localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));                                         
                         perbaruiSemuaData();
-                        customSwal().fire('Sukses!', "Riwayat Kas dipulihkan ke Cloud!", 'success');
+                        customSwal().fire('Sukses!', "Riwayat Kas dipulihkan & Tabel daftar hutang berjalan berhasil dibangun kembali!", 'success');
                         bukaHalaman('page-utama');
                     }
                 });
@@ -2099,16 +1997,8 @@
         event.target.value = '';
     }
     
-    // [UBAHAN KRUSIAL 3] HUTANG & TRANSFER DIKIRIM KE CLOUD DG USER ID
-    async function simpanHutang(e) {
+    function simpanHutang(e) {
         e.preventDefault();
-        
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) {
-            customSwal().fire('Error', 'Sesi login tidak valid.', 'error');
-            return;
-        }
-
         let tgl = document.getElementById('form-hutang').querySelector('#ht-tanggal').value;
         let jenis = document.getElementById('ht-jenis').value;
         let nama = document.getElementById('ht-nama').value;
@@ -2135,28 +2025,17 @@
             jenis: jenisKas,                                     
             kategori: ketKategori,
             dompet: dompetAktif,
-            jumlah: nominal,
-            user_id: user.id
+            jumlah: nominal
         };
-
-        Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        try {
-            await supabaseClient.from('transaksi').insert([transaksiBayangan]);
-            
-            dbTransaksi.unshift(transaksiBayangan);
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                               
-            localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
-            
-            document.getElementById('ht-nama').value = "";                                                            
-            document.getElementById('ht-nominal').value = "";
-            setTanggalHariIni();
-            perbaruiSemuaData();
-            Swal.close();
-            customSwal().fire('Berhasil', 'Catatan tersimpan!', 'success');
-        } catch(err) {
-            Swal.close();
-            customSwal().fire('Gagal', err.message, 'error');
-        }
+        dbTransaksi.unshift(transaksiBayangan);
+        
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));                               
+        localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
+        
+        document.getElementById('ht-nama').value = "";                                                            
+        document.getElementById('ht-nominal').value = "";
+        setTanggalHariIni();
+        perbaruiSemuaData();
     }
     
     function tampilkanDaftarHutang() {
@@ -2193,15 +2072,8 @@
         }); 
     }
     
-    async function eksekusiTransfer(e) {
+    function eksekusiTransfer(e) {
         e.preventDefault();                                 
-        
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) {
-            customSwal().fire('Error', 'Sesi login tidak valid.', 'error');
-            return;
-        }
-
         let tgl = document.getElementById('trf-tanggal').value;
         let dari = document.getElementById('trf-dari').value;                       
         let ke = document.getElementById('trf-ke').value;
@@ -2226,8 +2098,7 @@
             jenis: 'keluar',
             kategori: `🔄 Transfer ke ${ke}`,                    
             dompet: dari,
-            jumlah: nominal,
-            user_id: user.id
+            jumlah: nominal
         };
         
         let txMasuk = {
@@ -2237,31 +2108,20 @@
             jenis: 'masuk',                
             kategori: `🔄 Transfer dari ${dari}`,                
             dompet: ke,
-            jumlah: nominal,
-            user_id: user.id
+            jumlah: nominal                    
         };
         
-        Swal.fire({ title: 'Transfer Cloud...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        
-        try {
-            await supabaseClient.from('transaksi').insert([txKeluar, txMasuk]);
-            
-            dbTransaksi.unshift(txKeluar);
-            dbTransaksi.unshift(txMasuk);                
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+        dbTransaksi.unshift(txKeluar);
+        dbTransaksi.unshift(txMasuk);                
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
 
-            document.getElementById('trf-nominal').value = "";
-            dompetAktif = ke;
-            localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
+        document.getElementById('trf-nominal').value = "";
+        dompetAktif = ke;
+        localStorage.setItem('aul_kas_dompet_aktif', dompetAktif);
 
-            perbaruiSemuaData();
-            Swal.close();
-            customSwal().fire('Sukses!', `Berhasil memindahkan ${formatRupiah(nominal)} dari ${dari} ke ${ke}.`, 'success');                    
-            bukaHalaman('page-utama');
-        } catch(err) {
-            Swal.close();
-            customSwal().fire('Gagal', err.message, 'error');
-        }
+        perbaruiSemuaData();
+        customSwal().fire('Sukses!', `Berhasil memindahkan ${formatRupiah(nominal)} dari ${dari} ke ${ke}.`, 'success');                    
+        bukaHalaman('page-utama');
     }
     
     function bukaModalAksiHutang(id) {                       
@@ -2296,12 +2156,8 @@
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, Lunas'
-                    }).then(async (result) => {
+                    }).then((result) => {
                         if (result.isConfirmed) {
-                            
-                            const { data: { user } } = await supabaseClient.auth.getUser();
-                            if(!user) return;
-
                             h.status = 'lunas';          
                             h.terbayar = h.nominal;
                             let jenisMutasi = (h.jenis === 'piutang') ? 'masuk' : 'keluar';
@@ -2314,24 +2170,13 @@
                                 jenis: jenisMutasi,   
                                 kategori: ketKategori,
                                 dompet: dompetAktif,
-                                jumlah: sisa,
-                                user_id: user.id
+                                jumlah: sisa
                             };
-
-                            Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                            try {
-                                await supabaseClient.from('transaksi').insert([txPelunasan]);
-                                
-                                dbTransaksi.unshift(txPelunasan);
-                                localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi)); 
-                                localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
-                                perbaruiSemuaData();
-                                idHutangTerpilih = null;
-                                Swal.close();
-                            } catch(err) {
-                                Swal.close();
-                                customSwal().fire('Error', err.message, 'error');
-                            }
+                            dbTransaksi.unshift(txPelunasan);
+                            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi)); 
+                            localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
+                            perbaruiSemuaData();
+                            idHutangTerpilih = null;
                         } else {
                             idHutangTerpilih = null;
                         }
@@ -2390,12 +2235,8 @@
         idHutangTerpilih = null;
     }
 
-    async function eksekusiBayarCicilanKustom() {
+    function eksekusiBayarCicilanKustom() {
         if (!idHutangTerpilih) return;
-        
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if(!user) return;
-
         let inputNominal = document.getElementById('input-nominal-cicilan').value;
         let nominalCicilan = parseFloat(inputNominal);
         let tanggalCicilan = document.getElementById('input-tanggal-cicilan').value;
@@ -2436,26 +2277,16 @@
             jenis: jenisKas,
             kategori: ketKategori,
             dompet: dompetAktif,
-            jumlah: nominalCicilan,
-            user_id: user.id
+            jumlah: nominalCicilan
         };
+        dbTransaksi.unshift(txCicilan);
         
-        Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        try {
-            await supabaseClient.from('transaksi').insert([txCicilan]);
-            
-            dbTransaksi.unshift(txCicilan);
-            localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
-            localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
-            
-            perbaruiSemuaData();
-            tutupModalCicilan();
-            Swal.close();
-            customSwal().fire('Berhasil', `Sukses mencatat cicilan sebesar ${formatRupiah(nominalCicilan)} pada tanggal ${formatTanggalIndo(tanggalCicilan)}.`, 'success');
-        } catch (err) {
-            Swal.close();
-            customSwal().fire('Gagal', err.message, 'error');
-        }
+        localStorage.setItem('aul_kas_hutang', JSON.stringify(dbHutang));
+        localStorage.setItem('aul_kas_transaksi', JSON.stringify(dbTransaksi));
+        
+        perbaruiSemuaData();
+        tutupModalCicilan();
+        customSwal().fire('Berhasil', `Sukses mencatat cicilan sebesar ${formatRupiah(nominalCicilan)} pada tanggal ${formatTanggalIndo(tanggalCicilan)}.`, 'success');
     }
 
     function editHutang() {
@@ -2562,12 +2393,8 @@
             confirmButtonColor: '#e74c3c',
             cancelButtonText: 'Batal',
             confirmButtonText: 'Ya, Reset Semua!'
-        }).then(async (result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                // Opsional: Jika ingin menghapus dari cloud juga
-                // const { data: { user } } = await supabaseClient.auth.getUser();
-                // await supabaseClient.from('transaksi').delete().eq('user_id', user.id);
-
                 localStorage.clear();                                
                 dbTransaksi = [];
                 dbHutang = [];
