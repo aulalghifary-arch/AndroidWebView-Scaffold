@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta id="theme-color-meta" name="theme-color" content="#f4f7f6">
     <title>Buku Kas Aul v8 Pro</title>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
             --primary: #3498db;
@@ -38,11 +35,6 @@
         .app-title { font-size: 20px; font-weight: bold; }
         .btn-menu { background-color: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* Halaman Login Styles */
-        .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; }
-        .login-logo { font-size: 45px; margin-bottom: 10px; }
-        .login-box { width: 100%; max-width: 340px; background: var(--bg-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
-
         .main-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .dash-card { padding: 15px; border-radius: 12px; color: white; display: flex; flex-direction: column; cursor: pointer; }
         .card-large { grid-column: span 2; padding: 20px; }
@@ -58,35 +50,17 @@
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
 
-        input, select { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); color: var(--text-color); font-size: 14px; outline: none; }
+        input, select { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; outline: none; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-secondary { background-color: var(--border-color); color: var(--text-color); margin-bottom: 10px; }
         .btn-warning { background-color: var(--warning); color: white; }
 
-        .custom-trigger-box { display: flex; align-items: center; justify-content: space-between; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
-        .custom-trigger-box span { font-weight: 500; }
+        /* Gaya Pemicu Kalender Kustom Modis */
+        .custom-calendar-trigger { display: flex; align-items: center; justify-content: space-between; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
+        .custom-calendar-trigger span { font-weight: 500; }
         
-        .time-grid-container { display: flex; gap: 15px; }
-        .time-col { flex: 1; }
-        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
-        .time-grid::-webkit-scrollbar { width: 4px; }
-        .time-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-        .time-cell { padding: 12px 0; text-align: center; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
-        .time-cell:hover { background: var(--border-color); }
-        .time-cell.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .time-label { font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; color: var(--text-color); opacity: 0.8; }
-
-        .jenis-card { display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; background: var(--bg-color); }
-        .jenis-card.active-masuk { border-color: var(--success); background: rgba(46, 204, 113, 0.08); }
-        .jenis-card.active-keluar { border-color: var(--danger); background: rgba(231, 76, 60, 0.08); }
-        .radio-circle { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
-        .jenis-card.active-masuk .radio-circle { border-color: var(--success); }
-        .jenis-card.active-keluar .radio-circle { border-color: var(--danger); }
-        .radio-circle-inner { width: 12px; height: 12px; border-radius: 50%; background: transparent; transition: all 0.2s; }
-        .jenis-card.active-masuk .radio-circle-inner { background: var(--success); }
-        .jenis-card.active-keluar .radio-circle-inner { background: var(--danger); }
-
+        /* Elemen Komponen Kalender di Dalam Modal */
         .calendar-wrapper { display: flex; flex-direction: column; gap: 12px; }
         .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
         .calendar-header-nav span { font-weight: bold; font-size: 15px; }
@@ -99,6 +73,7 @@
         .calendar-cell-date.empty { pointer-events: none; opacity: 0; }
         .calendar-cell-date.selected-day { background: var(--primary) !important; color: white !important; }
 
+        /* Komponen Dropdown Kategori Kustom Dinamis */
         .custom-dropdown-box { position: relative; width: 100%; }
         .custom-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 11px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .custom-dropdown-list { display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 2500; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -125,10 +100,8 @@
         .btn-icon { background: none; border: none; font-size: 14px; cursor: pointer; padding: 4px; }             
         .txt-masuk { color: #2ecc71; }                       
         .txt-keluar { color: #e74c3c; }
-        
         .sub-page { display: none; }                         
         .sub-page.active { display: block; }
-        
         .page-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
         .btn-back { width: auto; padding: 8px 15px; font-size: 13px; background-color: var(--dark); color: white; border-radius: 6px; border: none; cursor: pointer; }
         body.dark-mode .btn-back { background-color: #ffffff !important; color: #1a1a1a !important; font-weight: bold; border: 1px solid #cbd5e1; }
@@ -141,7 +114,7 @@
         .btn-blue { background: #3498db; }
         .btn-red { background: #e74c3c; }                    
         .btn-gray { background: #bdc3c7; color: #2c3e50; }                                                                                                  
-        
+            
         .chart-container { display: flex; justify-content: space-around; align-items: flex-end; height: 120px; padding: 15px 10px; background: var(--bg-color); border-radius: 10px; margin: 15px 0; border: 1px solid var(--border-color); }
         .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }                           
         .chart-bar { width: 35px; border-radius: 6px 6px 0 0; min-height: 5px; transition: height 0.5s ease; }
@@ -149,61 +122,46 @@
         .bar-keluar { background: linear-gradient(to top, #e74c3c, #c0392b); }                                    
         .chart-label { font-size: 11px; margin-top: 8px; font-weight: 600; text-align: center; }
         .chart-val { font-size: 10px; margin-bottom: 4px; font-weight: bold; opacity: 0.8; }
+
+        /* Tambahan CSS Kustom untuk Waktu (Jam) */
+        .time-input-kustom::-webkit-outer-spin-button,
+        .time-input-kustom::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .time-input-kustom {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body>
-<div class="container">    
-
-    <div id="page-login" class="sub-page active">
-        <div class="login-wrapper">
-            <div class="login-logo">🔐</div>
-            <h2 style="margin-bottom: 20px; font-size: 20px; text-align: center;">Masuk Buku Kas Aul</h2>
-            <div class="login-box">
-                <div class="form-group">
-                    <label>EMAIL</label>
-                    <input type="email" id="login-email" placeholder="Masukkan email Anda..." required>
-                </div>
-                <div class="form-group">
-                    <label>PASSWORD</label>
-                    <input type="password" id="login-password" placeholder="Masukkan kata sandi..." required>
-                </div>
-                <button class="btn btn-primary" onclick="prosesLogin()" style="margin-top: 10px;">Masuk Aplikasi</button>
-                <div style="text-align: center; font-size: 12px; margin-top: 15px; opacity: 0.8;">
-                    Belum punya akun? <br><br>
-                    <button class="btn btn-secondary" onclick="prosesRegister()" style="font-size: 12px; padding: 8px;">Daftar Akun Baru</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-utama" class="sub-page">            
+<div class="container">                                  
+    <div id="page-utama" class="sub-page active">            
         <div class="app-header">
             <div class="app-title">Buku Kas Aul v8 Pro</div>
             <button class="btn-menu" onclick="bukaHalaman('page-menu')">☰ Menu</button>                           
         </div>
         <div class="main-dashboard">
-            <div class="dash-card bg-dompet card-large" onclick="bukaModalDompet()">         
+            <div class="dash-card bg-dompet card-large" onclick="bukaModalDompet()">                                     
                 <span class="lbl-card" id="lbl-saldo-utama">Saldo Dompet Utama ↗ (Ketuk Ganti Dompet)</span>
-                <span class="val-card" id="total-saldo">Rp 0</span>                            
+                <span class="val-card" id="total-saldo">Rp 0</span>                                                   
             </div>
             <div class="dash-card bg-masuk" onclick="bukaHalamanLaporan('masuk')">                                        
-                <span class="lbl-card">Pemasukan Terhitung ↗</span>                                                       
-                <span class="val-card" id="total-pemasukan">Rp 0</span>                 
+                <span class="lbl-card">Pemasukan Terhitung ↗</span>                   
+                <span class="val-card" id="total-pemasukan">Rp 0</span>                                             
             </div>                                               
-            <div class="dash-card bg-keluar" onclick="bukaHalamanLaporan('keluar')">                                      
-                <span class="lbl-card">Pengeluaran Terhitung ↗</span>                                       
+            <div class="dash-card bg-keluar" onclick="bukaHalamanLaporan('keluar')">                        
+                <span class="lbl-card">Pengeluaran Terhitung ↗</span>                                                     
                 <span class="val-card" id="total-pengeluaran">Rp 0</span>
             </div>                                           
         </div>
-    
-        <form id="form-transaksi" onsubmit="simpanTransaksi(event)">                                                  
+        <form id="form-transaksi" onsubmit="simpanTransaksi(event)">                      
             <h3 style="font-size:15px; margin-bottom:12px;">Input Transaksi Kas</h3>                  
-            
             <div class="form-row">
                 <div class="form-group">                                 
                     <label>TANGGAL</label>
                     <input type="hidden" id="tx-tanggal" required>
-                    <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('tx-tanggal')">
+                    <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('tx-tanggal')">
                         <span id="label-kalender-tx-tanggal">-/-/-</span>
                         <span>📅</span>
                     </div>
@@ -211,24 +169,22 @@
                 <div class="form-group">
                     <label>WAKTU (JAM)</label>
                     <input type="hidden" id="tx-jam" required>
-                    <div class="custom-trigger-box" onclick="bukaModalJamKustom('tx-jam')">
-                        <span id="label-jam-tx-jam">--:--</span>
+                    <div class="custom-calendar-trigger" onclick="bukaModalWaktuKustom('tx-jam')">
+                        <span id="label-waktu-tx-jam">--:--</span>
                         <span>⏰</span>
                     </div>
                 </div>
             </div>                                               
-            
             <div class="form-group">
-                <label>JENIS TRANSAKSI</label>                       
-                <input type="hidden" id="tx-jenis" value="keluar">
-                <div class="custom-trigger-box" onclick="bukaModalJenisTx('tx-jenis', 'utama')">
-                    <span id="label-jenis-tx-jenis" style="font-weight:bold; color:var(--danger);">Pengeluaran (-)</span>
+                <label>JENIS TRANSAKSI</label> 
+                <input type="hidden" id="tx-jenis" value="masuk">
+                <div class="custom-dropdown-header" onclick="bukaModalJenisTx('utama')">
+                    <span id="label-tx-jenis">Pemasukan (+)</span>
                     <span>▼</span>
-                </div>                                      
+                </div>                                     
             </div>
-            
             <div class="form-group">
-                <label>KATEGORI</label>                              
+                <label>KATEGORI</label>       
                 <div class="custom-dropdown-box" id="dropdown-box-utama">
                     <div class="custom-dropdown-header" onclick="toggleDropdownKustom('dropdown-box-utama')">
                         <span id="dropdown-val-utama">Pilih Kategori...</span>
@@ -236,21 +192,18 @@
                     </div>
                     <div class="custom-dropdown-list" id="dropdown-list-utama"></div>
                 </div>
-            </div>                                   
-            
+            </div>                 
             <div class="form-group" style="display:none;">
-                <label>SUMBER DOMPET / E-WALLET</label>  
+                <label>SUMBER DOMPET / E-WALLET</label>                                                 
                 <input list="list-dompet-tersimpan" id="tx-dompet">
-                <datalist id="list-dompet-tersimpan"></datalist>                                                      
-            </div>                                  
-            
+                <datalist id="list-dompet-tersimpan"></datalist>                                               
+            </div>                                                                                 
             <div class="form-group">
                 <label>JUMLAH UANG</label>                           
                 <input type="number" id="tx-jumlah" placeholder="Masukkan nominal..." required>
-            </div>                                
-            <button type="submit" class="btn btn-primary">Simpan Transaksi</button>                                                              
+            </div>                                               
+            <button type="submit" class="btn btn-primary">Simpan Transaksi</button>                            
         </form>
-        
         <div style="margin-top:25px;">
             <h3 style="font-size:15px;">Riwayat Transaksi Terkini</h3>
             <div class="tab-scroll-container">
@@ -278,7 +231,10 @@
             <button class="btn btn-secondary" style="background-color: #2ecc71; color: white; border: none;" onclick="pemicuImport()">📤 Pulihkan Data (JSON / CSV Lama)</button>                                               
             <input type="file" id="input-backup" accept="*/*" style="display: none;" onchange="importDataUniversal(event)">
             
-            <button class="btn btn-secondary" style="background-color: #7f8c8d; color: white; border: none; margin-top: 5px;" onclick="handleLogout()">🚪 Keluar Akun (Logout)</button>
+            <div style="background-color: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 25px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                <span id="user-email-display" style="font-size: 13px; font-weight: bold; color: var(--text-color);">👤 Memuat data pengguna...</span>
+                <button class="btn btn-secondary" style="background-color: #7f8c8d; color: white; border: none; margin: 0; width: 100%;" onclick="handleLogout()">🚪 Keluar Akun (Logout)</button>
+            </div>
 
             <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px;">
                 <p style="font-size: 12px; color: var(--danger); margin-bottom: 10px; font-weight: bold;">Zona Berbahaya:</p>
@@ -352,7 +308,7 @@
             <div class="form-group">
                 <label>TANGGAL TRANSAKSI</label>                     
                 <input type="hidden" id="ht-tanggal" required>
-                <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('ht-tanggal')">
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('ht-tanggal')">
                     <span id="label-kalender-ht-tanggal">-/-/-</span>
                     <span>📅</span>
                 </div>                
@@ -387,7 +343,7 @@
             <div class="form-group">
                 <label>TANGGAL KIRIM SALDO</label>
                 <input type="hidden" id="trf-tanggal" required>
-                <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('trf-tanggal')">
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('trf-tanggal')">
                     <span id="label-kalender-trf-tanggal">-/-/-</span>
                     <span>📅</span>
                 </div>
@@ -417,7 +373,7 @@
             <div class="form-group">
                 <label>TANGGAL MULAI</label>
                 <input type="hidden" id="inv-tgl-mulai" required>
-                <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('inv-tgl-mulai')">
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('inv-tgl-mulai')">
                     <span id="label-kalender-inv-tgl-mulai">-/-/-</span>
                     <span>📅</span>
                 </div>
@@ -425,7 +381,7 @@
             <div class="form-group">
                 <label>TANGGAL AKHIR</label>
                 <input type="hidden" id="inv-tgl-akhir" required>
-                <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('inv-tgl-akhir')">
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('inv-tgl-akhir')">
                     <span id="label-kalender-inv-tgl-akhir">-/-/-</span>
                     <span>📅</span>
                 </div>                                         
@@ -441,54 +397,16 @@
     </div>
 </div>                                               
 
-<div id="modal-jam-kustom" class="action-modal" style="z-index: 4000;">
-    <div class="action-content" style="max-width: 320px; padding: 20px;">
-        <h3 style="text-align:center; font-size:16px; margin-bottom:15px;">⏰ Atur Waktu</h3>
-        <div class="time-grid-container">
-            <div class="time-col">
-                <div class="time-label">JAM (0-23)</div>
-                <div class="time-grid" id="grid-jam"></div>
-            </div>
-            <div class="time-col">
-                <div class="time-label">MENIT (0-59)</div>
-                <div class="time-grid" id="grid-menit"></div>
-            </div>
-        </div>
-        <div style="text-align:center; margin:15px 0; font-size:32px; font-weight:bold; color:var(--primary);" id="preview-jam">00:00</div>
-        <button class="btn-action btn-primary" style="margin-bottom:10px;" onclick="simpanJamKustom()">Terapkan Waktu</button>
-        <button class="btn-action btn-gray" onclick="tutupModalJamKustom()">Batal</button>
-    </div>
-</div>
-
-<div id="modal-jenis-tx" class="action-modal" style="z-index: 4000;">
-    <div class="action-content" style="max-width: 340px; padding: 25px 20px;">
-        <h3 style="text-align:center; font-size:16px; margin-bottom:15px;">Pilih Jenis Transaksi</h3>
-        
-        <div class="jenis-card" id="card-masuk" onclick="pilihJenisTx('masuk')">
-            <span style="font-weight:bold; color:var(--success); font-size:15px;">Pemasukan (+)</span>
-            <div class="radio-circle"><div class="radio-circle-inner"></div></div>
-        </div>
-
-        <div class="jenis-card" id="card-keluar" onclick="pilihJenisTx('keluar')">
-            <span style="font-weight:bold; color:var(--danger); font-size:15px;">Pengeluaran (-)</span>
-            <div class="radio-circle"><div class="radio-circle-inner"></div></div>
-        </div>
-
-        <button class="btn-action btn-gray" style="margin-top:10px;" onclick="tutupModalJenisTx()">Batal</button>
-    </div>
-</div>
-
 <div id="modal-edit-transaksi" class="action-modal">
     <div class="action-content">
         <h3 style="text-align:center; font-size:16px; margin-bottom:5px;">✏️ Perbaiki Transaksi</h3>
         <form id="form-edit-transaksi" onsubmit="prosesSimpanEditTransaksi(event)">
             <input type="hidden" id="edit-tx-id-edit" value="">
-            
             <div class="form-row">
                 <div class="form-group">
                     <label>TANGGAL</label>
                     <input type="hidden" id="edit-tx-tanggal" required>
-                    <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('edit-tx-tanggal')">
+                    <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-tx-tanggal')">
                         <span id="label-kalender-edit-tx-tanggal">-/-/-</span>
                         <span>📅</span>
                     </div>
@@ -496,22 +414,20 @@
                 <div class="form-group">
                     <label>WAKTU (JAM)</label>
                     <input type="hidden" id="edit-tx-jam" required>
-                    <div class="custom-trigger-box" onclick="bukaModalJamKustom('edit-tx-jam')">
-                        <span id="label-jam-edit-tx-jam">--:--</span>
+                    <div class="custom-calendar-trigger" onclick="bukaModalWaktuKustom('edit-tx-jam')">
+                        <span id="label-waktu-edit-tx-jam">--:--</span>
                         <span>⏰</span>
                     </div>
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>JENIS TRANSAKSI</label>
-                <input type="hidden" id="edit-tx-jenis" value="keluar">
-                <div class="custom-trigger-box" onclick="bukaModalJenisTx('edit-tx-jenis', 'edit')">
-                    <span id="label-jenis-edit-tx-jenis" style="font-weight:bold; color:var(--danger);">Pengeluaran (-)</span>
+                <input type="hidden" id="edit-tx-jenis" value="masuk">
+                <div class="custom-dropdown-header" onclick="bukaModalJenisTx('edit')">
+                    <span id="label-edit-tx-jenis">Pemasukan (+)</span>
                     <span>▼</span>
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>KATEGORI</label>
                 <div class="custom-dropdown-box" id="dropdown-box-edit">
@@ -522,7 +438,6 @@
                     <div class="custom-dropdown-list" id="dropdown-list-edit"></div>
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>JUMLAH UANG</label>
                 <input type="number" id="edit-tx-jumlah" placeholder="Nominal uang..." required>
@@ -541,7 +456,7 @@
             <div class="form-group">
                 <label>TANGGAL TRANSAKSI</label>
                 <input type="hidden" id="edit-ht-tanggal" required>
-                <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('edit-ht-tanggal')">
+                <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('edit-ht-tanggal')">
                     <span id="label-kalender-edit-ht-tanggal">-/-/-</span>
                     <span>📅</span>
                 </div>
@@ -603,7 +518,7 @@
         <div class="form-group">
             <label>TANGGAL CICILAN</label>
             <input type="hidden" id="input-tanggal-cicilan" required>
-            <div class="custom-trigger-box" onclick="bukaModalKalenderKustom('input-tanggal-cicilan')">
+            <div class="custom-calendar-trigger" onclick="bukaModalKalenderKustom('input-tanggal-cicilan')">
                 <span id="label-kalender-input-tanggal-cicilan">-/-/-</span>
                 <span>📅</span>
             </div>
@@ -635,12 +550,11 @@
         </div>
         <div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
             <label>RENTANG WAKTU GRAFIK MUTASI</label>                                                                
-            <select id="md-filter-waktu" onchange="perbaruiGrafikDompet()">
-                <option value="hari-ini" selected>Hari Ini</option>
-                <option value="kemarin">Kemarin</option>
-                <option value="minggu-ini">Minggu Ini</option>                                                    
-                <option value="bulan-ini">Bulan Ini</option>                                                 
-            </select>             
+            <input type="hidden" id="md-filter-waktu" value="hari-ini">
+            <div class="custom-dropdown-header" onclick="bukaModalFilterWaktu()">
+                <span id="label-md-filter-waktu">Hari Ini</span>
+                <span>▼</span>
+            </div>            
         </div>
         <div class="chart-container">
             <div class="chart-bar-wrapper">                          
@@ -682,23 +596,70 @@
     </div>
 </div>
 
-<script>
-    // ==========================================
-    // KONFIGURASI SUPABASE (WAJIB DIGANTI!)
-    // ==========================================
-    const SUPABASE_URL = 'https://bwljinbudwtgeiewonh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<div id="modal-jenis-tx" class="action-modal" style="z-index: 4000;">
+    <div class="action-content" style="padding: 20px 15px;">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:15px;">🏷️ Jenis Transaksi</h3>
+        <div style="display:flex; flex-direction:column;">
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center; border-radius:8px 8px 0 0;" onclick="terapkanJenisTx('masuk', 'Pemasukan (+)')">
+                <span style="font-weight:600;">Pemasukan (+)</span>
+                <span id="radio-tx-masuk" style="color:var(--primary); font-size:18px;">&#9711;</span>
+            </div>
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center; border-bottom:none; border-radius:0 0 8px 8px;" onclick="terapkanJenisTx('keluar', 'Pengeluaran (-)')">
+                <span style="font-weight:600;">Pengeluaran (-)</span>
+                <span id="radio-tx-keluar" style="color:var(--border-color); font-size:18px;">&#9711;</span>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div id="modal-filter-waktu" class="action-modal" style="z-index: 4000;">
+    <div class="action-content" style="padding: 20px 15px;">
+        <h3 style="text-align:center; font-size:15px; margin-bottom:15px;">📅 Rentang Waktu</h3>
+        <div style="display:flex; flex-direction:column;">
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center;" onclick="terapkanFilterWaktu('hari-ini', 'Hari Ini')">
+                <span style="font-weight:500;">Hari Ini</span>
+                <span id="radio-fw-hari-ini" style="font-size:18px;">&#9711;</span>
+            </div>
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center;" onclick="terapkanFilterWaktu('kemarin', 'Kemarin')">
+                <span style="font-weight:500;">Kemarin</span>
+                <span id="radio-fw-kemarin" style="font-size:18px;">&#9711;</span>
+            </div>
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center;" onclick="terapkanFilterWaktu('minggu-ini', 'Minggu Ini')">
+                <span style="font-weight:500;">Minggu Ini</span>
+                <span id="radio-fw-minggu-ini" style="font-size:18px;">&#9711;</span>
+            </div>
+            <div class="custom-dropdown-item" style="display:flex; justify-content:space-between; align-items:center; border-bottom:none;" onclick="terapkanFilterWaktu('bulan-ini', 'Bulan Ini')">
+                <span style="font-weight:500;">Bulan Ini</span>
+                <span id="radio-fw-bulan-ini" style="font-size:18px;">&#9711;</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-waktu-kustom" class="action-modal" style="z-index: 4000;">
+    <div class="action-content" style="max-width: 300px; padding: 25px 20px;">
+        <h3 style="text-align:center; font-size:16px; margin-bottom:20px;">⏰ Atur Waktu</h3>
+        <div style="display:flex; justify-content:center; gap:15px; align-items:center; margin-bottom:25px;">
+            <input type="number" id="input-jam-kustom" class="time-input-kustom" min="0" max="23" style="font-size:32px; font-weight:bold; text-align:center; width:80px; height:80px; border-radius:12px; border:2px solid var(--border-color); background:var(--bg-color); color:var(--text-color); outline:none;" placeholder="00">
+            <span style="font-size:32px; font-weight:bold; color:var(--text-color);">:</span>
+            <input type="number" id="input-menit-kustom" class="time-input-kustom" min="0" max="59" style="font-size:32px; font-weight:bold; text-align:center; width:80px; height:80px; border-radius:12px; border:2px solid var(--border-color); background:var(--bg-color); color:var(--text-color); outline:none;" placeholder="00">
+        </div>
+        <button class="btn-action btn-primary" style="margin-bottom:10px; font-size:15px;" onclick="simpanWaktuKustom()">Setel Waktu</button>
+        <button class="btn-action btn-gray" onclick="tutupModalWaktuKustom()">Batal</button>
+    </div>
+</div>
+
+<script>                                                 
     let dbTransaksi = JSON.parse(localStorage.getItem('aul_kas_transaksi')) || [];
     let dbHutang = JSON.parse(localStorage.getItem('aul_kas_hutang')) || [];
     let dompetAktif = localStorage.getItem('aul_kas_dompet_aktif') || "Dompet Utama";
-    let filterUtamaAktif = "hari-ini";                   
+    let filterUtamaAktif = "hari-ini";          
     let filterLaporanAktif = "hari-ini";                
     let jenisLaporanSaja = "masuk";                  
     
     let defaultKatMasuk = ["Pendapatan", "Bonus/Insentif", "Tips Penumpang"];
     let defaultKatKeluar = ["Rokok", "Makan & Minum", "Kopi", "Bensin", "Token Listrik"];
+    
     let dbKategoriMasuk = JSON.parse(localStorage.getItem('aul_kas_kat_masuk')) || defaultKatMasuk;
     let dbKategoriKeluar = JSON.parse(localStorage.getItem('aul_kas_kat_keluar')) || defaultKatKeluar;
 
@@ -716,14 +677,11 @@
     // State Pendukung Dropdown Kategori Kustom
     let kategoriTerpilihUtama = "";
     let kategoriTerpilihEdit = "";
-    
-    // State Pendukung Pop-up Custom Jam & Jenis Tx
-    let targetInputJamId = null;
-    let tempJam = "00";
-    let tempMenit = "00";
-    let targetInputJenisId = null;
-    let konteksJenisTx = 'utama';
-    
+
+    // State Pendukung Modal Kustom Baru
+    let targetInputWaktuId = null;
+    let targetKonteksTx = 'utama';
+
     function customSwal() {
         let isDark = document.body.classList.contains('dark-mode');
         return Swal.mixin({
@@ -734,125 +692,27 @@
         });
     }
 
-    // ==========================================
-    // INISIALISASI SAAT APLIKASI DIBUKA
-    // ==========================================
-    window.onload = async function() {                             
+    window.onload = function() {                             
         if (localStorage.getItem('tema_buku_kas') === 'dark') {
             document.body.classList.add('dark-mode');
             document.getElementById('theme-color-meta').content = "#121212";
         } else {
             document.getElementById('theme-color-meta').content = "#f4f7f6";
         }
-
+        setTanggalHariIni();
+        sesuaikanKategori();
+        buatBilahTab('tabs-utama', 'utama');
+        buatBilahTab('tabs-laporan', 'laporan');             
+        perbaruiSemuaData();
+        
         // Event listener penutup otomatis dropdown saat klik di luar area komponen
         document.addEventListener('click', function(e) {
             if(!e.target.closest('.custom-dropdown-box')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(list => list.classList.remove('open'));
             }
         });
-        
-        // Cek Autentikasi Supabase
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-            // Jika sudah login
-            inisialisasiAplikasiUtama();
-            bukaHalaman('page-utama');
-        } else {
-            // Jika belum login
-            bukaHalaman('page-login');
-        }
-    };
-
-    function inisialisasiAplikasiUtama() {
-        setTanggalHariIni();
-        sesuaikanKategori();
-        buatBilahTab('tabs-utama', 'utama');
-        buatBilahTab('tabs-laporan', 'laporan');             
-        perbaruiSemuaData();
-    }
-
-    // ==========================================
-    // FUNGSI LOGIN & REGISTRASI SUPABASE
-    // ==========================================
-    async function prosesLogin() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            customSwal().fire('Peringatan', 'Email dan Password tidak boleh kosong!', 'warning');
-            return;
-        }
-
-        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        
-        try {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-            
-            if (error) {
-                customSwal().fire('Gagal Masuk', error.message, 'error');
-            } else {
-                customSwal().fire('Berhasil', 'Selamat datang kembali!', 'success');
-                inisialisasiAplikasiUtama();
-                bukaHalaman('page-utama');
-            }
-        } catch (err) {
-            customSwal().fire('Error', 'Terjadi kesalahan koneksi ke Supabase.', 'error');
-        }
-    }
-
-    async function prosesRegister() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            customSwal().fire('Peringatan', 'Isi email dan password di form terlebih dahulu untuk mendaftar!', 'warning');
-            return;
-        }
-
-        Swal.fire({ title: 'Mendaftarkan Akun...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        
-        try {
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-            });
-            
-            if (error) {
-                customSwal().fire('Gagal Daftar', error.message, 'error');
-            } else {
-                customSwal().fire('Pendaftaran Berhasil!', 'Akun Anda telah dibuat. Silakan cek kotak masuk email untuk verifikasi (jika aktif), atau langsung klik Masuk Aplikasi.', 'success');
-            }
-        } catch (err) {
-            customSwal().fire('Error', 'Terjadi kesalahan koneksi ke Supabase.', 'error');
-        }
-    }
-
-    async function handleLogout() {
-        customSwal().fire({
-            title: 'Keluar Akun?',
-            text: "Apakah Anda yakin ingin keluar dari sesi aplikasi? (Data offline tetap aman di perangkat ini)",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e74c3c',
-            confirmButtonText: 'Ya, Keluar'
-        }).then(async (result) => {
-            if(result.isConfirmed) {
-                Swal.fire({ title: 'Keluar...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                
-                await supabaseClient.auth.signOut();
-                Swal.close();
-                document.getElementById('login-email').value = "";
-                document.getElementById('login-password').value = "";
-                bukaHalaman('page-login');
-            }
-         });
-    }
+    };                                               
     
-    // Fungsi sinkronisasi nilai input ke elemen pemicu tanggal kustom visual
     function sinkronkanTampilanPemicuKalender(inputId) {
         let nilaiInput = document.getElementById(inputId).value;
         let labelEl = document.getElementById('label-kalender-' + inputId);
@@ -877,131 +737,111 @@
 
         let jam = String(tgl.getHours()).padStart(2, '0');                                                        
         let menit = String(tgl.getMinutes()).padStart(2, '0');
-        document.getElementById('tx-jam').value = `${jam}:${menit}`;
-        let labelJam = document.getElementById('label-jam-tx-jam');
-        if(labelJam) labelJam.innerText = `${jam}:${menit}`;
-
-        document.getElementById('tx-jenis').value = 'keluar'; 
-        let labelJenis = document.getElementById('label-jenis-tx-jenis');
-        if(labelJenis) {
-            labelJenis.innerText = 'Pengeluaran (-)';
-            labelJenis.style.color = 'var(--danger)';
-        }
+        document.getElementById('tx-jam').value = `${jam}:${menit}`; 
+        
+        // Memperbarui label waktu kustom form utama
+        let lblWaktuUtama = document.getElementById('label-waktu-tx-jam');
+        if (lblWaktuUtama) lblWaktuUtama.innerText = `${jam}:${menit}`;
     }
 
-    function renderGridJam() {
-        let containerJam = document.getElementById('grid-jam');
-        let containerMenit = document.getElementById('grid-menit');
-        containerJam.innerHTML = "";
-        containerMenit.innerHTML = "";
-        for(let i=0; i<24; i++) {
-            let val = String(i).padStart(2, '0');
-            let div = document.createElement('div');
-            div.className = `time-cell ${tempJam === val ? 'active' : ''}`;
-            div.innerText = val;
-            div.onclick = function() {
-                tempJam = val;
-                renderGridJam();
-                updatePreviewJam();
-                div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            };
-            containerJam.appendChild(div);
-        }
+    /* =======================================
+       LOGIKA MODAL KUSTOM BARU 
+       (Waktu, Jenis Transaksi, Rentang Waktu)
+    ========================================= */
 
-        for(let i=0; i<60; i++) { 
-            let val = String(i).padStart(2, '0');
-            let div = document.createElement('div');
-            div.className = `time-cell ${tempMenit === val ? 'active' : ''}`;
-            div.innerText = val;
-            div.onclick = function() {
-                tempMenit = val;
-                renderGridJam();
-                updatePreviewJam();
-                div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            };
-            containerMenit.appendChild(div);
-        }
-        updatePreviewJam();
-    }
-
-    function updatePreviewJam() {
-        document.getElementById('preview-jam').innerText = `${tempJam}:${tempMenit}`;
-    }
-
-    function bukaModalJamKustom(inputId) {
-        targetInputJamId = inputId;
-        let currentVal = document.getElementById(inputId).value;
-        if(currentVal && currentVal.includes(':')) {
-            let parts = currentVal.split(':');
-            tempJam = parts[0];
-            tempMenit = parts[1];
+    function bukaModalWaktuKustom(inputId) {
+        targetInputWaktuId = inputId;
+        let nilaiInputSkrg = document.getElementById(inputId).value;
+        if (nilaiInputSkrg) {
+            let parts = nilaiInputSkrg.split(':');
+            document.getElementById('input-jam-kustom').value = parts[0];
+            document.getElementById('input-menit-kustom').value = parts[1];
         } else {
-            let d = new Date();
-            tempJam = String(d.getHours()).padStart(2, '0');
-            tempMenit = String(d.getMinutes()).padStart(2, '0');
+            let tglSkrg = new Date();
+            document.getElementById('input-jam-kustom').value = String(tglSkrg.getHours()).padStart(2, '0');
+            document.getElementById('input-menit-kustom').value = String(tglSkrg.getMinutes()).padStart(2, '0');
         }
+        document.getElementById('modal-waktu-kustom').classList.add('active');
+    }
+
+    function tutupModalWaktuKustom() {
+        document.getElementById('modal-waktu-kustom').classList.remove('active');
+        targetInputWaktuId = null;
+    }
+
+    function simpanWaktuKustom() {
+        let jam = document.getElementById('input-jam-kustom').value || '00';
+        let menit = document.getElementById('input-menit-kustom').value || '00';
         
-        document.getElementById('modal-jam-kustom').classList.add('active');
-        renderGridJam();
+        jam = parseInt(jam);
+        menit = parseInt(menit);
+        if(isNaN(jam) || jam < 0 || jam > 23) jam = 0;
+        if(isNaN(menit) || menit < 0 || menit > 59) menit = 0;
         
-        setTimeout(() => {
-            let activeJam = document.querySelector('#grid-jam .time-cell.active');
-            let activeMenit = document.querySelector('#grid-menit .time-cell.active');
-            if(activeJam) activeJam.scrollIntoView({ block: 'center' });
-            if(activeMenit) activeMenit.scrollIntoView({ block: 'center' });
-        }, 50);
+        let formatJam = String(jam).padStart(2, '0');
+        let formatMenit = String(menit).padStart(2, '0');
+        let nilaiFinal = `${formatJam}:${formatMenit}`;
+
+        document.getElementById(targetInputWaktuId).value = nilaiFinal;
+        let labelEl = document.getElementById('label-waktu-' + targetInputWaktuId);
+        if (labelEl) labelEl.innerText = nilaiFinal;
+        
+        tutupModalWaktuKustom();
     }
 
-    function tutupModalJamKustom() {
-        document.getElementById('modal-jam-kustom').classList.remove('active');
-    }
+    function bukaModalJenisTx(konteks) {
+        targetKonteksTx = konteks;
+        let valSkg = (konteks === 'utama') ? document.getElementById('tx-jenis').value : document.getElementById('edit-tx-jenis').value;
+        
+        // Render status radio &#9673; (terisi) and &#9711; (kosong)
+        document.getElementById('radio-tx-masuk').innerHTML = (valSkg === 'masuk') ? '&#9673;' : '&#9711;';
+        document.getElementById('radio-tx-masuk').style.color = (valSkg === 'masuk') ? 'var(--primary)' : 'var(--border-color)';
+        
+        document.getElementById('radio-tx-keluar').innerHTML = (valSkg === 'keluar') ? '&#9673;' : '&#9711;';
+        document.getElementById('radio-tx-keluar').style.color = (valSkg === 'keluar') ? 'var(--primary)' : 'var(--border-color)';
 
-    function simpanJamKustom() {
-        document.getElementById(targetInputJamId).value = `${tempJam}:${tempMenit}`;
-        let labelEl = document.getElementById(`label-jam-${targetInputJamId}`);
-        if(labelEl) labelEl.innerText = `${tempJam}:${tempMenit}`;
-        tutupModalJamKustom();
-    }
-
-    function bukaModalJenisTx(inputId, konteks) {
-        targetInputJenisId = inputId;
-        konteksJenisTx = konteks;
-        let currentVal = document.getElementById(inputId).value || 'keluar';
-        updateVisualKartuJenis(currentVal); 
         document.getElementById('modal-jenis-tx').classList.add('active');
     }
 
-    function tutupModalJenisTx() {
+    function terapkanJenisTx(value, label) {
+        if(targetKonteksTx === 'utama') {
+            document.getElementById('tx-jenis').value = value;
+            document.getElementById('label-tx-jenis').innerText = label;
+            sesuaikanKategori();
+        } else {
+            document.getElementById('edit-tx-jenis').value = value;
+            document.getElementById('label-edit-tx-jenis').innerText = label;
+            sesuaikanKategoriEdit();
+        }
         document.getElementById('modal-jenis-tx').classList.remove('active');
     }
 
-    function updateVisualKartuJenis(jenis) {
-        document.getElementById('card-masuk').className = 'jenis-card';
-        document.getElementById('card-keluar').className = 'jenis-card';
-        if(jenis === 'masuk') {
-            document.getElementById('card-masuk').classList.add('active-masuk');
-        } else {
-            document.getElementById('card-keluar').classList.add('active-keluar');
-        }
-    }
-
-    function pilihJenisTx(jenis) {
-        updateVisualKartuJenis(jenis);
-        document.getElementById(targetInputJenisId).value = jenis;
-        let labelEl = document.getElementById(`label-jenis-${targetInputJenisId}`);
-        if(labelEl) {
-            labelEl.innerText = (jenis === 'masuk') ? 'Pemasukan (+)' : 'Pengeluaran (-)';
-            labelEl.style.color = (jenis === 'masuk') ? 'var(--success)' : 'var(--danger)';
-        }
+    function bukaModalFilterWaktu() {
+        let valSkg = document.getElementById('md-filter-waktu').value;
+        let arr = ['hari-ini', 'kemarin', 'minggu-ini', 'bulan-ini'];
         
-        if(konteksJenisTx === 'utama') {
-            sesuaikanKategori();
-        } else {
-            sesuaikanKategoriEdit();
-        }
-        setTimeout(() => { tutupModalJenisTx(); }, 150);
+        arr.forEach(id => {
+            let el = document.getElementById('radio-fw-' + id);
+            if(valSkg === id) {
+                el.innerHTML = '&#9673;';
+                el.style.color = 'var(--primary)';
+            } else {
+                el.innerHTML = '&#9711;';
+                el.style.color = 'var(--border-color)';
+            }
+        });
+
+        document.getElementById('modal-filter-waktu').classList.add('active');
     }
 
+    function terapkanFilterWaktu(value, label) {
+        document.getElementById('md-filter-waktu').value = value;
+        document.getElementById('label-md-filter-waktu').innerText = label;
+        perbaruiGrafikDompet();
+        document.getElementById('modal-filter-waktu').classList.remove('active');
+    }
+    
+    // MANAJEMEN KALENDER KUSTOM POP-UP
     function bukaModalKalenderKustom(inputId) {
         targetInputKalenderId = inputId;
         let nilaiInputSkrg = document.getElementById(inputId).value;
@@ -1044,6 +884,7 @@
         let hariPertamaBulan = new Date(kalenderTahunAktif, kalenderBulanAktif, 1).getDay();
         let jumlahHariBulanIni = new Date(kalenderTahunAktif, kalenderBulanAktif + 1, 0).getDate();
         let nilaiInputSkrg = document.getElementById(targetInputKalenderId).value;
+        
         for (let i = 0; i < hariPertamaBulan; i++) {
             let selKosong = document.createElement('div');
             selKosong.className = "calendar-cell-date empty";
@@ -1365,14 +1206,11 @@
         sinkronkanTampilanPemicuKalender('edit-tx-tanggal');
         
         document.getElementById('edit-tx-jam').value = t.jam;
-        let labelJamEdit = document.getElementById('label-jam-edit-tx-jam');
-        if(labelJamEdit) labelJamEdit.innerText = t.jam;
+        document.getElementById('label-waktu-edit-tx-jam').innerText = t.jam;
+
         document.getElementById('edit-tx-jenis').value = t.jenis;
-        let labelJenisEdit = document.getElementById('label-jenis-edit-tx-jenis');
-        if(labelJenisEdit) {
-            labelJenisEdit.innerText = (t.jenis === 'masuk') ? 'Pemasukan (+)' : 'Pengeluaran (-)';
-            labelJenisEdit.style.color = (t.jenis === 'masuk') ? 'var(--success)' : 'var(--danger)';
-        }
+        let lblJenis = (t.jenis === 'masuk') ? 'Pemasukan (+)' : 'Pengeluaran (-)';
+        document.getElementById('label-edit-tx-jenis').innerText = lblJenis;
         
         sesuaikanKategoriEdit();                         
         kategoriTerpilihEdit = t.kategori;
@@ -1523,8 +1361,8 @@
             let sld = saldoPerDompet[d] || 0;        
             let styleWarna = sld >= 0 ? 'var(--success)' : 'var(--danger)';
             let styleAktif = (d === dompetAktif) ? 'background: rgba(52, 152, 219, 0.15); border-left: 4px solid var(--primary);' : '';                        
-            modalDaftarDompet.innerHTML += 
-                `<div onclick="gantiDompetAktif('${d}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 10px; border-bottom:1px solid var(--border-color); font-size:13px; cursor:pointer; ${styleAktif}">                                              
+            modalDaftarDompet.innerHTML += `
+                <div onclick="gantiDompetAktif('${d}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 10px; border-bottom:1px solid var(--border-color); font-size:13px; cursor:pointer; ${styleAktif}">                                              
                     <span style="font-weight:600;">💳 ${d} ${d === dompetAktif ? '✅' : ''}</span>
                     <span style="font-weight:bold; color:${styleWarna};">${formatRupiah(sld)}</span>
                 </div>`;
@@ -1852,6 +1690,7 @@
                     });
                 }
             }                                                                                        
+                  
             if (dataDiimport.length > 0) {
                 customSwal().fire({
                     title: 'Pulihkan CSV Lama?',
@@ -1987,7 +1826,7 @@
         let nominal = parseFloat(document.getElementById('trf-nominal').value);  
         
         if (dari === ke) {
-            customSwal().fire('Gagal', 'Dompet asal dan dompet tujuan tidak boleh sama!', 'error');
+            customSwal().fire('Gagal', 'Dompet asal and dompet tujuan tidak boleh sama!', 'error');
             return;
         }              
         if (nominal <= 0 || isNaN(nominal)) {
@@ -2052,8 +1891,8 @@
                     let terbayarSaatIni = h.terbayar || 0;
                     let sisa = h.nominal - terbayarSaatIni;
                     let pesanKonfirmasi = (h.jenis === 'piutang') ?
-                        `Tandai Piutang sebagai LUNAS dan otomatis catat sisa Pelunasan (${formatRupiah(sisa)}) ke Saldo ${dompetAktif}?` :
-                        `Tandai Hutang sebagai LUNAS dan otomatis catat sisa Pembayaran (${formatRupiah(sisa)}) dari Saldo ${dompetAktif}?`;
+                        `Tandai Piutang sebagai LUNAS and otomatis catat sisa Pelunasan (${formatRupiah(sisa)}) ke Saldo ${dompetAktif}?` :
+                        `Tandai Hutang sebagai LUNAS and otomatis catat sisa Pembayaran (${formatRupiah(sisa)}) dari Saldo ${dompetAktif}?`;
                     customSwal().fire({
                         title: 'Tandai Lunas?',
                         text: pesanKonfirmasi,
@@ -2066,6 +1905,7 @@
                             h.terbayar = h.nominal;
                             let jenisMutasi = (h.jenis === 'piutang') ? 'masuk' : 'keluar';
                             let ketKategori = (h.jenis === 'piutang') ? 'Pelunasan Piutang dari ' + h.nama : 'Bayar Hutang ke ' + h.nama;
+                            
                             let txPelunasan = {
                                 id: 'lunas-' + Date.now().toString(),                        
                                 tanggal: new Date().toISOString().split('T')[0],
@@ -2087,7 +1927,7 @@
                 } else {
                     customSwal().fire({
                         title: 'Ubah Status?',
-                        text: "Ubah status kembali menjadi BELUM LUNAS? (Info: Transaksi kas pelunasan sebelumnya tidak akan terhapus otomatis, dan riwayat cicilan akan di-reset)",
+                        text: "Ubah status kembali menjadi BELUM LUNAS? (Info: Transaksi kas pelunasan sebelumnya tidak akan terhapus otomatis, and riwayat cicilan akan di-reset)",
                         icon: 'warning',
                         showCancelButton: true
                     }).then((result) => {
@@ -2116,9 +1956,9 @@
         }
 
         document.getElementById('modal-aksi-hutang').classList.remove('active');
-
         document.getElementById('lbl-nama-cicilan').innerText = `Orang: ${h.nama}`;
-        document.getElementById('input-nominal-cicilan').value = "";
+        document.getElementById('input-nominal-cicilan').value = ""; 
+        
         let tgl = new Date();
         let yyyy = tgl.getFullYear();
         let mm = String(tgl.getMonth() + 1).padStart(2, '0');
@@ -2198,14 +2038,13 @@
 
                 document.getElementById('edit-ht-jenis').value = item.jenis;
                 document.getElementById('edit-ht-nama').value = item.nama;
-                document.getElementById('edit-ht-nominal').value = item.nominal;                                               
-                
+                document.getElementById('edit-ht-nominal').value = item.nominal;
                 document.getElementById('modal-aksi-hutang').classList.remove('active');
                 document.getElementById('modal-edit-hutang').classList.add('active');
             }                                                
         }
-    }                                        
-        
+    }                                       
+    
     function tutupModalEditHutang() {
         document.getElementById('modal-edit-hutang').classList.remove('active');
         idHutangTerpilih = null;
@@ -2306,8 +2145,7 @@
         });
     }
 
-    function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID');
-    }              
+    function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }              
     
     function formatTanggalIndo(tglString) {
         if(!tglString) return "";
@@ -2350,7 +2188,7 @@
         let dompetPilihan = document.getElementById('inv-dompet').value;
 
         if(!mulai || !akhir) {                                   
-            customSwal().fire('Error', 'Mohon tentukan tanggal mulai dan tanggal akhir terlebih dahulu!', 'error');
+            customSwal().fire('Error', 'Mohon tentukan tanggal mulai and tanggal akhir terlebih dahulu!', 'error');
             return;
         }
 
@@ -2360,7 +2198,7 @@
             return pasTanggal && pasDompet;         
         });
         if(filtered.length === 0) {                              
-            customSwal().fire('Info', 'Tidak ditemukan riwayat data transaksi pada rentang waktu dan dompet tersebut!', 'info');
+            customSwal().fire('Info', 'Tidak ditemukan riwayat data transaksi pada rentang waktu and dompet tersebut!', 'info');
             return;                                          
         }                                            
         
@@ -2409,60 +2247,150 @@
         elemenCetak.style.padding = '35px';
         elemenCetak.style.backgroundColor = '#ffffff';
         elemenCetak.style.color = '#2c3e50';
-        elemenCetak.innerHTML = `
-            <h2 style="text-align: center; margin-bottom: 5px; color: #2c3e50; font-size: 22px;">Laporan Keuangan Buku Kas</h2>
-            <p style="text-align: center; font-size: 13px; color: #7f8c8d; margin-bottom: 25px;">
-                Periode: <strong>${formatTanggalIndo(mulai)}</strong> s/d <strong>${formatTanggalIndo(akhir)}</strong><br>
-                Filter Dompet: <strong>${dompetPilihan === 'semua' ? 'Semua Dompet' : dompetPilihan}</strong>
-            </p>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        elemenCetak.innerHTML = `                                
+            <div style="text-align: center; margin-bottom: 25px; border-bottom: 3px double #2c3e50; padding-bottom: 12px;">
+                <h1 style="margin: 0; color: #3498db; font-size: 24px; text-transform: uppercase; letter-spacing: 0.5px;">Buku Kas Aul v8 Pro</h1>              
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #7f8c8d; font-weight: 500;">Invoice Resmi & Laporan Mutasi Transaksi Keuangan</p>                     
+            </div>
+
+            <table style="width: 100%; margin-bottom: 25px; font-size: 12px; color: #34495e;">
+                <tr>
+                    <td style="width: 18%; font-weight: bold; padding: 3px 0;">Periode Laporan</td>                           
+                    <td style="width: 37%; padding: 3px 0;">: ${formatTanggalIndo(mulai)} s/d ${formatTanggalIndo(akhir)}</td>                                                     
+                    <td style="width: 18%; font-weight: bold; padding: 3px 0;">Filter Dompet</td>
+                    <td style="width: 27%; padding: 3px 0;">: ${dompetPilihan === 'semua' ? 'Semua Dompet' : dompetPilihan}</td>                                               
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 3px 0;">Tanggal Cetak</td>
+                    <td style="padding: 3px 0;">: ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</td>
+                    <td style="font-weight: bold; padding: 3px 0;">Status Dokumen</td>
+                    <td style="padding: 3px 0; color: #2ecc71; font-weight: bold;">: Terverifikasi (Sukses)</td>
+                </tr>
+            </table>                                 
+            
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 12px; box-shadow: 0 2px 3px rgba(0,0,0,0.02);">                              
                 <thead>
-                    <tr style="background-color: #f8fafc; border-bottom: 2px solid #cbd5e1;">
-                        <th style="padding: 12px; text-align: center; font-size: 13px; color: #64748b; width: 10%;">No</th>
-                        <th style="padding: 12px; text-align: left; font-size: 13px; color: #64748b; width: 50%;">Kategori / Deskripsi</th>
-                        <th style="padding: 12px; text-align: right; font-size: 13px; color: #64748b; width: 40%;">Jumlah Transaksi</th>
+                    <tr style="background-color: #34495e; color: white;">                                                         
+                        <th style="padding: 12px; border: 1px solid #cbd5e1; width: 10%; text-align: center;">NO</th>
+                        <th style="padding: 12px; border: 1px solid #cbd5e1; width: 60%; text-align: left;">KATEGORI / KETERANGAN RANGKUMAN</th>                                                 
+                        <th style="padding: 12px; border: 1px solid #cbd5e1; width: 30%; text-align: right;">TOTAL JUMLAH MUTASI</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${barisTabelHTML}
+                    ${barisTabelHTML}                   
                 </tbody>
             </table>
-            <div style="display: flex; justify-content: flex-end;">
-                <div style="width: 280px; background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
-                        <span style="color: #64748b;">Total Pemasukan:</span>
-                        <span style="color: #2ecc71; font-weight: bold;">${formatRupiah(totalMasuk)}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
-                        <span style="color: #64748b;">Total Pengeluaran:</span>
-                        <span style="color: #e74c3c; font-weight: bold;">${formatRupiah(totalKeluar)}</span>
-                    </div>
-                    <div style="border-top: 1px dashed #cbd5e1; margin-bottom: 12px;"></div>
-                    <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold;">
-                        <span style="color: #2c3e50;">Saldo Bersih:</span>
-                        <span style="${saldoBersih >= 0 ? 'color: #2ecc71;' : 'color: #e74c3c;'}">${formatRupiah(saldoBersih)}</span>
-                    </div>
-                </div>
+
+            <div style="float: right; width: 45%; font-size: 12px; margin-top: 5px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 6px 0; color: #2ecc71; font-weight: 600;">Total Pemasukan (+)</td>
+                        <td style="padding: 6px 0; text-align: right; color: #2ecc71; font-weight: bold;">${formatRupiah(totalMasuk)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 0; color: #e74c3c; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Total Pengeluaran (-)</td>                                     
+                        <td style="padding: 6px 0; text-align: right; color: #e74c3c; font-weight: bold; border-bottom: 1px solid #e2e8f0;">${formatRupiah(totalKeluar)}</td>                                                           
+                    </tr>
+                    <tr>                                                     
+                        <td style="padding: 12px 0; font-weight: bold; font-size: 14px; color: #2c3e50;">Saldo Bersih Terhitung</td>                                                   
+                        <td style="padding: 12px 0; text-align: right; font-weight: bold; font-size: 14px; color: ${saldoBersih >= 0 ? '#27ae60' : '#e74c3c'};">
+                            ${saldoBersih < 0 ? '-' : ''} ${formatRupiah(saldoBersih)}
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8;">
-                Dicetak secara otomatis dari Aplikasi Buku Kas Aul v8 Pro pada ${formatTanggalIndo(new Date().toISOString().split('T')[0])}
+            <div style="clear: both;"></div>
+
+            <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 12px; font-weight: 500;">                                                               
+                Laporan invoice ini digenerate secara aman oleh sistem lokal database Buku Kas Aul v8 Pro.
             </div>
         `;
-
-        let opt = {
-            margin:       [10, 10, 10, 10],
-            filename:  `Laporan_Kas_${dompetPilihan}_${Date.now()}.pdf`,
+                                             
+        let konfigurasiPDF = {                              
+            margin:       [12, 12, 12, 12],
+            filename:     `Invoice_Kas_Aul_${mulai}_ke_${akhir}.pdf`,                                                 
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }                                  
         };
 
-        html2pdf().set(opt).from(elemenCetak).save().then(() => {
-            customSwal().fire('Sukses', 'Invoice PDF berhasil dibuat dan mulai diunduh!', 'success');
-        }).catch(err => {
-            customSwal().fire('Error', 'Terjadi kesalahan saat memproses PDF.', 'error');
-        });
+        html2pdf().set(konfigurasiPDF).from(elemenCetak).save();
     }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div id="auth-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+<div style="background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; font-family: sans-serif;">
+<h2 style="color: #0f172a; margin-bottom: 8px;">Buku Kas Aul</h2>
+<p style="color: #64748b; font-size: 14px; margin-bottom: 24px;">Login untuk mengakses data</p>
+
+<input type="email" id="auth-email" placeholder="Email" style="width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box;">
+<input type="password" id="auth-password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box;">
+
+<button onclick="handleLogin()" style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; margin-bottom: 12px; cursor: pointer;">Masuk</button>
+<button onclick="handleRegister()" style="width: 100%; padding: 12px; background: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 8px; font-weight: bold; cursor: pointer;">Daftar Akun</button>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://bwijginbudwtgeiewcnh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function cekSesiLogin() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    document.getElementById('auth-container').style.display = session ? 'none' : 'flex';
+
+    // Menampilkan email pengguna jika sudah login
+    const emailDisplay = document.getElementById('user-email-display');
+    if (session && session.user && emailDisplay) {
+        emailDisplay.innerText = "👤 " + session.user.email;
+    } else if (emailDisplay) {
+        emailDisplay.innerText = "👤 Memuat data pengguna...";
+    }
+}
+
+async function handleLogin() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    if(!email || !password) return alert('Isi email dan password!');
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) alert('Gagal: ' + error.message);
+    else cekSesiLogin();
+}
+
+async function handleRegister() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    if(!email || !password) return alert('Isi email dan password!');
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) alert('Gagal Daftar: ' + error.message);
+    else alert('Sukses mendaftar! Silakan klik tombol Masuk.');
+}
+
+async function handleLogout() {
+    customSwal().fire({
+        title: 'Keluar Akun?',
+        text: 'Apakah Anda yakin ingin keluar dari akun Buku Kas ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                customSwal().fire('Gagal Keluar', error.message, 'error');
+            } else {
+                bukaHalaman('page-utama');
+                cekSesiLogin();
+            }
+        }
+    });
+}
+
+window.addEventListener('DOMContentLoaded', cekSesiLogin);
 </script>
 </body>
 </html>
