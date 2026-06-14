@@ -149,6 +149,11 @@
         .bar-keluar { background: linear-gradient(to top, #e74c3c, #c0392b); }                                    
         .chart-label { font-size: 11px; margin-top: 8px; font-weight: 600; text-align: center; }
         .chart-val { font-size: 10px; margin-bottom: 4px; font-weight: bold; opacity: 0.8; }
+
+        /* Mencegah popup SweetAlert2 tertimpa modal bawaan yang z-indexnya 3000 */
+        .swal2-container {
+            z-index: 5000 !important;
+        }
     </style>
 </head>
 <body>
@@ -636,14 +641,14 @@
         </div>
         <div id="md-daftar-per-dompet" style="max-height: 200px; overflow-y: auto; background: var(--bg-color); border-radius: 0 0 8px 8px; border: 1px solid var(--border-color); border-top: none; display: none; flex-direction: column;">                                    
         </div>
+        
         <div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
             <label>RENTANG WAKTU GRAFIK MUTASI</label>                                                                
-            <select id="md-filter-waktu" onchange="perbaruiGrafikDompet()">
-                <option value="hari-ini" selected>Hari Ini</option>
-                <option value="kemarin">Kemarin</option>
-                <option value="minggu-ini">Minggu Ini</option>                                                    
-                <option value="bulan-ini">Bulan Ini</option>                                                 
-            </select>             
+            <input type="hidden" id="md-filter-waktu" value="hari-ini">
+            <div class="custom-trigger-box" onclick="bukaModalRentangWaktu()">
+                <span id="label-filter-waktu">Hari Ini</span>
+                <span>▼</span>
+            </div>            
         </div>
         <div class="chart-container">
             <div class="chart-bar-wrapper">                          
@@ -1513,6 +1518,43 @@
         } else {                                                 
             customSwal().fire('Perhatian', 'Ketikkan nama dompet baru terlebih dahulu!', 'warning');
         }
+    }
+
+    // FUNGSI BARU UNTUK POP-UP RENTANG WAKTU CUSTOM 
+    function bukaModalRentangWaktu() {
+        let valSkrg = document.getElementById('md-filter-waktu').value;
+        
+        customSwal().fire({
+            title: 'Pilih Rentang Waktu',
+            input: 'radio',
+            inputOptions: {
+                'hari-ini': 'Hari Ini',
+                'kemarin': 'Kemarin',
+                'minggu-ini': 'Minggu Ini',
+                'bulan-ini': 'Bulan Ini'
+            },
+            inputValue: valSkrg,
+            showCancelButton: true,
+            confirmButtonText: 'Pilih',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                // Simpan nilai baru ke input hidden
+                document.getElementById('md-filter-waktu').value = result.value;
+                
+                // Ubah teks visual di UI
+                let labelTeks = '';
+                if(result.value === 'hari-ini') labelTeks = 'Hari Ini';
+                if(result.value === 'kemarin') labelTeks = 'Kemarin';
+                if(result.value === 'minggu-ini') labelTeks = 'Minggu Ini';
+                if(result.value === 'bulan-ini') labelTeks = 'Bulan Ini';
+                
+                document.getElementById('label-filter-waktu').innerText = labelTeks;
+                
+                // Panggil pembaruan grafik
+                perbaruiGrafikDompet();
+            }
+        });
     }
 
     function perbaruiSemuaData() {
