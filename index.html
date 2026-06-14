@@ -686,8 +686,8 @@
     // ==========================================
     // KONFIGURASI SUPABASE (WAJIB DIGANTI!)
     // ==========================================
-    const SUPABASE_URL = 'https://bwljinbudwtgeiewonh.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_MvEhcXf5OOEg_QrA2Z_8IA_nRyCYFhT';
+    const supabase_url = 'https://bwljinbudwtgeiewonh.supabase.co';
+    const supabase_anon_key = 'sb_publishable_MvEhcXf5OOEg_QrA2Z_8IA_nRyCYFhT';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let dbTransaksi = JSON.parse(localStorage.getItem('aul_kas_transaksi')) || [];
