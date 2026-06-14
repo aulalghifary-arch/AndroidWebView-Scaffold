@@ -2585,20 +2585,31 @@
                 </tbody>
             </table>
             <div style="display: flex; justify-content: flex-end;">
-                <div style="width: 280px; background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
-                        <span style="color: #64748b;">Total Pemasukan:</span>
-                        <span style="color: #2ecc71; font-weight: bold;">${formatRupiah(totalMasuk)}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
-                        <span style="color: #64748b;">Total Pengeluaran:</span>
-                        <span style="color: #e74c3c; font-weight: bold;">${formatRupiah(totalKeluar)}</span>
-                    </div>
-                    <div style="border-top: 1px dashed #cbd5e1; margin-bottom: 12px;"></div>
-                    <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold;">
-                        <span style="color: #2c3e50;">Saldo Bersih:</span>
-                        <span style="${saldoBersih >= 0 ? 'color: #2ecc71;' : 'color: #e74c3c;'}">${formatRupiah(saldoBersih)}</span>
-                    </div>
+                <div style="width: 320px; background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <table style="width: 100%; font-size: 13px; text-align: left; border-collapse: collapse;">
+                        <tr>
+                            <td style="color: #64748b; padding-bottom: 8px; width: 45%;">Total Pemasukan</td>
+                            <td style="color: #64748b; padding-bottom: 8px; width: 5%;">:</td>
+                            <td style="color: #2ecc71; font-weight: bold; padding-bottom: 8px; text-align: right;">${formatRupiah(totalMasuk)}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #64748b; padding-bottom: 12px;">Total Pengeluaran</td>
+                            <td style="color: #64748b; padding-bottom: 12px;">:</td>
+                            <td style="color: #e74c3c; font-weight: bold; padding-bottom: 12px; text-align: right;">${formatRupiah(totalKeluar)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div style="border-top: 1px dashed #cbd5e1; margin-bottom: 12px;"></div>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 15px;">
+                            <td style="color: #2c3e50; font-weight: bold;">Saldo Bersih</td>
+                            <td style="color: #2c3e50; font-weight: bold;">:</td>
+                            <td style="${saldoBersih >= 0 ? 'color: #2ecc71;' : 'color: #e74c3c;'} font-weight: bold; text-align: right;">
+                                ${formatRupiah(saldoBersih)}
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8;">
