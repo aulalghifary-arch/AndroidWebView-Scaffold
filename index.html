@@ -2645,28 +2645,26 @@
 async function aturVisibilitasDonasi() {
     const container = document.getElementById('container-donasi');
     
-    // 1. Tunggu 500ms agar Supabase punya waktu untuk memverifikasi sesi login
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Tampilkan tombol sebagai default (sebelum pengecekan selesai)
+    container.style.display = 'flex'; 
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 2. Jika tetap tidak ada user, tampilkan tombol
-    if (!user) {
-        container.style.display = 'flex';
-        return;
-    }
+    // Jika user belum login, biarkan tombol tetap tampil (flex)
+    if (!user) return;
 
-    // 3. Cek database
+    // Jika user login, cek apakah dia ada di daftar whitelist
     const { data } = await supabase
         .from('whitelist_donasi')
         .select('email')
         .eq('email', user.email)
         .maybeSingle();
 
-    // 4. Jika user terdaftar, Sembunyikan. Jika tidak, Tampilkan.
+    // Jika data ditemukan (artinya user tersebut adalah VIP/Admin), sembunyikan tombol
     if (data) {
         container.style.display = 'none';
     } else {
+        // Jika tidak ditemukan di database, pastikan tombol TAMPIL
         container.style.display = 'flex';
     }
 }
