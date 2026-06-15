@@ -235,8 +235,8 @@
                 <div class="donasi-container" id="container-donasi" style="display: none;">
                     <button class="btn-donasi" onclick="toggleDonasiDropdown()">☕ Dukung ▼</button>
                     <div class="donasi-dropdown-content" id="donasi-dropdown">
-                        <a href="intent://saweria.co/aulfrusciante#Intent;scheme=https;package=com.android.chrome;end;">💛 Saweria</a>
-                        <a href="intent://trakteer.id/aulfrusciante/gift#Intent;scheme=https;package=com.android.chrome;end;">🔴 Trakteer</a>
+                        <a href="https://saweria.co/aulfrusciante" target="_blank">💛 Saweria</a>
+                        <a href="https://trakteer.id/aulfrusciante/gift" target="_blank">🔴 Trakteer</a>
                     </div>
                 </div>
 
@@ -2717,37 +2717,5 @@
         });
     }
 </script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Daftarkan riwayat awal buatan saat aplikasi pertama kali dimuat
-    window.history.pushState({ path: 'utama' }, '', '');
-
-    // Dengarkan ketukan tombol kembali (Back Button) fisik/bawaan ponsel
-    window.addEventListener('popstate', function(event) {
-        // Cari tahu sub-page mana yang saat ini sedang aktif di layar
-        const halamanAktif = document.querySelector('.sub-page.active');
-        
-        if (halamanAktif && halamanAktif.id !== 'page-utama' && halamanAktif.id !== 'page-login') {
-            // Jika pengguna sedang di halaman Menu, Hutang, Transfer, Laporan, dll.
-            // Kembalikan tampilannya secara otomatis ke Halaman Utama
-            if (typeof bukaHalaman === 'function') {
-                bukaHalaman('page-utama');
-            } else {
-                // Cadangan jika fungsi utama tidak terbaca secara global
-                document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
-                document.getElementById('page-utama').classList.add('active');
-            }
-            
-            // Masukkan kembali riwayat buatan agar tombol back bisa mendeteksi ketukan berikutnya
-            window.history.pushState({ path: 'utama' }, '', '');
-        } else {
-            // Jika pengguna sudah berada di 'page-utama' atau 'page-login', 
-            // biarkan sistem ponsel menjalankan perintah bawaannya yaitu keluar/menutup aplikasi
-        }
-    });
-});
-</script>
-
 </body>
 </html>
