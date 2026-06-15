@@ -11,6 +11,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* Pengaturan agar tombol donasi tidak muncul tiba-tiba saat loading */
+#container-donasi {
+    display: none; 
+}
+
+/* Kelas yang akan ditambahkan oleh JavaScript untuk menampilkan tombol */
+#container-donasi.tampil {
+    display: flex !important;
+}
+
         :root {
             --primary: #3498db;
             --success: #2ecc71;
@@ -2645,31 +2655,32 @@
 async function aturVisibilitasDonasi() {
     const container = document.getElementById('container-donasi');
     
-    // Tampilkan tombol sebagai default (sebelum pengecekan selesai)
-    container.style.display = 'flex'; 
+    // Pastikan container ada sebelum menjalankan logika
+    if (!container) return;
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Jika user belum login, biarkan tombol tetap tampil (flex)
-    if (!user) return;
+    // Jika tidak login, tampilkan
+    if (!user) {
+        container.classList.add('tampil');
+        return;
+    }
 
-    // Jika user login, cek apakah dia ada di daftar whitelist
+    // Jika login, cek database
     const { data } = await supabase
         .from('whitelist_donasi')
         .select('email')
         .eq('email', user.email)
         .maybeSingle();
 
-    // Jika data ditemukan (artinya user tersebut adalah VIP/Admin), sembunyikan tombol
-    if (data) {
-        container.style.display = 'none';
-    } else {
-        // Jika tidak ditemukan di database, pastikan tombol TAMPIL
-        container.style.display = 'flex';
+    // Jika email TIDAK ADA di database, maka tampilkan tombol
+    if (!data) {
+        container.classList.add('tampil');
     }
+    // Jika email ADA (VIP), jangan lakukan apa-apa, 
+    // tombol akan tetap 'display: none' sesuai CSS tadi.
 }
 
-// Jalankan saat halaman siap
 window.addEventListener('DOMContentLoaded', aturVisibilitasDonasi);
 
 </script>
