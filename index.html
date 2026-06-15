@@ -2645,29 +2645,35 @@
 async function aturVisibilitasDonasi() {
     const container = document.getElementById('container-donasi');
     
-    // Paksa tampilkan dulu agar kita tahu tombolnya ada
-    container.style.display = 'flex'; 
+    // 1. Tunggu 500ms agar Supabase punya waktu untuk memverifikasi sesi login
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Jika belum login, biarkan tetap tampil (sudah flex)
-    if (!user) return;
+    // 2. Jika tetap tidak ada user, tampilkan tombol
+    if (!user) {
+        container.style.display = 'flex';
+        return;
+    }
 
-    // Jika sudah login, cek whitelist
-    const { data, error } = await supabase
+    // 3. Cek database
+    const { data } = await supabase
         .from('whitelist_donasi')
         .select('email')
         .eq('email', user.email)
         .maybeSingle();
 
-    // Jika ditemukan di database (VIP), barulah kita sembunyikan
+    // 4. Jika user terdaftar, Sembunyikan. Jika tidak, Tampilkan.
     if (data) {
         container.style.display = 'none';
+    } else {
+        container.style.display = 'flex';
     }
 }
 
-// Jalankan fungsi
+// Jalankan saat halaman siap
 window.addEventListener('DOMContentLoaded', aturVisibilitasDonasi);
+
 </script>
 
 </script>
