@@ -35,8 +35,55 @@
         .container { max-width: 500px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .app-title { font-size: 20px; font-weight: bold; }
+        .app-title { font-size: 16px; font-weight: bold; white-space: nowrap; }
         .btn-menu { background-color: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+
+        /* Style untuk Dropdown Donasi */
+        .donasi-container { position: relative; display: inline-block; }
+        .btn-donasi {
+            background-color: #f1c40f; 
+            color: #2c3e50;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn-donasi:hover { background-color: #f39c12; }
+        body.dark-mode .btn-donasi { color: #121212; }
+
+        .donasi-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            background-color: var(--card-bg);
+            min-width: 110px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 3500;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .donasi-dropdown-content.show { display: block; }
+        .donasi-dropdown-content a {
+            color: var(--text-color);
+            padding: 10px 12px;
+            text-decoration: none;
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .donasi-dropdown-content a:last-child { border-bottom: none; }
+        .donasi-dropdown-content a:hover { background-color: var(--bg-color); }
 
         /* Halaman Login Styles */
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; }
@@ -150,7 +197,6 @@
         .chart-label { font-size: 11px; margin-top: 8px; font-weight: 600; text-align: center; }
         .chart-val { font-size: 10px; margin-bottom: 4px; font-weight: bold; opacity: 0.8; }
 
-        /* Mencegah popup SweetAlert2 tertimpa modal bawaan yang z-indexnya 3000 */
         .swal2-container {
             z-index: 5000 !important;
         }
@@ -183,7 +229,19 @@
 
     <div id="page-utama" class="sub-page">            
         <div class="app-header">
-            <div class="app-title">Buku Kas Aul v8 Pro</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="app-title">Buku Kas Aul v8 Pro</div>
+                
+                <div class="donasi-container" id="container-donasi" style="display: none;">
+                    <button class="btn-donasi" onclick="toggleDonasiDropdown()">☕ Dukung ▼</button>
+                    <div class="donasi-dropdown-content" id="donasi-dropdown">
+                        <a href="https://saweria.co/aulfrusciante" target="_blank">💛 Saweria</a>
+                        <a href="https://trakteer.id/aulfrusciante/gift" target="_blank">🔴 Trakteer</a>
+                    </div>
+                </div>
+
+            </div>
+            
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img id="fotoProfilUser" src="" alt="Profil" style="width: 33px; height: 33px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <button class="btn-menu" onclick="bukaHalaman('page-menu')">☰ Menu</button>                           
@@ -692,12 +750,10 @@
 
 <script>
     // ==========================================
-    // KONFIGURASI SUPABASE (WAJIB DIGANTI!)
-    // Pastikan URL diawali https:// 
-    // Pastikan URL dan Key ditulis langsung (hardcoded) di sini
+    // KONFIGURASI SUPABASE
     // ==========================================
-    const SUPABASE_URL = 'https://bwijginbudwtgeiewcnh.supabase.co'; // <--- Ganti Ini! Harus diawali https://
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo'; // <--- Ganti Ini!
+    const SUPABASE_URL = 'https://bwijginbudwtgeiewcnh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aWpnaW5idWR3dGdlaWV3Y25oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTg1MTksImV4cCI6MjA5NjQ5NDUxOX0.1gUBjSzCAmRrfnZrEQbdP10EttMuQ71m2ryswjxRONo';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -718,17 +774,14 @@
     let tabKategoriAktif = 'keluar';
     let idTransaksiTerpilihModal = null; 
 
-    // State Pendukung Kalender Kustom
     let targetInputKalenderId = null;
     let kalenderBulanAktif = new Date().getMonth();
     let kalenderTahunAktif = new Date().getFullYear();
     const namaBulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     
-    // State Pendukung Dropdown Kategori Kustom
     let kategoriTerpilihUtama = "";
     let kategoriTerpilihEdit = "";
     
-    // State Pendukung Pop-up Custom Jam & Jenis Tx
     let targetInputJamId = null;
     let tempJam = "00";
     let tempMenit = "00";
@@ -746,6 +799,44 @@
     }
 
     // ==========================================
+    // FUNGSI TOGGLE DROPDOWN DONASI
+    // ==========================================
+    function toggleDonasiDropdown() {
+        document.getElementById("donasi-dropdown").classList.toggle("show");
+    }
+
+    // ==========================================
+    // FUNGSI MANAJEMEN TOMBOL DONASI (WHITELIST)
+    // ==========================================
+    async function manageDonationButton(userEmail) {
+        try {
+            let isWhitelisted = false;
+
+            const { data, error } = await supabaseClient
+                .from('whitelist_donasi')
+                .select('id')
+                .eq('email', userEmail);
+
+            if (data && data.length > 0) {
+                isWhitelisted = true;
+            }
+
+            const containerDonasi = document.getElementById('container-donasi');
+            if (containerDonasi) {
+                if (isWhitelisted) {
+                    containerDonasi.style.display = 'none';
+                } else {
+                    containerDonasi.style.display = 'inline-block';
+                }
+            }
+        } catch (err) {
+            console.error("Gagal mengecek whitelist donasi:", err.message);
+            const containerDonasi = document.getElementById('container-donasi');
+            if (containerDonasi) containerDonasi.style.display = 'inline-block';
+        }
+    }
+
+    // ==========================================
     // FUNGSI UNTUK MEMUAT FOTO DAN EMAIL
     // ==========================================
     async function muatProfilPengguna() {
@@ -755,24 +846,22 @@
 
             if (user) {
                 const emailPengguna = user.email;
-                // Cek apakah ada profil picture dari provider
-                // Jika tidak ada, panggil ui-avatars berdasarkan alamat email
                 const fotoUrl = user.user_metadata?.avatar_url || 
                                 user.user_metadata?.picture || 
                                 `https://ui-avatars.com/api/?name=${encodeURIComponent(emailPengguna)}&background=random&color=fff`;
 
-                // 1. Tampilkan email di sidebar menggantikan "Menu Utama"
                 const elemenEmail = document.getElementById('emailUserMenu');
                 if (elemenEmail) {
                     elemenEmail.textContent = emailPengguna;
                 }
 
-                // 2. Tampilkan Foto Profil di main page (sebelah tombol menu)
                 const elemenFoto = document.getElementById('fotoProfilUser');
                 if (elemenFoto) {
                     elemenFoto.src = fotoUrl;
-                    elemenFoto.style.display = 'block'; // tampilkan gambar
+                    elemenFoto.style.display = 'block';
                 }
+
+                manageDonationButton(emailPengguna);
             }
         } catch (err) {
             console.error("Gagal memuat profil pengguna:", err.message);
@@ -790,22 +879,28 @@
             document.getElementById('theme-color-meta').content = "#f4f7f6";
         }
 
-        // Event listener penutup otomatis dropdown saat klik di luar area komponen
+        // Listener klik untuk menutup dropdown (kategori dan donasi) jika klik di luar
         document.addEventListener('click', function(e) {
             if(!e.target.closest('.custom-dropdown-box')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(list => list.classList.remove('open'));
             }
+            if(!e.target.closest('.donasi-container')) {
+                const dropdowns = document.getElementsByClassName("donasi-dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
         });
 
-        // Cek Autentikasi Supabase
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
-            // Jika sudah login
             inisialisasiAplikasiUtama();
-            muatProfilPengguna(); // Panggil fungsi muat profil di sini
+            muatProfilPengguna(); 
             bukaHalaman('page-utama');
         } else {
-            // Jika belum login
             bukaHalaman('page-login');
         }
     };
@@ -837,7 +932,6 @@
                 password: password,
             });
             if (error) {
-                // Modifikasi Tangkapan Error agar mudah dipahami
                 if (error.message === 'Failed to fetch') {
                     customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
                 } else {
@@ -846,12 +940,12 @@
             } else {
                 customSwal().fire('Berhasil', 'Selamat datang kembali!', 'success');
                 inisialisasiAplikasiUtama();
-                muatProfilPengguna(); // Panggil fungsi muat profil saat berhasil login
+                muatProfilPengguna(); 
                 bukaHalaman('page-utama');
             }
         } catch (err) {
             if (err.message === 'Failed to fetch') {
-                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase.', 'error');
             } else {
                 customSwal().fire('Error', 'Terjadi kesalahan sistem.', 'error');
             }
@@ -874,9 +968,8 @@
                 password: password,
             });
             if (error) {
-                // Modifikasi Tangkapan Error agar mudah dipahami
                 if (error.message === 'Failed to fetch') {
-                    customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+                    customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase.', 'error');
                 } else {
                     customSwal().fire('Gagal Daftar', error.message, 'error');
                 }
@@ -885,7 +978,7 @@
             }
         } catch (err) {
              if (err.message === 'Failed to fetch') {
-                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase. Pastikan URL menggunakan "https://" dan URL/Key sudah disalin langsung ke dalam file HTML ini.', 'error');
+                customSwal().fire('Koneksi Gagal', 'Browser gagal memanggil Supabase.', 'error');
             } else {
                 customSwal().fire('Error', 'Terjadi kesalahan koneksi ke Supabase.', 'error');
             }
@@ -909,7 +1002,6 @@
                 document.getElementById('login-email').value = "";
                 document.getElementById('login-password').value = "";
                 
-                // Hapus Tampilan Foto & Email agar tidak membekas
                 const elemenFoto = document.getElementById('fotoProfilUser');
                 if (elemenFoto) elemenFoto.style.display = 'none';
                 
@@ -921,7 +1013,6 @@
          });
     }
     
-    // Fungsi sinkronisasi nilai input ke elemen pemicu tanggal kustom visual
     function sinkronkanTampilanPemicuKalender(inputId) {
         let nilaiInput = document.getElementById(inputId).value;
         let labelEl = document.getElementById('label-kalender-' + inputId);
@@ -1521,7 +1612,6 @@
         }
     }
 
-    // FUNGSI BARU UNTUK POP-UP RENTANG WAKTU CUSTOM 
     function bukaModalRentangWaktu() {
         let valSkrg = document.getElementById('md-filter-waktu').value;
         
@@ -1541,10 +1631,8 @@
             cancelButtonText: 'Batal',
         }).then((result) => {
             if (result.isConfirmed && result.value) {
-                // Simpan nilai baru ke input hidden
                 document.getElementById('md-filter-waktu').value = result.value;
                 
-                // Ubah teks visual di UI
                 let labelTeks = '';
                 if(result.value === 'kemarin') labelTeks = 'Kemarin';
                 if(result.value === 'hari-ini') labelTeks = 'Hari Ini';
@@ -1553,8 +1641,6 @@
                 if(result.value === 'tahun-ini') labelTeks = 'Tahun Ini';
                 
                 document.getElementById('label-filter-waktu').innerText = labelTeks;
-                
-                // Panggil pembaruan grafik
                 perbaruiGrafikDompet();
             }
         });
@@ -1686,7 +1772,6 @@
         
         if (filterId === 'bulan-ini') return tglData.getMonth() === tglSekarang.getMonth() && tglData.getFullYear() === tglSekarang.getFullYear();
         
-        // Logika baru untuk Tahun Ini
         if (filterId === 'tahun-ini') return tglData.getFullYear() === tglSekarang.getFullYear();
 
         return itemTanggal === filterId;
