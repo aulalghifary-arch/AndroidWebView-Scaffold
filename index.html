@@ -2643,29 +2643,33 @@
 </script>
     <script>
 async function aturVisibilitasDonasi() {
-    const { data: { user } } = await supabase.auth.getUser();
     const container = document.getElementById('container-donasi');
+    
+    // Paksa tampilkan dulu agar kita tahu tombolnya ada
+    container.style.display = 'flex'; 
 
-    if (!user) {
-        container.style.display = 'flex';
-        return;
-    }
+    const { data: { user } } = await supabase.auth.getUser();
 
+    // Jika belum login, biarkan tetap tampil (sudah flex)
+    if (!user) return;
+
+    // Jika sudah login, cek whitelist
     const { data, error } = await supabase
         .from('whitelist_donasi')
         .select('email')
         .eq('email', user.email)
-        .single();
+        .maybeSingle();
 
-    if (error || !data) {
-        container.style.display = 'flex';
-    } else {
-        container.style.display = 'none'; // Sembunyikan untuk Anda
+    // Jika ditemukan di database (VIP), barulah kita sembunyikan
+    if (data) {
+        container.style.display = 'none';
     }
 }
 
-// Panggil fungsi saat aplikasi dimuat
+// Jalankan fungsi
 window.addEventListener('DOMContentLoaded', aturVisibilitasDonasi);
+</script>
+
 </script>
 
 </body>
