@@ -2544,7 +2544,11 @@
         });
     }
 
-    function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }              
+    function formatRupiah(angka) { 
+    let tanda = angka < 0 ? "-" : "";
+    return tanda + "Rp " + Math.abs(angka).toLocaleString('id-ID'); 
+}
+              
     
     function formatTanggalIndo(tglString) {
         if(!tglString) return "";
