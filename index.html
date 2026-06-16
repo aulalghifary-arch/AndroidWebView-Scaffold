@@ -341,6 +341,92 @@
             <button class="btn btn-secondary" onclick="bukaHalaman('page-transfer')" style="background-color: #27ae60; color: white; border: none;">💸 Transfer Antar Dompet</button>
             <button class="btn btn-secondary" onclick="bukaHalamanInvoice()" style="background-color: #9b59b6; color: white; border: none;">📄 Cetak Invoice / Laporan (PDF)</button>
             <button class="btn btn-secondary" onclick="toggleDarkMode()">⚙️ Ganti Mode Gelap / Terang</button>
+            <div id="chat-button-container"></div>
+
+<div id="chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        <div style="background: #00A39D; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">Dukungan Buku Kas Pro</h4>
+                <p id="chat-user-status" style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;"></p>
+            </div>
+            <button onclick="tutupModalChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
+        <div id="chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+            <input type="text" id="chat-message-input" placeholder="Ketik pesan bantuan..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+            <button onclick="kirimPesanModal()" style="background: #00A39D; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
+        </div>
+    </div>
+</div>
+
+<div id="admin-chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        <div style="background: #4C3494; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">👑 Dasbor Admin Chat</h4>
+                <p style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;">Memantau pesan masuk pengguna</p>
+            </div>
+            <button onclick="tutupModalAdminChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f8f9fa;">
+            <div id="admin-panel-list" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
+            <div id="admin-panel-detail" style="display: none; flex: 1; flex-direction: column; overflow: hidden; height: 100%;">
+                <button onclick="kembaliKeDaftarRoom()" style="background: #e9ecef; border: none; padding: 10px; font-size: 13px; cursor: pointer; text-align: left; color: #4C3494; font-weight: bold; border-bottom: 1px solid #ddd;">⬅ Kembali ke Daftar Obrolan</button>
+                <div id="admin-chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f4f4f4; display: flex; flex-direction: column; gap: 10px;"></div>
+                <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+                    <input type="text" id="admin-message-input" placeholder="Ketik balasan admin..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+                    <button onclick="kirimPesanAdmin()" style="background: #4C3494; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bubble-chat { max-width: 75%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+    .bubble-me { background: #00A39D; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .bubble-them { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .chat-time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 3px; }
+</style>
+
+            <!-- KODE BARU: Tombol Menu & Struktur Ruang Chat Modal -->
+<div id="chat-button-container"></div>
+
+<div id="chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        
+        <!-- Header Chat -->
+        <div style="background: #00A39D; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">Dukungan Buku Kas Pro</h4>
+                <p id="chat-user-status" style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;"></p>
+            </div>
+            <button onclick="tutupModalChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
+
+        <!-- Area Pesan -->
+        <div id="chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Pesan masuk di sini -->
+        </div>
+
+        <!-- Input Bar -->
+        <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+            <input type="text" id="chat-message-input" placeholder="Ketik pesan bantuan..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+            <button onclick="kirimPesanModal()" style="background: #00A39D; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Gaya Gelembung Chat Ringan */
+    .bubble-chat { max-width: 75%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+    .bubble-me { background: #00A39D; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .bubble-them { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .chat-time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 3px; }
+</style>
+
             <button class="btn btn-secondary" style="background-color: #3498db; color: white; border: none;" onclick="exportKeJSON()">📥 Backup Seluruh Data (.JSON)</button>
             <button class="btn btn-secondary" style="background-color: #2ecc71; color: white; border: none;" onclick="pemicuImport()">📤 Pulihkan Data (JSON / CSV Lama)</button>                                               
             <input type="file" id="input-backup" accept="*/*" style="display: none;" onchange="importDataUniversal(event)">
@@ -2544,11 +2630,7 @@
         });
     }
 
-    function formatRupiah(angka) { 
-    let tanda = angka < 0 ? "-" : "";
-    return tanda + "Rp " + Math.abs(angka).toLocaleString('id-ID'); 
-}
-              
+    function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }              
     
     function formatTanggalIndo(tglString) {
         if(!tglString) return "";
@@ -2798,6 +2880,227 @@ function tampilkanDonasiOVO() {
         }
     });
 }
+// =======================================================
+// KODE UTUH: FITUR LIVE CHAT SINGLE FILE SYSTEM (ANTI-EROR) - FINAL
+// =======================================================
+let chatUserSesi = null;
+let chatActiveRoomId = null;
+let adminActiveRoomId = null;
+let adminSubscription = null;
+
+async function renderTombolChatOtomatis() {
+    const container = document.getElementById('chat-button-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    try {
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        if (error || !user) return;
+
+        chatUserSesi = user;
+        const isAdmin = user.email === 'aul.alghifary@gmail.com';
+        const chatBtn = document.createElement('button');
+        
+        chatBtn.style.width = '100%';
+        chatBtn.style.padding = '12px';
+        chatBtn.style.marginTop = '10px';
+        chatBtn.style.marginBottom = '10px';
+        chatBtn.style.border = 'none';
+        chatBtn.style.borderRadius = '8px';
+        chatBtn.style.fontSize = '15px';
+        chatBtn.style.fontWeight = '600';
+        chatBtn.style.cursor = 'pointer';
+        chatBtn.style.display = 'block';
+        chatBtn.style.textAlign = 'center';
+
+        if (isAdmin) {
+            chatBtn.innerHTML = '👑 Dasbor Admin Chat';
+            chatBtn.style.backgroundColor = '#4C3494';
+            chatBtn.style.color = '#ffffff';
+            chatBtn.onclick = function() {
+                bukaModalAdminChat(); // Membuka fungsi admin asli
+            };
+        } else {
+            chatBtn.innerHTML = '💬 Hubungi Pengembang';
+            chatBtn.style.backgroundColor = '#00A39D';
+            chatBtn.style.color = '#ffffff';
+            chatBtn.onclick = function() {
+                bukaModalChat();
+            };
+        }
+
+        container.appendChild(chatBtn);
+    } catch (err) {
+        console.error("Gagal memuat tombol chat:", err);
+    }
+}
+
+// --- LOGIKA UTK SISI USER ---
+async function bukaModalChat() {
+    if (!chatUserSesi) return;
+    document.getElementById('chat-user-status').innerText = chatUserSesi.email;
+    document.getElementById('chat-modal-overlay').style.display = 'flex';
+    document.getElementById('chat-box-container').innerHTML = '<p style="font-size:12px; text-align:center; color:#888;">Menghubungkan...</p>';
+
+    try {
+        let { data: room } = await supabaseClient.from('chat_rooms').select('id').eq('user_id', chatUserSesi.id).maybeSingle();
+        if (room) {
+            chatActiveRoomId = room.id;
+        } else {
+            const { data: newRoom } = await supabaseClient.from('chat_rooms').insert([{ user_id: chatUserSesi.id }]).select('id').single();
+            chatActiveRoomId = newRoom.id;
+        }
+
+        await muatPesanModal();
+        
+        supabaseClient.channel('room_' + chatActiveRoomId).on('postgres_changes', { 
+            event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${chatActiveRoomId}`
+        }, payload => {
+            tampilkanSatuPesan(payload.new);
+        }).subscribe();
+
+    } catch (err) { console.error(err); }
+}
+
+async function muatPesanModal() {
+    const { data: messages } = await supabaseClient.from('chat_messages').select('*').eq('room_id', chatActiveRoomId).order('created_at', { ascending: true });
+    const box = document.getElementById('chat-box-container');
+    box.innerHTML = '';
+    if (messages) { messages.forEach(msg => tampilkanSatuPesan(msg)); }
+}
+
+function tampilkanSatuPesan(msg) {
+    const box = document.getElementById('chat-box-container');
+    const isMe = msg.sender_id === chatUserSesi.id;
+    const bubble = document.createElement('div');
+    bubble.className = `bubble-chat ${isMe ? 'bubble-me' : 'bubble-them'}`;
+    const waktu = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.innerHTML = `${msg.message} <span class="chat-time">${waktu}</span>`;
+    box.appendChild(bubble);
+    box.scrollTop = box.scrollHeight;
+}
+
+async function kirimPesanModal() {
+    const input = document.getElementById('chat-message-input');
+    const txt = input.value.trim();
+    if (!txt || !chatActiveRoomId) return;
+    input.value = '';
+    await supabaseClient.from('chat_messages').insert([{ room_id: chatActiveRoomId, sender_id: chatUserSesi.id, message: txt }]);
+}
+
+function tutupModalChat() { document.getElementById('chat-modal-overlay').style.display = 'none'; }
+
+
+// --- LOGIKA UTK SISI ADMIN ---
+async function bukaModalAdminChat() {
+    document.getElementById('admin-chat-modal-overlay').style.display = 'flex';
+    kembaliKeDaftarRoom();
+}
+
+async function muatDaftarRoomAdmin() {
+    const listPanel = document.getElementById('admin-panel-list');
+    listPanel.innerHTML = '<p style="font-size:12px; text-align:center; color:#888;">Memuat daftar obrolan...</p>';
+
+    try {
+        const { data: rooms, error } = await supabaseClient.from('chat_rooms').select('*').order('id', { ascending: false });
+        if (error) throw error;
+
+        listPanel.innerHTML = '';
+        if (!rooms || rooms.length === 0) {
+            listPanel.innerHTML = '<p style="font-size:12px; text-align:center; color:#888; margin-top:20px;">Belum ada riwayat pesan dari pengguna.</p>';
+            return;
+        }
+
+        for (const room of rooms) {
+            const { data: msgData } = await supabaseClient.from('chat_messages').select('message').eq('room_id', room.id).order('created_at', { ascending: false }).limit(1);
+            let previewTeks = msgData && msgData.length > 0 ? msgData[0].message : "Belum ada pesan.";
+
+            const item = document.createElement('div');
+            item.style.cssText = "background:#ffffff; padding:12px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; transition:background 0.2s;";
+            item.innerHTML = `
+                <div style="font-weight:bold; font-size:13px; color:#4C3494; margin-bottom:3px;">💬 Sesi Chat #${room.id}</div>
+                <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${previewTeks}</div>
+            `;
+            item.onclick = () => pilihRoomAdmin(room.id);
+            listPanel.appendChild(item);
+        }
+    } catch (err) {
+        console.error(err);
+        listPanel.innerHTML = '<p style="font-size:12px; text-align:center; color:red;">Gagal mengambil daftar chat.</p>';
+    }
+}
+
+async function pilihRoomAdmin(roomId) {
+    adminActiveRoomId = roomId;
+    document.getElementById('admin-panel-list').style.display = 'none';
+    document.getElementById('admin-panel-detail').style.display = 'flex';
+    
+    const box = document.getElementById('admin-chat-box-container');
+    box.innerHTML = '<p style="font-size:12px; text-align:center; color:#888;">Memuat pesan...</p>';
+
+    await muatPesanAdmin();
+
+    if (adminSubscription) { supabaseClient.removeChannel(adminSubscription); }
+
+    adminSubscription = supabaseClient.channel('admin_room_' + adminActiveRoomId).on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${adminActiveRoomId}`
+    }, payload => {
+        tampilkanSatuPesanAdmin(payload.new);
+    }).subscribe();
+}
+
+async function muatPesanAdmin() {
+    const { data: messages } = await supabaseClient.from('chat_messages').select('*').eq('room_id', adminActiveRoomId).order('created_at', { ascending: true });
+    const box = document.getElementById('admin-chat-box-container');
+    box.innerHTML = '';
+    if (messages) { messages.forEach(msg => tampilkanSatuPesanAdmin(msg)); }
+}
+
+function tampilkanSatuPesanAdmin(msg) {
+    const box = document.getElementById('admin-chat-box-container');
+    const isMe = msg.sender_id === chatUserSesi.id;
+    const bubble = document.createElement('div');
+    bubble.className = `bubble-chat ${isMe ? 'bubble-me' : 'bubble-them'}`;
+    if (isMe) { bubble.style.background = '#4C3494'; } // Aksen ungu untuk balasan Admin
+    
+    const waktu = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.innerHTML = `${msg.message} <span class="chat-time">${waktu}</span>`;
+    box.appendChild(bubble);
+    box.scrollTop = box.scrollHeight;
+}
+
+async function kirimPesanAdmin() {
+    const input = document.getElementById('admin-message-input');
+    const txt = input.value.trim();
+    if (!txt || !adminActiveRoomId) return;
+    input.value = '';
+    await supabaseClient.from('chat_messages').insert([{ room_id: adminActiveRoomId, sender_id: chatUserSesi.id, message: txt }]);
+}
+
+function kembaliKeDaftarRoom() {
+    adminActiveRoomId = null;
+    if (adminSubscription) { supabaseClient.removeChannel(adminSubscription); adminSubscription = null; }
+    document.getElementById('admin-panel-list').style.display = 'flex';
+    document.getElementById('admin-panel-detail').style.display = 'none';
+    muatDaftarRoomAdmin();
+}
+
+function tutupModalAdminChat() {
+    if (adminSubscription) { supabaseClient.removeChannel(adminSubscription); adminSubscription = null; }
+    document.getElementById('admin-chat-modal-overlay').style.display = 'none';
+}
+
+// Event listener tombol enter keyboard
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderTombolChatOtomatis, 1000);
+    document.body.addEventListener('keypress', function(e) {
+        if(e.target && e.target.id === 'chat-message-input' && e.key === 'Enter') { kirimPesanModal(); }
+        if(e.target && e.target.id === 'admin-message-input' && e.key === 'Enter') { kirimPesanAdmin(); }
+    });
+});
+// =======================================================
+// AKHIR FITUR LIVE CHAT SINGLE FILE SYSTEM
+// =======================================================
 
 </script>
 </body>
