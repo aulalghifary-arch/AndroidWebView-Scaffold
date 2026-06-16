@@ -235,9 +235,10 @@
                 <div class="donasi-container" id="container-donasi" style="display: none;">
                     <button class="btn-donasi" onclick="toggleDonasiDropdown()">☕ Dukung ▼</button>
                     <div class="donasi-dropdown-content" id="donasi-dropdown">
-                        <a href="https://saweria.co/aulfrusciante" target="_blank">💛 Saweria</a>
-                        <a href="https://trakteer.id/aulfrusciante/gift">🔴 Trakteer</a>
-                    </div>
+    <a href="javascript:void(0)" onclick="tampilkanDonasiBSI()">🏦 Bank BSI</a>
+    <a href="javascript:void(0)" onclick="tampilkanDonasiOVO()">🟣 OVO</a>
+</div>
+
                 </div>
 
             </div>
@@ -2716,6 +2717,84 @@
             customSwal().fire('Error', 'Terjadi kesalahan saat memproses PDF.', 'error');
         });
     }
+    // ==========================================
+// FUNGSI DONASI LANGSUNG (OVO & BSI)
+// ==========================================
+
+// Fungsi pembantu untuk menyalin teks ke clipboard HP/Perangkat
+function salinKeClipboard(teks) {
+    navigator.clipboard.writeText(teks).then(() => {
+        customSwal().fire({
+            title: 'Tersalin!',
+            text: 'Nomor berhasil disalin. Silakan buka aplikasi bank atau e-wallet Anda.',
+            icon: 'success',
+            timer: 2200,
+            showConfirmButton: false
+        });
+    }).catch(err => {
+        console.error('Gagal menyalin:', err);
+        customSwal().fire('Error', 'Gagal menyalin teks secara otomatis. Silakan salin manual.', 'error');
+    });
+}
+
+// Menampilkan Modal Bank BSI
+function tampilkanDonasiBSI() {
+    // Menutup dropdown otomatis setelah diklik
+    const dropdown = document.getElementById("donasi-dropdown");
+    if (dropdown) dropdown.classList.remove("show");
+
+    let noRekBSI = "7186804656"; // ✏️ GANTI DENGAN NOMOR REKENING BSI ANDA
+    let namaPemilik = "Wlita Aulia Rahmat"; // ✏️ GANTI DENGAN NAMA PEMILIK REKENING
+
+    customSwal().fire({
+        title: 'Dukung via Bank BSI',
+        html: `
+            <div style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
+                <p style="font-size: 13px; margin-bottom: 5px; opacity: 0.8;">Nomor Rekening Bank Syariah Indonesia:</p>
+                <h3 style="font-size: 24px; color: #00A39D; margin: 0; letter-spacing: 1px; font-weight: bold;">${noRekBSI}</h3>
+                <p style="font-size: 14px; font-weight: 600; margin-top: 5px; color: var(--text-color);">a.n. ${namaPemilik}</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '📋 Salin Rekening',
+        cancelButtonText: 'Tutup',
+        confirmButtonColor: '#00A39D'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            salinKeClipboard(noRekBSI);
+        }
+    });
+}
+
+// Menampilkan Modal OVO
+function tampilkanDonasiOVO() {
+    // Menutup dropdown otomatis setelah diklik
+    const dropdown = document.getElementById("donasi-dropdown");
+    if (dropdown) dropdown.classList.remove("show");
+
+    let noOVO = "085260109004"; // ✏️ GANTI DENGAN NOMOR HP OVO ANDA
+    let namaPemilik = "Wilta Aulia Rahmat"; // ✏️ GANTI DENGAN NAMA AKUN OVO ANDA
+
+    customSwal().fire({
+        title: 'Dukung via OVO',
+        html: `
+            <div style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
+                <p style="font-size: 13px; margin-bottom: 5px; opacity: 0.8;">Nomor HP OVO:</p>
+                <h3 style="font-size: 24px; color: #4C3494; margin: 0; letter-spacing: 1px; font-weight: bold;">${noOVO}</h3>
+                <p style="font-size: 14px; font-weight: 600; margin-top: 5px; color: var(--text-color);">a.n. ${namaPemilik}</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '📋 Salin Nomor',
+        cancelButtonText: 'Tutup',
+        confirmButtonColor: '#4C3494'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            salinKeClipboard(noOVO);
+        }
+    });
+}
+
 </script>
 </body>
 </html>
