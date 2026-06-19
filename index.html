@@ -2630,7 +2630,12 @@
         });
     }
 
-    function formatRupiah(angka) { return "Rp " + Math.abs(angka).toLocaleString('id-ID'); }              
+     function formatRupiah(angka) {
+    let isNegative = angka < 0;
+    let formatAngka = Math.abs(angka).toLocaleString('id-ID');
+    return (isNegative ? "-Rp " : "Rp ") + formatAngka;
+}
+             
     
     function formatTanggalIndo(tglString) {
         if(!tglString) return "";
