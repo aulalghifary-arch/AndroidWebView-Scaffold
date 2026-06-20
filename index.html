@@ -197,9 +197,8 @@
         .chart-label { font-size: 11px; margin-top: 8px; font-weight: 600; text-align: center; }
         .chart-val { font-size: 10px; margin-bottom: 4px; font-weight: bold; opacity: 0.8; }
 
-        /* PERBAIKAN Z-INDEX AGAR POP UP HAPUS SELALU DI DEPAN */
         .swal2-container {
-            z-index: 10000 !important;
+            z-index: 5000 !important;
         }
     </style>
 </head>
@@ -236,10 +235,12 @@
                 <div class="donasi-container" id="container-donasi" style="display: none;">
                     <button class="btn-donasi" onclick="toggleDonasiDropdown()">☕ Dukung ▼</button>
                     <div class="donasi-dropdown-content" id="donasi-dropdown">
-                        <a href="javascript:void(0)" onclick="tampilkanDonasiBSI()">🏦 Bank BSI</a>
-                        <a href="javascript:void(0)" onclick="tampilkanDonasiOVO()">🟣 OVO</a>
-                    </div>
+    <a href="javascript:void(0)" onclick="tampilkanDonasiBSI()">🏦 Bank BSI</a>
+    <a href="javascript:void(0)" onclick="tampilkanDonasiOVO()">🟣 OVO</a>
+</div>
+
                 </div>
+
             </div>
             
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -340,58 +341,92 @@
             <button class="btn btn-secondary" onclick="bukaHalaman('page-transfer')" style="background-color: #27ae60; color: white; border: none;">💸 Transfer Antar Dompet</button>
             <button class="btn btn-secondary" onclick="bukaHalamanInvoice()" style="background-color: #9b59b6; color: white; border: none;">📄 Cetak Invoice / Laporan (PDF)</button>
             <button class="btn btn-secondary" onclick="toggleDarkMode()">⚙️ Ganti Mode Gelap / Terang</button>
-            
             <div id="chat-button-container"></div>
 
-            <div id="chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
-                <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
-                    <div style="background: #00A39D; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4 style="margin: 0; font-size: 16px;">Dukungan Buku Kas Pro</h4>
-                            <p id="chat-user-status" style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;"></p>
-                        </div>
-                        <button onclick="tutupModalChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
-                    </div>
-                    
-                    <button onclick="tutupModalChat()" style="background: #e9ecef; border: none; padding: 10px; font-size: 13px; cursor: pointer; text-align: center; color: #00A39D; font-weight: bold; border-bottom: 1px solid #ddd; width: 100%; display: block; box-sizing: border-box;">⬇ Tutup Ruang Chat</button>
-                    
-                    <div id="chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px;"></div>
-                    <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
-                        <input type="text" id="chat-message-input" placeholder="Ketik pesan bantuan..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
-                        <button onclick="kirimPesanModal()" style="background: #00A39D; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
-                    </div>
+<div id="chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        <div style="background: #00A39D; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">Dukungan Buku Kas Pro</h4>
+                <p id="chat-user-status" style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;"></p>
+            </div>
+            <button onclick="tutupModalChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
+        <div id="chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+            <input type="text" id="chat-message-input" placeholder="Ketik pesan bantuan..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+            <button onclick="kirimPesanModal()" style="background: #00A39D; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
+        </div>
+    </div>
+</div>
+
+<div id="admin-chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        <div style="background: #4C3494; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">👑 Dasbor Admin Chat</h4>
+                <p style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;">Memantau pesan masuk pengguna</p>
+            </div>
+            <button onclick="tutupModalAdminChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f8f9fa;">
+            <div id="admin-panel-list" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
+            <div id="admin-panel-detail" style="display: none; flex: 1; flex-direction: column; overflow: hidden; height: 100%;">
+                <button onclick="kembaliKeDaftarRoom()" style="background: #e9ecef; border: none; padding: 10px; font-size: 13px; cursor: pointer; text-align: left; color: #4C3494; font-weight: bold; border-bottom: 1px solid #ddd;">⬅ Kembali ke Daftar Obrolan</button>
+                <div id="admin-chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f4f4f4; display: flex; flex-direction: column; gap: 10px;"></div>
+                <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+                    <input type="text" id="admin-message-input" placeholder="Ketik balasan admin..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+                    <button onclick="kirimPesanAdmin()" style="background: #4C3494; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <div id="admin-chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
-                <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
-                    <div style="background: #4C3494; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4 style="margin: 0; font-size: 16px;">👑 Dasbor Admin Chat</h4>
-                            <p style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;">Memantau pesan masuk pengguna</p>
-                        </div>
-                        <button onclick="tutupModalAdminChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f8f9fa;">
-                        <div id="admin-panel-list" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-                        <div id="admin-panel-detail" style="display: none; flex: 1; flex-direction: column; overflow: hidden; height: 100%;">
-                            <button onclick="kembaliKeDaftarRoom()" style="background: #e9ecef; border: none; padding: 10px; font-size: 13px; cursor: pointer; text-align: left; color: #4C3494; font-weight: bold; border-bottom: 1px solid #ddd;">⬅ Kembali ke Daftar Obrolan</button>
-                            <div id="admin-chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f4f4f4; display: flex; flex-direction: column; gap: 10px;"></div>
-                            <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
-                                <input type="text" id="admin-message-input" placeholder="Ketik balasan admin..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
-                                <button onclick="kirimPesanAdmin()" style="background: #4C3494; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<style>
+    .bubble-chat { max-width: 75%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+    .bubble-me { background: #00A39D; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .bubble-them { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .chat-time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 3px; }
+</style>
+
+            <!-- KODE BARU: Tombol Menu & Struktur Ruang Chat Modal -->
+<div id="chat-button-container"></div>
+
+<div id="chat-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;">
+    <div style="background: #ffffff; width: 100%; max-width: 400px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+        
+        <!-- Header Chat -->
+        <div style="background: #00A39D; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0; font-size: 16px;">Dukungan Buku Kas Pro</h4>
+                <p id="chat-user-status" style="margin: 0; font-size: 11px; opacity: 0.8; font-weight: normal;"></p>
             </div>
+            <button onclick="tutupModalChat()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;">✕</button>
+        </div>
 
-            <style>
-                .bubble-chat { max-width: 75%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
-                .bubble-me { background: #00A39D; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-                .bubble-them { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
-                .chat-time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 3px; }
-            </style>
+        <!-- Area Pesan -->
+        <div id="chat-box-container" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Pesan masuk di sini -->
+        </div>
+
+        <!-- Input Bar -->
+        <div style="padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white;">
+            <input type="text" id="chat-message-input" placeholder="Ketik pesan bantuan..." style="flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;">
+            <button onclick="kirimPesanModal()" style="background: #00A39D; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px;">🕊️</button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Gaya Gelembung Chat Ringan */
+    .bubble-chat { max-width: 75%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+    .bubble-me { background: #00A39D; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .bubble-them { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .chat-time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 3px; }
+</style>
+
             <button class="btn btn-secondary" style="background-color: #3498db; color: white; border: none;" onclick="exportKeJSON()">📥 Backup Seluruh Data (.JSON)</button>
             <button class="btn btn-secondary" style="background-color: #2ecc71; color: white; border: none;" onclick="pemicuImport()">📤 Pulihkan Data (JSON / CSV Lama)</button>                                               
             <input type="file" id="input-backup" accept="*/*" style="display: none;" onchange="importDataUniversal(event)">
@@ -2884,36 +2919,12 @@ async function renderTombolChatOtomatis() {
         chatBtn.style.textAlign = 'center';
 
         if (isAdmin) {
-            // LOGIKA CEK LENCANA NOTIFIKASI
-            let hasUnread = false;
-            const { data: rooms } = await supabaseClient.from('chat_rooms').select('id');
-            if (rooms) {
-                for (const room of rooms) {
-                    const { data: msgData } = await supabaseClient.from('chat_messages').select('created_at, sender_id').eq('room_id', room.id).order('created_at', { ascending: false }).limit(1);
-                    if (msgData && msgData.length > 0 && msgData[0].sender_id !== chatUserSesi.id) {
-                        let msgTime = new Date(msgData[0].created_at).getTime();
-                        let lastRead = localStorage.getItem('admin_read_room_' + room.id) || 0;
-                        if (msgTime > lastRead) {
-                            hasUnread = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            let badgeHtml = hasUnread ? `<span style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 5px; vertical-align: middle;">New</span>` : '';
-
-            chatBtn.innerHTML = '👑 Dasbor Admin Chat ' + badgeHtml;
+            chatBtn.innerHTML = '👑 Dasbor Admin Chat';
             chatBtn.style.backgroundColor = '#4C3494';
             chatBtn.style.color = '#ffffff';
             chatBtn.onclick = function() {
-                bukaModalAdminChat();
+                bukaModalAdminChat(); // Membuka fungsi admin asli
             };
-
-            if (!window.adminNotifInterval) {
-                window.adminNotifInterval = setInterval(renderTombolChatOtomatis, 15000); // Polling ringan tiap 15 detik
-            }
-
         } else {
             chatBtn.innerHTML = '💬 Hubungi Pengembang';
             chatBtn.style.backgroundColor = '#00A39D';
@@ -3006,30 +3017,16 @@ async function muatDaftarRoomAdmin() {
         }
 
         for (const room of rooms) {
-            const { data: msgData } = await supabaseClient.from('chat_messages').select('message, created_at, sender_id').eq('room_id', room.id).order('created_at', { ascending: false }).limit(1);
+            const { data: msgData } = await supabaseClient.from('chat_messages').select('message').eq('room_id', room.id).order('created_at', { ascending: false }).limit(1);
             let previewTeks = msgData && msgData.length > 0 ? msgData[0].message : "Belum ada pesan.";
 
-            // LOGIKA TITIK MERAH SPESIFIK TIAP ROOM
-            let unreadBadge = '';
-            if (msgData && msgData.length > 0 && msgData[0].sender_id !== chatUserSesi.id) {
-                let msgTime = new Date(msgData[0].created_at).getTime();
-                let lastRead = localStorage.getItem('admin_read_room_' + room.id) || 0;
-                if (msgTime > lastRead) {
-                    unreadBadge = `<span style="background: red; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 5px;"></span>`;
-                }
-            }
-
-                        const item = document.createElement('div');
-            item.id = 'baris-chat-' + room.id; // <-- KODE BARU: Memberikan ID unik pada baris
-            item.style.cssText = "background:#ffffff; padding:12px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; transition:background 0.2s; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;";
-
+            const item = document.createElement('div');
+            item.style.cssText = "background:#ffffff; padding:12px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; transition:background 0.2s;";
             item.innerHTML = `
-                <div style="flex: 1; overflow:hidden;" onclick="pilihRoomAdmin('${room.id}')">
-                    <div style="font-weight:bold; font-size:13px; color:#4C3494; margin-bottom:3px;">💬 Sesi Chat #${room.id.substring(0,6)}... ${unreadBadge}</div>
-                    <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${previewTeks}</div>
-                </div>
-                <button onclick="hapusRoomAdmin('${room.id}')" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size:16px; padding:5px; margin-left:10px;">🗑️</button>
+                <div style="font-weight:bold; font-size:13px; color:#4C3494; margin-bottom:3px;">💬 Sesi Chat #${room.id}</div>
+                <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${previewTeks}</div>
             `;
+            item.onclick = () => pilihRoomAdmin(room.id);
             listPanel.appendChild(item);
         }
     } catch (err) {
@@ -3038,52 +3035,8 @@ async function muatDaftarRoomAdmin() {
     }
 }
 
-// FUNGSI BARU: Hapus Room Admin (DENGAN ERROR HANDLER & Z-INDEX)
-async function hapusRoomAdmin(roomId) {
-    // 1. Konfirmasi Hapus
-    const result = await Swal.fire({
-        title: 'Hapus Chat?',
-        text: "Data chat ini akan dihapus permanen.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, hapus!'
-    });
-
-    if (result.isConfirmed) {
-        // 2. Hapus dari Database Supabase
-        const { error } = await supabaseClient
-            .from('chat_rooms') // Sesuaikan nama tabel Anda
-            .delete()
-            .eq('id', roomId);
-
-        if (!error) {
-            // 3. PENTING: Bersihkan Cache Lokal agar tidak muncul lagi
-            localStorage.removeItem('admin_read_room_' + roomId);
-            
-            // 4. Hapus elemen dari tampilan (DOM) secara instan
-            const el = document.getElementById('baris-chat-' + roomId);
-            if (el) el.remove();
-
-            Swal.fire('Terhapus!', 'Sesi obrolan berhasil dihapus.', 'success');
-            
-            // Opsional: Jika Anda menggunakan real-time, 
-            // pastikan memuat ulang daftar tanpa cache (jika memungkinkan)
-            // Atau cukup biarkan elemen terhapus dari DOM saja agar user tidak melihatnya lagi
-        } else {
-            Swal.fire('Gagal', 'Terjadi kesalahan: ' + error.message, 'error');
-        }
-    }
-}
-
-
-
 async function pilihRoomAdmin(roomId) {
     adminActiveRoomId = roomId;
-    
-    // TANDAI SEBAGAI DIBACA SAAT ROOM DIBUKA
-    localStorage.setItem('admin_read_room_' + roomId, Date.now());
-    renderTombolChatOtomatis(); // Segarkan lencana tombol menu utama
-
     document.getElementById('admin-panel-list').style.display = 'none';
     document.getElementById('admin-panel-detail').style.display = 'flex';
     
@@ -3098,8 +3051,6 @@ async function pilihRoomAdmin(roomId) {
         event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${adminActiveRoomId}`
     }, payload => {
         tampilkanSatuPesanAdmin(payload.new);
-        // Tandai sebagai dibaca otomatis jika room sedang terbuka
-        localStorage.setItem('admin_read_room_' + adminActiveRoomId, Date.now());
     }).subscribe();
 }
 
