@@ -3159,5 +3159,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // =======================================================
 
 </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => console.log('Service Worker berhasil aktif offline!', reg.scope))
+        .catch((err) => console.error('Gagal mengaktifkan mode offline:', err));
+    });
+  }
+</script>
+
 </body>
 </html>
