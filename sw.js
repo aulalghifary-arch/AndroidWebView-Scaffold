@@ -1,32 +1,38 @@
-const CACHE_NAME = 'buku-kas-v8-cache';
-// Daftar file yang wajib disimpan agar aplikasi bisa terbuka saat offline
+const CACHE_NAME = 'buku-kas-v8-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  'index.html',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png'
 ];
 
-// 1. Tahap Instalasi: Simpan semua aset utama ke dalam cache HP
+// 1. Tahap Instalasi: Simpan aset utama secara aman
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Mengunduh aset untuk mode offline...');
-      return cache.addAll(ASSETS_TO_CACHE);
+      // Menggunakan mode 'cors' atau 'no-cors' agar Vercel tidak memblokir request
+      return Promise.all(
+        ASSETS_TO_CACHE.map((url) => {
+          return fetch(new Request(url, { cache: 'reload' }))
+            .then((response) => {
+              if (response.ok) return cache.put(url, response);
+              throw new Error(`Gagal memuat file: ${url}`);
+            })
+            .catch((err) => console.warn('Aset dilewati:', url, err));
+        })
+      );
     })
   );
   self.skipWaiting();
 });
 
-// 2. Tahap Aktivasi: Bersihkan cache versi lama jika ada pembaruan
+// 2. Tahap Aktivasi: Bersihkan cache usang
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('Menghapus cache usang:', cache);
             return caches.delete(cache);
           }
         })
@@ -36,34 +42,32 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 3. Tahap Pengambilan Data (Strategi Network First, Fallback to Cache)
-// Mencoba mengambil data terbaru dari internet dulu (supaya Supabase tetap sinkron),
-// jika internet mati/gagal, langsung ambil dari cache lokal HP.
+// 3. Tahap Fetch (Wajib untuk Syarat Instalasi PWA)
 self.addEventListener('fetch', (event) => {
-  // Hanya tangani permintaan internal website (bukan request luar seperti ke Supabase)
-  if (event.request.url.startsWith(self.location.origin)) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Jika sukses mendapat data segar dari internet, perbarui salinan di cache
-          if (response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Jika internet mati (fetch gagal), ambil dari cache HP
-          return caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // Jika benar-benar tidak ada di cache, arahkan ke halaman utama
-            return caches.match('/index.html');
-          });
-        })
-    );
+  // Abaikan request luar (seperti Supabase) agar tidak bentrok
+  if (!event.request.url.startsWith(self.location.origin) || event.request.method !== 'GET') {
+    return;
   }
+
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          // Jika offline total, arahkan navigasi ke index.html
+          if (event.request.mode === 'navigate') {
+            return caches.match('index.html');
+          }
+        });
+      })
+  );
 });
