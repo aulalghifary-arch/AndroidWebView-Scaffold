@@ -2651,10 +2651,26 @@ localStorage.getItem = function(key) {
     }
     
     function bukaHalaman(id) {
-        document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if (id === 'page-utama') perbaruiSemuaData();
+  document.querySelectorAll('.sub-page')
+    .forEach(p => p.classList.remove('active'));
+    
+  document.getElementById(id).classList.add('active');
+  
+  if (id === 'page-utama') {
+    perbaruiSemuaData();
+  }
+
+  // === SUNTIKKAN KODE BARU INI DI SINI (Sebelum tanda tutup kurung kurawal) ===
+  const cloudNavbar = document.getElementById('cloudNavbar');
+  if (cloudNavbar) {
+    if (id === 'page-utama') {
+      cloudNavbar.style.display = 'flex';  // Munculkan hanya di halaman utama
+    } else {
+      cloudNavbar.style.display = 'none';  // Sembunyikan di login, kategori, dll.
     }
+  }
+}
+
     
     function hapusSemuaData() {
         customSwal().fire({
@@ -3159,7 +3175,118 @@ document.addEventListener('DOMContentLoaded', () => {
 // =======================================================
 
 </script>
-    <script>
+<script>
+  // ========================================================
+// LOGIKA SINKRONISASI DATABASE CLOUD (SUPABASE)
+// ========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnBackupCloud = document.getElementById('btnBackupCloud');
+  const btnRestoreCloud = document.getElementById('btnRestoreCloud');
+
+  // 1. FUNGSI SIMPAN DATA KE CLOUD
+  if (btnBackupCloud) {
+    btnBackupCloud.addEventListener('click', async () => {
+      try {
+        // Cek sesi login aktif dari Supabase Client Anda
+        const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
+        
+        if (authError || !session) {
+          Swal.fire('Akses Ditolak', 'Anda harus login untuk menyimpan data ke Cloud.', 'error');
+          return;
+        }
+
+        // Ambil data dari variabel array lokal aplikasi Anda
+        // Berdasarkan baris 2671 di kode Anda, nama variabelnya adalah dbTransaksi
+        if (!dbTransaksi || dbTransaksi.length === 0) {
+          Swal.fire('Informasi', 'Tidak ada data transaksi lokal untuk disimpan.', 'info');
+          return;
+        }
+
+        const userId = session.user.id;
+        
+        // Petakan data agar mengikat user_id Supabase Anda
+        const dataSiapKirim = dbTransaksi.map(item => ({
+          ...item,
+          user_id: userId
+        }));
+
+        // Tampilkan loading screen/indikator progress jika ada
+        Swal.fire({ title: 'Menyimpan ke Cloud...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        // Ganti 'transaksi' dengan nama tabel transaksi asli Anda di Supabase
+        const { error } = await supabaseClient
+          .from('transaksi') 
+          .upsert(dataSiapKirim, { onConflict: 'id' });
+
+        Swal.close();
+
+        if (error) throw error;
+        Swal.fire('Sukses!', '🚀 Data Anda berhasil diamankan di Cloud Supabase.', 'success');
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal', 'Terjadi kesalahan saat menyimpan: ' + err.message, 'error');
+      }
+    });
+  }
+
+  // 2. FUNGSI PULIHKAN DATA DARI CLOUD
+  if (btnRestoreCloud) {
+    btnRestoreCloud.addEventListener('click', async () => {
+      try {
+        const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
+        
+        if (authError || !session) {
+          Swal.fire('Akses Ditolak', 'Silakan login terlebih dahulu.', 'error');
+          return;
+        }
+
+        // Konfirmasi penimpaan data menggunakan gaya confirm bawaan Anda (Baris 2660)
+        const konfirmasi = confirm('⚠️ Perhatian! Memulihkan data dari Cloud akan menggantikan seluruh data aktif di HP Anda saat ini. Lanjutkan?');
+        if (!konfirmasi) return;
+
+        Swal.fire({ title: 'Mengunduh data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        // Tarik data dari tabel Supabase Anda berdasarkan user_id yang aktif
+        const { data, error } = await supabaseClient
+          .from('transaksi')
+          .select('*')
+          .eq('user_id', session.user.id);
+
+        Swal.close();
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          Swal.fire('Awan Kosong', 'Anda belum memiliki riwayat cadangan di Cloud.', 'info');
+          return;
+        }
+
+        // 1. Perbarui database array lokal di memori HP Anda
+        dbTransaksi = data;
+
+        // 2. Simpan hasil unduhan tersebut ke LocalStorage perangkat Anda
+        // Sesuaikan 'dbTransaksi' dengan string key localStorage asli aplikasi Anda jika berbeda
+        localStorage.setItem('dbTransaksi', JSON.stringify(dbTransaksi));
+        
+        // 3. Jalankan fungsi refresh bawaan aplikasi Anda (Baris 2656)
+        if (typeof perbaruiSemuaData === 'function') {
+          perbaruiSemuaData();
+        } else {
+          window.location.reload();
+        }
+
+        Swal.fire('🎉 Berhasil!', 'Seluruh data lama Anda telah dipulihkan dari Cloud.', 'success');
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal', 'Terjadi kesalahan saat memulihkan: ' + err.message, 'error');
+      }
+    });
+  }
+});
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
@@ -3168,6 +3295,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 </script>
+<div id="cloudNavbar" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #ffffff; box-shadow: 0 -3px 10px rgba(0,0,0,0.1); padding: 10px 16px; display: flex; gap: 12px; z-index: 9999; border-top: 1px solid #eee;">
+  
+  <button id="btnBackupCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: #2ec4b6; color: white; font-weight: bold; font-size: 14px;">
+    📥 Simpan Cloud
+  </button>
+  
+  <button id="btnRestoreCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: #00b4d8; color: white; font-weight: bold; font-size: 14px;">
+    📤 Pulihkan Cloud
+  </button>
+
+</div>
+
+<div style="height: 70px; width: 100%;"></div>
+
 
 </body>
 </html>
