@@ -3246,8 +3246,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Konfirmasi penimpaan data menggunakan gaya confirm bawaan Anda (Baris 2660)
-        const konfirmasi = confirm('⚠️ Perhatian! Memulihkan data dari Cloud akan menggantikan seluruh data aktif di HP Anda saat ini. Lanjutkan?');
-        if (!konfirmasi) return;
+        Swal.fire({
+    title: 'Perhatian!',
+    text: 'Memulihkan data dari Cloud akan menggantikan seluruh data aktif di HP Anda saat ini. Lanjutkan?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3498db',
+    cancelButtonColor: '#e74c3c',
+    confirmButtonText: 'OKE',
+    cancelButtonText: 'BATAL',
+    reverseButtons: true
+}).then(async (result) => {
+    // Kode di bawah ini hanya berjalan jika pengguna menekan tombol OKE
+    if (result.isConfirmed) {
+        
+        Swal.fire({ 
+            title: 'Mengunduh data...',
+            allowOutsideClick: false, 
+            didOpen: () => { Swal.showLoading() } 
+        });
+
+        try {
+            // Tarik data dari tabel Supabase Anda berdasarkan user_id yang aktif
+            const { data, error } = await supabaseClient
+                .from('transaksi')
+                .select('*')
+                .eq('user_id', session.user.id);
+
+            Swal.close();
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                Swal.fire('Awan Kosong', 'Anda belum memiliki riwayat cadangan di Cloud.', 'info');
+                return;
+            }
+
+            // 1. Perbarui database array lokal di memori HP Anda
+            dbTransaksi = data;
+
+            // 2. Simpan hasil unduhan tersebut ke LocalStorage perangkat Anda
+            localStorage.setItem('dbTransaksi', JSON.stringify(dbTransaksi));
+
+            // 3. Jalankan fungsi refresh bawaan aplikasi Anda
+            if (typeof perbaruiSemuaData === 'function') {
+                perbaruiSemuaData();
+            } else {
+                window.location.reload();
+            }
+
+            // Tampilkan pesan sukses setelah data berhasil masuk
+            Swal.fire('Berhasil!', 'Seluruh data lama Anda telah dipulihkan dari Cloud.', 'success');
+
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Gagal', 'Terjadi kesalahan saat memulihkan: ' + err.message, 'error');
+        }
+
+    } // Akhir dari cek kondisi isConfirmed
+});
+// ==============================================================
 
         Swal.fire({ title: 'Mengunduh data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
