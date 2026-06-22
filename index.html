@@ -24,13 +24,24 @@
             --card-bg: #ffffff;
             --text-color: #2c3e50;
             --border-color: #e2e8f0;
+                    --btn-simpan-bg: #4db6ac;
+        --btn-pulihkan-bg: #2980b9;
+
         }
         body.dark-mode {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
             --border-color: #333333;
+                    --btn-simpan-bg: #1a5c53; /* Hijau toska kalem */
+        --btn-pulihkan-bg: #1b4f72; /* Biru navy redup */
+
         }
+/* Perbaikan latar belakang putih pembungkus tombol bawah */
+div[style*="bottom: 0"] {
+    background-color: var(--card-bg) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
 
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; transition: all 0.3s ease; }
@@ -3358,11 +3369,13 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <div id="cloudNavbar" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #ffffff; box-shadow: 0 -3px 10px rgba(0,0,0,0.1); padding: 10px 16px; display: flex; gap: 12px; z-index: 9999; border-top: 1px solid #eee;">
   
-  <button id="btnBackupCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: #2ec4b6; color: white; font-weight: bold; font-size: 14px;">
+  <button id="btnBackupCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: var(--btn-simpan-bg);
+ color: white; font-weight: bold; font-size: 14px;">
     📥 Simpan Cloud
   </button>
   
-  <button id="btnRestoreCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: #00b4d8; color: white; font-weight: bold; font-size: 14px;">
+  <button id="btnRestoreCloud" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: none; border-radius: 8px; background-color: var(--btn-pulihkan-bg);
+ color: white; font-weight: bold; font-size: 14px;">
     📤 Pulihkan Cloud
   </button>
 
