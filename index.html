@@ -498,14 +498,20 @@ body.dark .swal2-title {
         <div style="text-align: center; font-size: 11px; opacity: 0.7; margin-bottom: 15px;">Temukan Transaksi Pada Buku Kas</div>
         <div style="background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
             <input type="text" id="cari-teks" placeholder="Nominal atau Deskripsi/Kategori" style="margin-bottom: 10px;">
-            <select id="cari-jenis" style="margin-bottom: 10px;">
-                <option value="semua">Semua Jenis Pemasukan/Pengeluaran</option>
-                <option value="masuk">Pemasukan (+)</option>
-                <option value="keluar">Pengeluaran (-)</option>
-            </select>
-            <select id="cari-dompet" style="margin-bottom: 10px;">
-                <option value="semua">Semua Buku Kas</option>
-            </select>
+            <!-- 1. DROPDOWN FILTER JENIS -->
+<div id="pilih-cari-jenis" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 10px;">
+    <span id="teks-cari-jenis">Semua Jenis Pemasukan/Pengeluaran</span>
+    <span>▼</span>
+</div>
+<input type="hidden" id="cari-jenis" value="semua">
+
+<!-- 2. DROPDOWN FILTER BUKU KAS -->
+<div id="pilih-cari-dompet" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 10px;">
+    <span id="teks-cari-dompet">Semua Buku Kas</span>
+    <span>▼</span>
+</div>
+<input type="hidden" id="cari-dompet" value="semua">
+
             <button class="btn btn-primary" onclick="eksekusiPencarian()">Cari!</button>
         </div>
         <div id="hasil-pencarian" class="list-transaksi" style="max-height: 400px;">
@@ -3330,6 +3336,76 @@ document.getElementById('pilih-trf-dari').addEventListener('click', () => {
 document.getElementById('pilih-trf-ke').addEventListener('click', () => {
     bukaPopupDompet('Pilih Tujuan Saldo', 'trf-ke', 'teks-trf-ke');
 });
+// =================================================================
+// 🔍 FUNGSI POP-UP FILTER PENCARIAN (SWEETALERT2)
+// =================================================================
+async function bukaPopupFilterCari(judulPopup, idInputRahasia, idTeksTampilan, daftarOpsi) {
+    const inputRahasia = document.getElementById(idInputRahasia);
+    const teksTampilan = document.getElementById(idTeksTampilan);
+    if (!inputRahasia || !teksTampilan) return;
+
+    const nilaiSekarang = inputRahasia.value || 'semua';
+
+    const { value: pilihanObj } = await Swal.fire({
+        title: judulPopup,
+        confirmButtonText: 'Terapkan',
+        confirmButtonColor: '#007bff',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        cancelButtonColor: '#d33',
+        html: `
+            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px;">
+                ${daftarOpsi.map(opsi => `
+                    <label style="display: flex; align-items: center; font-size: 15px; cursor: pointer; padding: 14px; border-radius: 10px;">
+                        <input type="radio" name="opsi-filter" value="${opsi.value}" ${nilaiSekarang === opsi.value ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #007bff;">
+                        <span>${opsi.text}</span>
+                    </label>
+                `).join('')}
+            </div>
+        `,
+        preConfirm: () => {
+            const pilihan = document.querySelector('input[name="opsi-filter"]:checked');
+            if (!pilihan) {
+                Swal.showValidationMessage('Anda harus memilih salah satu filter!');
+                return false;
+            }
+            const labelTeks = pilihan.nextElementSibling.innerText;
+            return { value: pilihan.value, text: labelTeks };
+        }
+    });
+
+    if (pilihanObj) {
+        inputRahasia.value = pilihanObj.value;
+        teksTampilan.innerText = pilihanObj.text;
+
+        // 🔄 Otomatis jalankan fungsi cari bawaan aplikasi kamu di baris 509
+        if (typeof eksekusiPencarian === 'function') {
+            eksekusiPencarian();
+        }
+    }
+}
+
+// 🎀 TRIGGER KLIK UNTUK BOX FILTER PENCARIAN
+document.getElementById('pilih-cari-jenis').addEventListener('click', () => {
+    bukaPopupFilterCari('Filter Jenis Catatan', 'cari-jenis', 'teks-cari-jenis', [
+        { value: 'semua', text: 'Semua Jenis Pemasukan/Pengeluaran' },
+        { value: 'masuk', text: 'Pemasukan (+)' },
+        { value: 'keluar', text: 'Pengeluaran (-)' }
+    ]);
+});
+
+document.getElementById('pilih-cari-dompet').addEventListener('click', () => {
+    bukaPopupFilterCari('Filter Buku Kas / Dompet', 'cari-dompet', 'teks-cari-dompet', [
+        { value: 'semua', text: 'Semua Buku Kas' },
+        { value: 'Dompet Utama', text: 'Dompet Utama' },
+        { value: 'BSI', text: 'BSI' },
+        { value: 'DANA', text: 'DANA' },
+        { value: 'GoPay', text: 'GoPay' },
+        { value: 'OVO', text: 'OVO' },
+        { value: 'Tunai', text: 'Tunai' }
+    ]);
+});
+
 
     </script>
 
