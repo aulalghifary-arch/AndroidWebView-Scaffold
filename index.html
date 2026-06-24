@@ -599,14 +599,26 @@ body.dark .swal2-title {
                     <span>📅</span>
                 </div>
             </div>                          
-            <div class="form-group">                 
-                <label>DARI DOMPET (SUMBER SALDO)</label>                              
-                <select id="trf-dari" required></select>                                               
-            </div>
-            <div class="form-group">
-                <label>KE DOMPET (TUJUAN SALDO)</label>
-                <select id="trf-ke" required></select>
-            </div>
+            <!-- 1. DARI DOMPET (SUMBER SALDO) -->
+<div class="form-group">
+    <label style="font-weight: bold;">DARI DOMPET (SUMBER SALDO)</label>
+    <div id="pilih-trf-dari" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-top: 5px;">
+        <span id="teks-trf-dari">Dompet Utama</span>
+        <span>▼</span>
+    </div>
+    <input type="hidden" id="trf-dari" name="trf_dari" value="Dompet Utama" required>
+</div>
+
+<!-- 2. KE DOMPET (TUJUAN SALDO) -->
+<div class="form-group" style="margin-top: 15px;">
+    <label style="font-weight: bold;">KE DOMPET (TUJUAN SALDO)</label>
+    <div id="pilih-trf-ke" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-top: 5px;">
+        <span id="teks-trf-ke">Dompet Utama</span>
+        <span>▼</span>
+    </div>
+    <input type="hidden" id="trf-ke" name="trf_ke" value="Dompet Utama" required>
+</div>
+
             <div class="form-group">                                 
                 <label>JUMLAH NOMINAL YANG DIPINDAHKAN (RP)</label>                                             
                 <input type="number" id="trf-nominal" placeholder="Masukkan nominal transfer..." required>
@@ -3263,8 +3275,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
-    </script>
+        // =================================================================
+// 🏦 FUNGSI PINTAR POP-UP PILIHAN DOMPET (SWEETALERT2)
+// =================================================================
+async function bukaPopupDompet(judulPopup, idInputRahasia, idTeksTampilan) {
+    const inputRahasia = document.getElementById(idInputRahasia);
+    const teksTampilan = document.getElementById(idTeksTampilan);
+    if (!inputRahasia || !teksTampilan) return;
 
+    const nilaiSekarang = inputRahasia.value || 'Dompet Utama';
+    
+    // Daftar opsi dompet sesuai sistem aplikasi kamu
+    const daftarDompet = ['Dompet Utama', 'BSI', 'DANA', 'GoPay', 'OVO', 'Tunai'];
+
+    const { value: dompetPilihan } = await Swal.fire({
+        title: judulPopup,
+        confirmButtonText: 'Pilih',
+        confirmButtonColor: '#28a745',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        cancelButtonColor: '#d33',
+        html: `
+            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px;">
+                ${daftarDompet.map(dompet => `
+                    <label style="display: flex; align-items: center; font-size: 15px; cursor: pointer; padding: 14px; border-radius: 10px;">
+                        <input type="radio" name="opsi-dompet" value="${dompet}" ${nilaiSekarang === dompet ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #28a745;">
+                        <span>${dompet}</span>
+                    </label>
+                `).join('')}
+            </div>
+        `,
+        preConfirm: () => {
+            const pilihan = document.querySelector('input[name="opsi-dompet"]:checked');
+            if (!pilihan) {
+                Swal.showValidationMessage('Anda harus memilih salah satu dompet!');
+                return false;
+            }
+            return pilihan.value;
+        }
+    });
+
+    // Jika user memilih dompet baru
+    if (dompetPilihan) {
+        inputRahasia.value = dompetPilihan;
+        teksTampilan.innerText = dompetPilihan;
+    }
+}
+
+// 🔀 TRIGGER KLIK UNTUK TOMBOL TRANSFER DOMPET
+document.getElementById('pilih-trf-dari').addEventListener('click', () => {
+    bukaPopupDompet('Pilih Sumber Saldo', 'trf-dari', 'teks-trf-dari');
+});
+
+document.getElementById('pilih-trf-ke').addEventListener('click', () => {
+    bukaPopupDompet('Pilih Tujuan Saldo', 'trf-ke', 'teks-trf-ke');
+});
+
+    </script>
 
     </script>
 
