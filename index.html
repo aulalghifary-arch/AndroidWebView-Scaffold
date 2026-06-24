@@ -13,6 +13,54 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+    /* Style khusus untuk kolom Jenis Catatan */
+.dropdown-tiruan {
+    border: 1px solid #ced4da;  /* Garis abu-abu terang saat mode terang */
+    background-color: #ffffff;  /* Latar belakang putih saat mode terang */
+}
+
+/* Otomatis berubah saat mode gelap aktif */
+body.dark-mode .dropdown-tiruan, 
+body.dark .dropdown-tiruan {
+    border: 1px solid #333333;  /* Garis abu-abu gelap */
+    background-color: #1e1e1e;  /* Latar belakang hitam */
+}
+/* === MISI 2: Menyesuaikan Warna Pilihan di Dalam Pop-up SweetAlert2 === */
+
+/* Tampilan Kotak Pilihan saat Mode Terang */
+.swal2-html-container label {
+    background-color: #f8f9fa !important;  /* Latar belakang jadi abu-abu terang */
+    color: #222222 !important;             /* Warna teks otomatis jadi gelap */
+    border: 1px solid #ced4da !important;  /* Garis tepi jadi abu-abu terang */
+}
+
+/* Tampilan Kotak Pilihan otomatis berubah saat Mode Gelap Aktif */
+body.dark-mode .swal2-html-container label, 
+body.dark .swal2-html-container label {
+    background-color: #252525 !important;  /* Kembali ke warna hitam aslimu */
+    color: #ffffff !important;             /* Kembali ke teks putih aslimu */
+    border: 1px solid #333333 !important;  /* Kembali ke garis tepi gelap */
+}
+/* === MISI 2 (Tambahan): Menyesuaikan Latar Belakang Utama Pop-up === */
+
+/* Mengubah badan pop-up dan judul menjadi putih saat Mode Terang */
+.swal2-popup {
+    background-color: #ffffff !important;  /* Latar pop-up jadi putih bersih */
+}
+.swal2-title {
+    color: #222222 !important;             /* Warna teks judul jadi gelap */
+}
+
+/* Mengembalikan badan pop-up dan judul ke Hitam saat Mode Gelap Aktif */
+body.dark-mode .swal2-popup, 
+body.dark .swal2-popup {
+    background-color: #1e1e1e !important;  /* Kembali ke hitam pekat aslimu */
+}
+body.dark-mode .swal2-title, 
+body.dark .swal2-title {
+    color: #ffffff !important;             /* Kembali ke judul putih aslimu */
+}
+
         :root {
             --primary: #3498db;
             --success: #2ecc71;
@@ -514,10 +562,14 @@
             </div>
             <div class="form-group">                                 
                 <label>JENIS CATATAN</label>
-                <select id="ht-jenis">
-                    <option value="hutang">Hutang (Uang Masuk ke Dompet)</option>
-                    <option value="piutang">Piutang (Uang Keluar ke Orang)</option>
-                </select>
+                <div id="pilih-jenis-catatan" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-top: 5px;">
+
+    <span id="teks-jenis-catatan">Pilih Jenis Catatan...</span>
+    <span style="font-size: 10px; color: #888;">▼</span>
+</div>
+<input type="hidden" id="jenis-transaksi" value="">
+
+
             </div>
             <div class="form-group">
                 <label>NAMA ORANG</label>                            
@@ -838,6 +890,7 @@
 </div>
 
 <script>
+
     // ==========================================
     // KONFIGURASI SUPABASE
     // ==========================================
@@ -1701,39 +1754,80 @@
         }
     }
 
-    function bukaModalRentangWaktu() {
-        let valSkrg = document.getElementById('md-filter-waktu').value;
+    async function bukaModalRentangWaktu() {
+    // 1. Mengambil elemen berdasarkan ID bawaan aplikasi kamu
+    const inputRahasiaRentang = document.getElementById('md-filter-waktu');
+    const teksRentang = document.getElementById('label-filter-waktu');
+    
+    if (!inputRahasiaRentang || !teksRentang) return;
+
+    // Mengambil nilai rentang aktif (default: hari-ini)
+    const nilaiSekarang = inputRahasiaRentang.value || 'hari-ini';
+
+    // 2. Memunculkan Pop-up Vertikal Premium Custom HTML
+    const { value: rentangPilihan } = await Swal.fire({
+        title: 'Pilih Rentang Waktu',
+        background: '#1e1e1e',         // 🖤 Latar belakang gelap modern
+        color: '#ffffff',              // 🤍 Judul teks putih
+        confirmButtonText: 'Pilih',
+        confirmButtonColor: '#3085d6', // 🔵 Tombol konfirmasi biru cerah
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        cancelButtonColor: '#d33',     // 🔴 Tombol batal merah
         
-        customSwal().fire({
-            title: 'Pilih Rentang Waktu',
-            input: 'radio',
-            inputOptions: {
-                'kemarin': 'Kemarin',
-                'hari-ini': 'Hari Ini',
-                'minggu-ini': 'Minggu Ini',
-                'bulan-ini': 'Bulan Ini',
-                'tahun-ini': 'Tahun Ini'
-            },
-            inputValue: valSkrg,
-            showCancelButton: true,
-            confirmButtonText: 'Pilih',
-            cancelButtonText: 'Batal',
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                document.getElementById('md-filter-waktu').value = result.value;
-                
-                let labelTeks = '';
-                if(result.value === 'kemarin') labelTeks = 'Kemarin';
-                if(result.value === 'hari-ini') labelTeks = 'Hari Ini';
-                if(result.value === 'minggu-ini') labelTeks = 'Minggu Ini';
-                if(result.value === 'bulan-ini') labelTeks = 'Bulan Ini';
-                if(result.value === 'tahun-ini') labelTeks = 'Tahun Ini';
-                
-                document.getElementById('label-filter-waktu').innerText = labelTeks;
-                perbaruiGrafikDompet();
+        html: `
+            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left; margin-top: 15px;">
+                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 12px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                    <input type="radio" name="rentang-opsi" value="kemarin" ${nilaiSekarang === 'kemarin' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #3085d6;">
+                    <span>Kemarin</span>
+                </label>
+                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 12px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                    <input type="radio" name="rentang-opsi" value="hari-ini" ${nilaiSekarang === 'hari-ini' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #3085d6;">
+                    <span>Hari Ini</span>
+                </label>
+                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 12px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                    <input type="radio" name="rentang-opsi" value="minggu-ini" ${nilaiSekarang === 'minggu-ini' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #3085d6;">
+                    <span>Minggu Ini</span>
+                </label>
+                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 12px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                    <input type="radio" name="rentang-opsi" value="bulan-ini" ${nilaiSekarang === 'bulan-ini' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #3085d6;">
+                    <span>Bulan Ini</span>
+                </label>
+                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 12px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                    <input type="radio" name="rentang-opsi" value="tahun-ini" ${nilaiSekarang === 'tahun-ini' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #3085d6;">
+                    <span>Tahun Ini</span>
+                </label>
+            </div>
+        `,
+        preConfirm: () => {
+            const pilihan = document.querySelector('input[name="rentang-opsi"]:checked');
+            if (!pilihan) {
+                Swal.showValidationMessage('Anda harus memilih salah satu rentang waktu!');
+                return false;
             }
-        });
+            return pilihan.value;
+        }
+    });
+
+    // 3. Eksekusi perubahan data & visual setelah user memilih opsi baru
+    if (rentangPilihan) {
+        inputRahasiaRentang.value = rentangPilihan;
+        
+        const listTeks = {
+            'kemarin': 'Kemarin',
+            'hari-ini': 'Hari Ini',
+            'minggu-ini': 'Minggu Ini',
+            'bulan-ini': 'Bulan Ini',
+            'tahun-ini': 'Tahun Ini'
+        };
+        
+        teksRentang.innerText = listTeks[rentangPilihan];
+        
+        // 🔄 Otomatis memicu render ulang grafik bawaan aplikasi kamu
+        perbaruiGrafikDompet();
     }
+}
+
 
     function perbaruiSemuaData() {
         let totalMasukSemuaDompetAktif = 0;
@@ -3110,5 +3204,73 @@ document.addEventListener('DOMContentLoaded', () => {
 // =======================================================
 
 </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const tombolPilih = document.getElementById("pilih-jenis-catatan");
+            const teksJenisCatatan = document.getElementById("teks-jenis-catatan");
+            const inputRahasia = document.getElementById("jenis-transaksi");
+
+            if (tombolPilih) {
+                tombolPilih.addEventListener("click", async function() {
+                    // Cek opsi yang sedang terpilih saat ini (default: hutang)
+                    const nilaiSekarang = inputRahasia.value || 'hutang';
+
+                    const { value: jenisPilihan } = await Swal.fire({
+                        title: 'Pilih Jenis Catatan',
+                        background: '#1e1e1e',         // 🖤 Latar belakang pop-up gelap
+                        color: '#ffffff',              // 🤍 Warna judul putih
+                        confirmButtonText: 'Pilih',
+                        confirmButtonColor: '#f0a844', // 🟠 Warna tombol oranye khas Buku Kas Aul
+                        
+                        // 🛠️ Membuat struktur HTML Sendiri agar Vertikal, Rapi, & Berlatar Gelap
+                        html: `
+                            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px;">
+                                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 14px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                                    <input type="radio" name="jenis-opsi" value="hutang" ${nilaiSekarang === 'hutang' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #f0a844;">
+                                    <span>Hutang (Uang Masuk ke Dompet)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; color: #ffffff; font-size: 15px; cursor: pointer; padding: 14px; border: 1px solid #333; border-radius: 10px; background-color: #252525;">
+                                    <input type="radio" name="jenis-opsi" value="piutang" ${nilaiSekarang === 'piutang' ? 'checked' : ''} style="margin-right: 12px; width: 18px; height: 18px; accent-color: #f0a844;">
+                                    <span>Piutang (Uang Keluar ke Orang)</span>
+                                </label>
+                            </div>
+                        `,
+                        // 🔐 Mengambil data radio yang dipilih saat tombol klik ditekan
+                        preConfirm: () => {
+                            const pilihan = document.querySelector('input[name="jenis-opsi"]:checked');
+                            if (!pilihan) {
+                                Swal.showValidationMessage('Anda harus memilih salah satu!');
+                                return false;
+                            }
+                            return pilihan.value;
+                        }
+                    });
+
+                    // Update tulisan di tombol luar setelah sukses memilih
+                    if (jenisPilihan) {
+                        inputRahasia.value = jenisPilihan;
+                        if (jenisPilihan === 'hutang') {
+                            teksJenisCatatan.innerText = 'Hutang (Uang Masuk ke Dompet)';
+                        } else {
+                            teksJenisCatatan.innerText = 'Piutang (Uang Keluar ke Orang)';
+                        }
+                        
+                        // Jalankan fungsi auto-hitung bawaan sistemmu jika ada
+                        if (typeof hitungTotal === "function") {
+                            hitungTotal();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+
+    </script>
+
+</body>
+</html>
+
+
 </body>
 </html>
