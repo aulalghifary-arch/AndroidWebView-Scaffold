@@ -657,9 +657,13 @@ body.dark .swal2-title {
             </div>
             <div class="form-group">                                 
                 <label>PILIH FILTER DOMPET</label>
-                <select id="inv-dompet">
-                    <option value="semua">Semua Dompet</option>
-                </select>
+                <!-- 1. DROPDOWN TIRUAN FILTER INVOICE -->
+<div id="pilih-inv-dompet" class="dropdown-tiruan" style="padding: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-top: 5px; border: 1px solid #ccc;">
+    <span id="teks-inv-dompet">Semua Dompet</span>
+    <span>▼</span>
+</div>
+<input type="hidden" id="inv-dompet" name="inv_dompet" value="semua">
+
             </div>
             <button type="button" class="btn btn-primary" style="background-color: #9b59b6; margin-top: 15px;" onclick="prosesCetakPDF()">📥 Unduh Invoice PDF</button>
         </div>
@@ -3397,6 +3401,18 @@ document.getElementById('pilih-cari-jenis').addEventListener('click', () => {
 document.getElementById('pilih-cari-dompet').addEventListener('click', () => {
     bukaPopupFilterCari('Filter Buku Kas / Dompet', 'cari-dompet', 'teks-cari-dompet', [
         { value: 'semua', text: 'Semua Buku Kas' },
+        { value: 'Dompet Utama', text: 'Dompet Utama' },
+        { value: 'BSI', text: 'BSI' },
+        { value: 'DANA', text: 'DANA' },
+        { value: 'GoPay', text: 'GoPay' },
+        { value: 'OVO', text: 'OVO' },
+        { value: 'Tunai', text: 'Tunai' }
+    ]);
+});
+// 🎀 TRIGGER KLIK UNTUK FILTER CETAK INVOICE
+document.getElementById('pilih-inv-dompet').addEventListener('click', () => {
+    bukaPopupFilterCari('Filter Buku Kas / Dompet', 'inv-dompet', 'teks-inv-dompet', [
+        { value: 'semua', text: 'Semua Dompet' },
         { value: 'Dompet Utama', text: 'Dompet Utama' },
         { value: 'BSI', text: 'BSI' },
         { value: 'DANA', text: 'DANA' },
